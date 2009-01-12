@@ -42,7 +42,7 @@ public class Myserver : GLib.Object {
   path_mapping=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);
     
   server=new Server(Soup.SERVER_PORT,port);
-  server.add_handler(null,serve_file_callback_default,(GLib.DestroyNotify)serve_file_destroy_notify);
+  server.add_handler("/",serve_file_callback_default);
   server.run_async();
   
   initialize_dbus();
@@ -52,10 +52,12 @@ public class Myserver : GLib.Object {
   mimetypes=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);
   try {
    FileStream f=FileStream.open(MIME_TYPES_FILE,"r");
-   string line=(string)new char[128];
+   char[] buffline=new char[128];
+   string line=null;
    if (f==null) throw new FileError.FAILED("opening");
    while (!f.eof()) {
-    f.gets(line,128);
+    f.gets(buffline);
+    line=(string)buffline;
     if (line==null || f.eof()) continue;
     string[] buf=line.split_set(" \t",2);
     string mime=buf[0].strip();
@@ -91,7 +93,7 @@ public class Myserver : GLib.Object {
   if (path_mapping.lookup(logical_path)!=null) return;
   path_mapping.insert(logical_path,real_path);
   stderr.printf("Registered logical path '%s' to real path '%s'\n",logical_path,real_path);
-  server.add_handler(logical_path,serve_file_callback,(GLib.DestroyNotify)serve_file_destroy_notify);
+  server.add_handler(logical_path,serve_file_callback);
  }
 
  public void unregister_path(string logical_path) {
@@ -189,9 +191,6 @@ public class Myserver : GLib.Object {
   msg.set_status(error);
   msg.set_response("text/html",Soup.MemoryUse.COPY,error_message,error_message.len());
   stderr.printf("%d - %s: %s\n",error,error_message,path);
- }
- 
- public void serve_file_destroy_notify(void *data) {
  }
  
  private string? extension_from_path(string path) {
