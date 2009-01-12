@@ -2,16 +2,36 @@ using GLib;
 using Soup;
 using Gtk;
 
+[DBus (name = "org.gnome.FromGnomeToTheWorld")]
+public class FromGnomeToTheWorld : GLib.Object {
+ public Myserver server;
+ 
+ public FromGnomeToTheWorld() {
+ }
+
+ public void register_path(string real_path, string logical_path) {
+  server.register_path(real_path,logical_path);
+ }
+  
+ public void unregister_path(string logical_path) {
+  server.unregister_path(logical_path);
+ }
+ 
+ public HashTable<string,string> get_paths() {
+  return server.get_paths();
+ }
+
+}
+
 public class Myserver : GLib.Object {
  const string MIME_TYPES_FILE="/etc/mime.types";
 
  private int port;
- private string[] paths;
- private int paths_length;
  private Soup.Server server;
  private GLib.HashTable<string,string> path_mapping;
  private GLib.HashTable<string,string> mimetypes;
-
+ private FromGnomeToTheWorld exposed;
+ 
  public Myserver() {
  }
 
@@ -20,15 +40,12 @@ public class Myserver : GLib.Object {
   
   initialize_mimetypes();
   path_mapping=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);
-  
-/*  
-  paths=new string[10];
-  paths_length=0;
-*/
     
   server=new Server(Soup.SERVER_PORT,port);
   server.add_handler(null,serve_file_callback_default,(GLib.DestroyNotify)serve_file_destroy_notify);
   server.run_async();
+  
+  initialize_dbus();
  }
 
  private void initialize_mimetypes() {
@@ -54,6 +71,18 @@ public class Myserver : GLib.Object {
   } 
  }
 
+ private void initialize_dbus() {
+  try {
+   this.exposed=new FromGnomeToTheWorld();
+   this.exposed.server=this;
+  
+   var conn = DBus.Bus.get(DBus.BusType.SESSION);
+   conn.register_object ("/org/gnome/FromGnomeToTheWorld", (GLib.Object)this.exposed);
+  } catch (Error e) {
+   stderr.printf("Error registering DBUS server: %s\n",e.message);
+  }
+ }
+
  public void set_port(int port) {
   this.port=port;
  }
@@ -66,9 +95,14 @@ public class Myserver : GLib.Object {
  }
 
  public void unregister_path(string logical_path) {
+  stderr.printf("Unregistered logical path '%s'\n",logical_path);
   path_mapping.remove(logical_path);
  }
 
+ public HashTable<string,string> get_paths() {
+  return path_mapping;
+ }
+ 
  public void serve_file_callback (Soup.Server server, Soup.Message? msg, string path,
   GLib.HashTable? query, Soup.ClientContext? client) {
   string real_path=null;
