@@ -17,8 +17,14 @@ public class FromGnomeToTheWorld : GLib.Object {
   server.unregister_path(logical_path);
  }
  
- public HashTable<string,string> get_paths() {
-  return server.get_paths();
+ public string get_paths() {
+  HashTable<string,string> t=server.get_paths();
+  string result="";
+  foreach (string k in t.get_keys()) {
+   string v=t.lookup(k);
+   result+=k+"\t"+v+"\n";
+  }
+  return result;
  }
 
 }
