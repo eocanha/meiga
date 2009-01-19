@@ -21,6 +21,16 @@ public class FromGnomeToTheWorld : GLib.Object {
   return server.get_paths();
  }
 
+ public string get_paths_as_string() {
+  HashTable<string,string> t=server.get_paths();
+  string result="";
+  foreach (string k in t.get_keys()) {
+   string v=t.lookup(k);
+   result+=k+"\t"+v+"\n";
+  }
+  return result;
+ }
+
 }
 
 public class Myserver : GLib.Object {
@@ -150,8 +160,10 @@ public class Myserver : GLib.Object {
     
    if (extension!=null) mime=mimetypes.lookup(extension);
    if (mime==null) mime="application/x-octet-stream";
-    
-   msg.set_response(mime,Soup.MemoryUse.COPY,(string)f.get_contents(),f.get_length());
+   
+   // f.get_contents() returns unmanaged memory, so Vala will segfault trying to
+   // unref a normal string. AN unmanaged string shoyuld be used (string *)
+   msg.set_response(mime,Soup.MemoryUse.COPY,(string *)f.get_contents(),f.get_length());
   } else if (FileUtils.test(real_path,FileTest.IS_DIR)) {
    Dir d=null;
    try {
