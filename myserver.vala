@@ -31,6 +31,10 @@ public class FromGnomeToTheWorld : GLib.Object {
   return result;
  }
 
+  public string test() {
+   stderr.printf("Log: HELLO WORLD!!!\n");
+   return "HELLO WORLD!!!\n";
+  }
 }
 
 public class Myserver : GLib.Object {
