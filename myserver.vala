@@ -30,11 +30,6 @@ public class FromGnomeToTheWorld : GLib.Object {
   }
   return result;
  }
-
-  public string test() {
-   stderr.printf("Log: HELLO WORLD!!!\n");
-   return "HELLO WORLD!!!\n";
-  }
 }
 
 public class Myserver : GLib.Object {
@@ -93,7 +88,17 @@ public class Myserver : GLib.Object {
    this.exposed.server=this;
   
    var conn = DBus.Bus.get(DBus.BusType.SESSION);
-   conn.register_object ("/org/gnome/FromGnomeToTheWorld", (GLib.Object)this.exposed);
+   dynamic DBus.Object bus = conn.get_object(
+    "org.freedesktop.DBus",
+    "/org/freedesktop/DBus",
+    "org.freedesktop.DBus");
+   uint request_name_result = bus.request_name ("org.gnome.FromGnomeToTheWorld", (uint) 0);
+   if (request_name_result == DBus.RequestNameReply.PRIMARY_OWNER) {
+    stderr.printf("Registering DBUS service\n");
+    conn.register_object ("/org/gnome/FromGnomeToTheWorld", (GLib.Object)this.exposed);
+   } else {
+    stderr.printf("Not registering DBUS service: not primary owner\n");
+   }
   } catch (Error e) {
    stderr.printf("Error registering DBUS server: %s\n",e.message);
   }

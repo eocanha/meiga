@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.gnome.FromGnomeToTheWorld
-Exec=/home/enrique/HACKFEST/GNOME/myserver/dbus-service.sh
