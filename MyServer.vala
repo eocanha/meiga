@@ -2,36 +2,6 @@ using GLib;
 using Soup;
 using Gtk;
 
-[DBus (name = "org.gnome.FromGnomeToTheWorld")]
-public class FromGnomeToTheWorld : GLib.Object {
- public Myserver server;
- 
- public FromGnomeToTheWorld() {
- }
-
- public void register_path(string real_path, string logical_path) {
-  server.register_path(real_path,logical_path);
- }
-  
- public void unregister_path(string logical_path) {
-  server.unregister_path(logical_path);
- }
- 
- public HashTable<string,string> get_paths() {
-  return server.get_paths();
- }
-
- public string get_paths_as_string() {
-  HashTable<string,string> t=server.get_paths();
-  string result="";
-  foreach (string k in t.get_keys()) {
-   string v=t.lookup(k);
-   result+=k+"\t"+v+"\n";
-  }
-  return result;
- }
-}
-
 public class Myserver : GLib.Object {
  const string MIME_TYPES_FILE="/etc/mime.types";
 
@@ -52,6 +22,7 @@ public class Myserver : GLib.Object {
     
   server=new Server(Soup.SERVER_PORT,port);
   server.add_handler("/",serve_file_callback_default);
+  server.add_handler("/rss",serve_rss_callback);  
   server.run_async();
   
   initialize_dbus();
@@ -86,6 +57,7 @@ public class Myserver : GLib.Object {
   try {
    this.exposed=new FromGnomeToTheWorld();
    this.exposed.server=this;
+   this.exposed.has_changed += (o) => { stderr.printf("Has changed\n"); };
   
    var conn = DBus.Bus.get(DBus.BusType.SESSION);
    dynamic DBus.Object bus = conn.get_object(
@@ -203,6 +175,13 @@ public class Myserver : GLib.Object {
   
  }
 
+ public void serve_rss_callback (Soup.Server server, Soup.Message? msg, string path,
+  GLib.HashTable? query, Soup.ClientContext? client) {
+  // NOT IMPLEMENTED
+  serve_error(msg,path,Soup.KnownStatusCode.NOT_IMPLEMENTED,"RSS not implemented");
+  stderr.printf("RSS not implemented\n");
+ }
+ 
  public void serve_file_callback_default (Soup.Server server, Soup.Message msg, string path,
   GLib.HashTable? query, Soup.ClientContext? client) {
   serve_error(msg,path,Soup.KnownStatusCode.NOT_FOUND,"File not found");
@@ -225,7 +204,7 @@ public class Myserver : GLib.Object {
  public static void main(string[] args) {
   Myserver s=new Myserver();
   s.initialize();
-  s.register_path("/home/enrique/IMAGENES","/pictures");
+  s.exposed.register_path("/home/enrique/IMAGENES","/pictures");
   Gtk.init(ref args);
   Gtk.main();
   return;
