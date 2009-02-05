@@ -177,9 +177,67 @@ public class Myserver : GLib.Object {
 
  public void serve_rss_callback (Soup.Server server, Soup.Message? msg, string path,
   GLib.HashTable? query, Soup.ClientContext? client) {
-  // NOT IMPLEMENTED
-  serve_error(msg,path,Soup.KnownStatusCode.NOT_IMPLEMENTED,"RSS not implemented");
-  stderr.printf("RSS not implemented\n");
+  
+  string real_path=null;
+  string[] path_tokens=path.split("/",32);
+  string composed_path="";
+  string translated_path="";
+  
+  int j=0;
+  // Ignoring first path element "/rss"
+  for (int i=2;path_tokens[i]!=null;i++) {
+   if (path_tokens[i]=="") continue;
+   composed_path+="/"+path_tokens[i];
+   translated_path=path_mapping.lookup(composed_path);
+   if (translated_path!=null) {
+    real_path=translated_path;
+    j=i+1;
+   }
+  }
+  for (int i=j;path_tokens[i]!=null;i++) {
+   real_path+="/"+path_tokens[i];
+  }
+  
+  stderr.printf("Request: %s --> Serving (RSS mode): %s\n",path,real_path);
+  
+  Soup.URI uri=msg.get_uri().copy();
+  string base_url="%s://%s:%u".printf(uri.scheme,uri.host,uri.port);
+  
+  if (real_path==null) {
+   serve_file_callback_default(server,msg,path,query,client);
+   return;
+  } else if (!FileUtils.test(real_path,FileTest.EXISTS)) {
+   serve_file_callback_default(server,msg,path,query,client);
+   return;
+  } else if (FileUtils.test(real_path,FileTest.IS_REGULAR)) {
+   MappedFile f=null;
+   try {
+    f=new MappedFile(real_path,false);
+   } catch (FileError e) {
+     serve_file_callback_default(server,msg,path,query,client);
+     return;
+   }
+   
+   msg.set_status(Soup.KnownStatusCode.OK);
+   
+   string extension=extension_from_path(real_path);
+   string mime=null;
+    
+   if (extension!=null) mime=mimetypes.lookup(extension);
+   if (mime==null) mime="application/x-octet-stream";
+   
+   // f.get_contents() returns unmanaged memory, so Vala will segfault trying to
+   // unref a normal string. AN unmanaged string shoyuld be used (string *)
+   msg.set_response(mime,Soup.MemoryUse.COPY,(string *)f.get_contents(),f.get_length());
+  } else if (FileUtils.test(real_path,FileTest.IS_DIR)) {
+   msg.set_status(Soup.KnownStatusCode.OK);
+   RssFeed rss=RssFeed.new_from_directory(real_path, base_url+composed_path, composed_path, "Documents under "+composed_path);
+   
+   string response=rss.to_string();
+   msg.set_response("application/xhtml+xml",Soup.MemoryUse.COPY,response,response.len());
+  } else {
+   serve_file_callback_default(server,msg,path,query,client);
+  }
  }
  
  public void serve_file_callback_default (Soup.Server server, Soup.Message msg, string path,
