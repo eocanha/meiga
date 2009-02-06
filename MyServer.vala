@@ -234,7 +234,7 @@ public class Myserver : GLib.Object {
    RssFeed rss=RssFeed.new_from_directory(real_path, base_url+composed_path, composed_path, "Documents under "+composed_path);
    
    string response=rss.to_string();
-   msg.set_response("application/xhtml+xml",Soup.MemoryUse.COPY,response,response.len());
+   msg.set_response("application/rss+xml",Soup.MemoryUse.COPY,response,response.len());
   } else {
    serve_file_callback_default(server,msg,path,query,client);
   }
