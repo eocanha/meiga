@@ -18,6 +18,7 @@ public class RssNode : GLib.Object {
     "   <link>"+link+"</link>\n" +
     "\n" +
     "   <pubDate>"+time.to_string()+"</pubDate>\n" +
+    "   <guid>"+link+"</guid>\n" +
     "   <description><![CDATA["+description+"]]></description>\n" +
     "     <content:encoded><![CDATA["+content+"]]></content:encoded>\n";
  }
@@ -114,7 +115,7 @@ public class RssFeed : GLib.Object {
       } else {
        if (mimetype==null) mimetype="application/x-octet-stream";
        if (mimetype.has_prefix("image/")) {
-        node.description="<img src=\"%s\" />".printf(node.link);
+        node.description="<img src=\"%s\" width=\"300\" />".printf(node.link);
        } else if (mimetype=="text/plain") {
         MappedFile f=new MappedFile(path+"/"+name,false);
         node.description="<pre>%s</pre>\n".printf((string *)f.get_contents());

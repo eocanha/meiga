@@ -136,7 +136,7 @@ public class Myserver : GLib.Object {
    
    msg.set_status(Soup.KnownStatusCode.OK);
    
-   string extension=extension_from_path(real_path);
+   string extension=extension_from_path(real_path).down();
    string mime=null;
     
    if (extension!=null) mime=mimetypes.lookup(extension);
