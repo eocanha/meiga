@@ -16,6 +16,7 @@ public class Gui : GLib.Object {
   private Gtk.Window aboutdialog;
   private Gtk.StatusIcon systray;
   private Gtk.MenuItem systraymenu_restore;
+  private Gtk.TreeView files;
   
   private Gtk.ListStore model;
   private string string_model;
@@ -63,6 +64,19 @@ public class Gui : GLib.Object {
   
   [CCode (instance_pos = -1)]
   public void on_refresh(Gtk.Widget widget) {
+    update_model();
+  }
+  
+  [CCode (instance_pos = -1)]
+  public void on_remove(Gtk.Widget widget) {
+    if (remote == null) return;
+    foreach (string share in get_selected_shares()) {
+      try {
+        remote.unregister_path(share);
+      } catch (Error e) {
+        stderr.printf("Remote error deleting share '%s'\n", share);
+      }
+    }
     update_model();
   }
   
@@ -139,9 +153,9 @@ public class Gui : GLib.Object {
     top = (Gtk.Window)xml.get_widget("top");
     adddialog = (Gtk.Window)xml.get_widget("adddialog");
     aboutdialog = (Gtk.Window)xml.get_widget("aboutdialog");
+    files = (Gtk.TreeView)xml.get_widget("files");
     
     Gtk.VBox topvbox=(Gtk.VBox)xml.get_widget("topvbox");
-    Gtk.TreeView files = (Gtk.TreeView)xml.get_widget("files");
         
     menu=menushell_to_menubar((Gtk.Menu)xml.get_widget("menu"));
     menu.set("visible",true);
@@ -183,6 +197,19 @@ public class Gui : GLib.Object {
     if (remote != null) string_model = remote.get_paths_as_string();
     if (string_model == null) string_model = "";
     update_model_from_string(model, string_model);
+  }
+
+  private List<string> get_selected_shares() {
+    List<string> selection = new List<string>();
+    foreach (weak Gtk.TreePath spath in files.get_selection().get_selected_rows(null)) {
+      Gtk.TreeIter iter;
+      if (model.get_iter(out iter, spath)) {
+        string shared_as = null;
+        model.get(iter, 1, out shared_as, -1);
+        if (shared_as != null) selection.append(shared_as);
+      }
+    }
+    return selection;
   }
 
   // Public methods
