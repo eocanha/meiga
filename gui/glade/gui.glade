@@ -242,8 +242,8 @@
   <property name="height_request">100</property>
   <property name="title" translatable="yes">Add path</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
-  <property name="window_position">GTK_WIN_POS_NONE</property>
-  <property name="modal">False</property>
+  <property name="window_position">GTK_WIN_POS_CENTER</property>
+  <property name="modal">True</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
   <property name="icon_name">stock_shared-by-me</property>
@@ -255,6 +255,8 @@
   <property name="focus_on_map">True</property>
   <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
+  <signal name="delete_event" handler="gtk_widget_hide_on_delete" last_modification_time="Sat, 28 Mar 2009 22:05:07 GMT"/>
+  <signal name="hide" handler="gui_on_adddialogcancel" last_modification_time="Sat, 28 Mar 2009 22:07:56 GMT"/>
 
   <child internal-child="vbox">
     <widget class="GtkVBox" id="dialog-vbox1">
@@ -277,7 +279,7 @@
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
 	      <property name="response_id">-6</property>
-	      <signal name="activate" handler="gui_on_adddialogcancel_activate" last_modification_time="Wed, 25 Mar 2009 23:30:49 GMT"/>
+	      <signal name="clicked" handler="gui_on_adddialogcancel" last_modification_time="Sat, 28 Mar 2009 22:18:40 GMT"/>
 	    </widget>
 	  </child>
 
@@ -291,7 +293,7 @@
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
 	      <property name="response_id">-5</property>
-	      <signal name="activate" handler="gui_on_addialogok_activate" last_modification_time="Wed, 25 Mar 2009 23:31:02 GMT"/>
+	      <signal name="clicked" handler="gui_on_adddialogok" last_modification_time="Sat, 28 Mar 2009 22:19:46 GMT"/>
 	    </widget>
 	  </child>
 	</widget>
@@ -437,6 +439,8 @@
   <property name="focus_on_map">True</property>
   <property name="urgency_hint">False</property>
   <property name="has_separator">True</property>
+  <signal name="delete_event" handler="gtk_widget_hide_on_delete" last_modification_time="Sat, 28 Mar 2009 22:05:33 GMT"/>
+  <signal name="hide" handler="gui_on_aboutdialogclose" last_modification_time="Sat, 28 Mar 2009 22:11:45 GMT"/>
 
   <child internal-child="vbox">
     <widget class="GtkVBox" id="dialog-vbox2">
@@ -450,7 +454,7 @@
 	  <property name="layout_style">GTK_BUTTONBOX_END</property>
 
 	  <child>
-	    <widget class="GtkButton" id="closebutton1">
+	    <widget class="GtkButton" id="aboutdialogclose">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
@@ -459,6 +463,7 @@
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
 	      <property name="response_id">-7</property>
+	      <signal name="clicked" handler="gui_on_aboutdialogclose" last_modification_time="Sat, 28 Mar 2009 22:19:59 GMT"/>
 	    </widget>
 	  </child>
 	</widget>

@@ -17,6 +17,8 @@ public class Gui : GLib.Object {
   private Gtk.StatusIcon systray;
   private Gtk.MenuItem systraymenu_restore;
   private Gtk.TreeView files;
+  private Gtk.FileChooserButton localdirectory;
+  private Gtk.Entry shareas;
   
   private Gtk.ListStore model;
   private string string_model;
@@ -81,13 +83,57 @@ public class Gui : GLib.Object {
   }
   
   [CCode (instance_pos = -1)]
+  public void on_add(Gtk.Widget widget) {
+    if (remote == null) return;
+    adddialog.set("visible", true);
+  }
+  
+  [CCode (instance_pos = -1)]
   public void on_quit(Gtk.Widget widget) {
     quit();
   }
   
+  [CCode (instance_pos = -1)]
+  public void on_adddialogcancel(Gtk.Widget widget) {
+    adddialog.set("visible", false);
+    
+    // Clear data for next use
+    shareas.set_text("");
+  }
+  
+  [CCode (instance_pos = -1)]
+  public void on_adddialogok(Gtk.Widget widget) {
+    string local_file = localdirectory.get_filename();
+    string shared_as = shareas.get_text();
+    
+    if (shared_as != null && shared_as[0] != '/') shared_as = "/" + shared_as;
+    
+    if (remote != null) {
+      try {
+        remote.register_path(local_file, shared_as);
+      } catch (Error e) {
+        stderr.printf("Remote error sharing '%s' as '%s'\n", local_file, shared_as);
+      }
+    }
+    
+    // Clear data for next use
+    shareas.set_text("");
+    
+    adddialog.set("visible", false);
+    update_model();
+  }
+  
+  [CCode (instance_pos = -1)]
+  public void on_aboutdialogclose(Gtk.Widget widget) {
+    aboutdialog.set("visible", false);
+  }
+  
   // Private methods
   [CCode (instance_pos = -1)]
-  private void connect_signals(string handler_name, GLib.Object object, string signal_name, string? signal_data, GLib.Object? connect_object, bool after) {
+  private void connect_signals(
+    string handler_name, GLib.Object object,
+    string signal_name, string? signal_data,
+    GLib.Object? connect_object, bool after) {
     Module module = Module.open(null, ModuleFlags.BIND_LAZY);
     void* sym;
         
@@ -154,6 +200,8 @@ public class Gui : GLib.Object {
     adddialog = (Gtk.Window)xml.get_widget("adddialog");
     aboutdialog = (Gtk.Window)xml.get_widget("aboutdialog");
     files = (Gtk.TreeView)xml.get_widget("files");
+    localdirectory = (Gtk.FileChooserButton)xml.get_widget("localdirectory");
+    shareas = (Gtk.Entry)xml.get_widget("shareas");
     
     Gtk.VBox topvbox=(Gtk.VBox)xml.get_widget("topvbox");
         
@@ -163,11 +211,14 @@ public class Gui : GLib.Object {
         
     model = new Gtk.ListStore(2, typeof(string), typeof(string));
     files.set_model(model);
-    files.insert_column_with_attributes (-1, "Local file", new CellRendererText (), "text", 0, null);
-    files.insert_column_with_attributes (-1, "Shared as", new CellRendererText (), "text", 1, null);
+    files.insert_column_with_attributes (
+      -1, "Local file", new CellRendererText (),
+      "text", 0, null);
+    files.insert_column_with_attributes (
+      -1, "Shared as", new CellRendererText (),
+      "text", 1, null);
     files.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
 
-    // TODO: Put more initializations here
     update_model();
 
     systray = new Gtk.StatusIcon.from_icon_name("stock_shared-by-me");
