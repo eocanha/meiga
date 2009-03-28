@@ -18,7 +18,19 @@ public class Gui : GLib.Object {
   private Gtk.MenuItem systraymenu_restore;
   
   private Gtk.ListStore model;
-  private string string_model = "file1\tshare1\nfile2\tshare2\nfile3\tshare3\n";
+  private string string_model;
+  
+  private dynamic DBus.Object bus;
+  private dynamic DBus.Object _remote = null;
+  private dynamic DBus.Object remote {
+    // Maybe remote DBUS service isn't immediately available, so by using
+    // this lazy init we give it the opportunity to be contacted each time
+    // we call for it
+    get {
+      if (_remote == null) dbus_init();
+      return _remote;
+    }
+  }
   
   // Callbacks
   [CCode (instance_pos = -1)]
@@ -47,6 +59,11 @@ public class Gui : GLib.Object {
   public void on_restore(Gtk.Widget widget) {
     top.set("visible", true);
     systraymenu_restore.set("sensitive",false);
+  }
+  
+  [CCode (instance_pos = -1)]
+  public void on_refresh(Gtk.Widget widget) {
+    update_model();
   }
   
   [CCode (instance_pos = -1)]
@@ -81,24 +98,31 @@ public class Gui : GLib.Object {
     return menubar;
   }
 
-  private void update_model_from_string(Gtk.ListStore model, string string_model) {
-    string[] rows = string_model.split("\n",128);
-    model.clear();
-    for (int i=0; rows[i][0]!='\0'; i++) {
-        string[] cols = rows[i].split("\t",2);
-        TreeIter iter;
-        model.append (out iter);
-        model.set(iter, 0, cols[0], 1, cols[1]);
-    }    
+  private void dbus_init() {
+    try {
+      var conn = DBus.Bus.get(DBus.BusType.SESSION);
+      bus = conn.get_object(
+        "org.freedesktop.DBus",
+        "/org/freedesktop/DBus",
+        "org.freedesktop.DBus");
+      uint request_name_result = bus.request_name (
+        "org.gnome.FromGnomeToTheWorld", (uint) 0);
+      if (request_name_result == DBus.RequestNameReply.PRIMARY_OWNER) {
+        stderr.printf("Remote DBUS service not found\n");
+        // Avoid being pointed as the owners because we aren't
+        bus.release_name("org.gnome.FromGnomeToTheWorld");
+      } else {
+        _remote = conn.get_object (
+          "org.gnome.FromGnomeToTheWorld",
+          "/org/gnome/FromGnomeToTheWorld",
+          "org.gnome.FromGnomeToTheWorld");
+      }
+    } catch (Error e) {
+     stderr.printf("Error registering DBUS server: %s\n",e.message);
+    }
   }
 
-  private void update_model() {
-    // TODO: Contact with the server via DBUS and use a true string model
-    update_model_from_string(model, string_model);
-  }
-
-  // Public methods
-  public void gui_init() {
+  private void gui_init() {
     string[] path = GLADE_PATH.split(":",8);
     for (int i=0; path[i]!=null && xml==null; i++) {
       string filename = path[i] + "/" + GLADE_FILENAME;
@@ -139,6 +163,32 @@ public class Gui : GLib.Object {
     // App is finally shown
     systray.set("visible",true);
   }
+  
+  private void update_model_from_string(Gtk.ListStore model, string string_model) {
+    model.clear();
+    if (string_model == null || string_model[0]=='\0') return;
+    string[] rows = string_model.split("\n",128);
+    for (int i=0; rows[i][0]!='\0'; i++) {
+        string[] cols = rows[i].split("\t",2);
+        string local_file = cols[1];
+        string shared_as = cols[0];
+        TreeIter iter;
+        model.append (out iter);
+        model.set(iter, 0, local_file, 1, shared_as);
+    }    
+  }
+
+  private void update_model() {
+    string_model = null;
+    if (remote != null) string_model = remote.get_paths_as_string();
+    if (string_model == null) string_model = "";
+    update_model_from_string(model, string_model);
+  }
+
+  // Public methods
+  public void init() {
+    gui_init();
+  }
 
   public void quit() {
     Gtk.main_quit();
@@ -147,7 +197,7 @@ public class Gui : GLib.Object {
   public static int main(string[] args) {
     Gui gui = new Gui();
     Gtk.init(ref args);
-    gui.gui_init();
+    gui.init();
     Gtk.main();
     return 0;
   }
