@@ -280,6 +280,7 @@
 	      <property name="focus_on_click">True</property>
 	      <property name="response_id">-6</property>
 	      <signal name="clicked" handler="gui_on_adddialogcancel" last_modification_time="Sat, 28 Mar 2009 22:18:40 GMT"/>
+	      <accelerator key="Escape" modifiers="0" signal="clicked"/>
 	    </widget>
 	  </child>
 
@@ -287,6 +288,7 @@
 	    <widget class="GtkButton" id="addialogok">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
+	      <property name="has_default">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="label">gtk-ok</property>
 	      <property name="use_stock">True</property>
@@ -457,6 +459,7 @@
 	    <widget class="GtkButton" id="aboutdialogclose">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
+	      <property name="has_default">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="label">gtk-close</property>
 	      <property name="use_stock">True</property>
@@ -464,6 +467,7 @@
 	      <property name="focus_on_click">True</property>
 	      <property name="response_id">-7</property>
 	      <signal name="clicked" handler="gui_on_aboutdialogclose" last_modification_time="Sat, 28 Mar 2009 22:19:59 GMT"/>
+	      <accelerator key="Escape" modifiers="0" signal="clicked"/>
 	    </widget>
 	  </child>
 	</widget>
