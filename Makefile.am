@@ -3,7 +3,8 @@ NULL =
 #Build in these directories:
 
 SUBDIRS = \
-	src \
+	src/server \
+	src/gui \
 	po \
 	$(NULL)
 

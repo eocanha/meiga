@@ -3,7 +3,7 @@ using Gtk;
 using Glade;
 
 const string GLADE_FILENAME = "gui.glade";
-const string GLADE_PATH = "glade:/usr/share/fromgnometotheworld/glade";
+const string GLADE_PATH = "glade:/usr/local/share/fgtw/glade";
 
 public class Gui : GLib.Object {
 
