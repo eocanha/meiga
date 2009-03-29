@@ -1,6 +1,7 @@
 NULL = 
 
 AM_CPPFLAGS = \
+	-DDATADIR=\""$(datadir)"\" \
 	$(FGTW_CFLAGS) \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
@@ -21,7 +22,7 @@ fgtw_SOURCES = \
 fgtw.vala.stamp: $(fgtw_VALASOURCES)
 	$(VALAC) -C \
 	--thread --pkg=gtk+-2.0 --pkg=libglade-2.0 --pkg=gmodule-2.0 --pkg=dbus-glib-1 \
-	--basedir $(top_srcdir)/src/gui $^
+	--vapidir=. --pkg=config --basedir $(top_srcdir)/src/gui $^
 	touch $@
 
 fgtw_LDADD = \

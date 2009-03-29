@@ -1,9 +1,10 @@
 using GLib;
 using Gtk;
 using Glade;
+using Config;
 
 const string GLADE_FILENAME = "gui.glade";
-const string GLADE_PATH = "glade:/usr/local/share/fgtw/glade";
+const string GLADE_PATH = "glade:"+Config.DATADIR+"/fgtw/glade";
 
 public class Gui : GLib.Object {
 
