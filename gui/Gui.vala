@@ -124,6 +124,11 @@ public class Gui : GLib.Object {
   }
   
   [CCode (instance_pos = -1)]
+  public void on_about(Gtk.Widget widget) {
+    aboutdialog.set("visible", true);
+  }
+  
+  [CCode (instance_pos = -1)]
   public void on_aboutdialogclose(Gtk.Widget widget) {
     aboutdialog.set("visible", false);
   }
