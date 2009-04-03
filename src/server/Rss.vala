@@ -103,15 +103,15 @@ public class RssFeed : GLib.Object {
        File dir2=File.new_for_path(path+"/"+name);
        FileEnumerator files2=dir2.enumerate_children(FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME, FileQueryInfoFlags.NONE, null);
        FileInfo info2=null;
-       string description="<ul>\n";
+       string node_description="<ul>\n";
        
        while ((info2=files2.next_file(null))!=null) {
         string name2=info2.get_attribute_string(FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME);
         string link2=base_url+"/"+name+"/"+name2;
-        description+="<li><a href=\""+link2+"\">"+name2+"</a></li>\n";
+        node_description+="<li><a href=\""+link2+"\">"+name2+"</a></li>\n";
        }
-       description+="<ul>\n";
-       node.description=description;
+       node_description+="<ul>\n";
+       node.description=node_description;
       } else {
        if (mimetype==null) mimetype="application/x-octet-stream";
        if (mimetype.has_prefix("image/")) {
