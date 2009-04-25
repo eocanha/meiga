@@ -1,4 +1,3 @@
-#include <libgupnp/gupnp-control-point.h>
 #include <upnp.h>
 
 #define CALLBACK_TIMEOUT (3*1000)
@@ -42,12 +41,13 @@ action_return (UPNPStateContext *sc);
 
 /** IMPLEMENTATION **/
 
-static GMainLoop *main_loop;
-
 UPNPStateContext *
-upnpstatecontext_new ()
+upnpstatecontext_new (GMainLoop *mainloop)
 {
-  return g_slice_new(UPNPStateContext);
+  UPNPStateContext *sc = g_slice_new(UPNPStateContext);
+  g_main_loop_ref(mainloop);
+  sc->mainloop = mainloop;
+  return sc;
 }
 
 static void
@@ -92,6 +92,7 @@ upnpstatecontext_free (UPNPStateContext *sc)
   g_free(sc->result);
   g_free(sc->internal_ip);
   g_free(sc->description);
+  g_main_loop_unref(sc->mainloop);
   g_slice_free(UPNPStateContext, sc);
 }
 
@@ -296,10 +297,10 @@ action_return (UPNPStateContext *sc)
 {
   if (sc->success) {
     g_printf("%s\n", sc->result);
-    g_main_loop_quit(main_loop);
+    g_main_loop_quit(sc->mainloop);
   } else {
     g_printerr("%s\n", sc->result);
-    g_main_loop_quit(main_loop);
+    g_main_loop_quit(sc->mainloop);
   }
 }
 
@@ -343,13 +344,15 @@ upnp_port_redirect (UPNPStateContext *sc,
 int
 main (int argc, char **argv)
 {
+  static GMainLoop *mainloop;
   UPNPStateContext *sc;
-
-  sc = upnpstatecontext_new();
 
   /* Required initialisation */
   g_thread_init (NULL);
   g_type_init ();
+  mainloop = g_main_loop_new (NULL, FALSE);
+
+  sc = upnpstatecontext_new(mainloop);
 
   //  upnp_get_public_ip(sc);
 
@@ -362,11 +365,10 @@ main (int argc, char **argv)
 
   /* Enter the main loop. This will start the search and result in callbacks to
      service_proxy_available_cb. */
-  main_loop = g_main_loop_new (NULL, FALSE);
-  g_main_loop_run (main_loop);
+  g_main_loop_run (mainloop);
 
   /* Clean up */
-  g_main_loop_unref (main_loop);
+  g_main_loop_unref (mainloop);
   upnpstatecontext_free(sc);
 
   return 0;

@@ -10,6 +10,7 @@ typedef struct {
   GUPnPContext *context;
   GUPnPControlPoint *cp;
   GUPnPServiceProxy *proxy;
+  GMainLoop *mainloop;
 
   /* Action sequence management */
   gchar *action_seq;
@@ -32,7 +33,7 @@ typedef struct {
 } UPNPStateContext;
 
 UPNPStateContext *
-upnpstatecontext_new ();
+upnpstatecontext_new (GMainLoop *mainloop);
 
 void
 upnpstatecontext_free (UPNPStateContext *sc);
