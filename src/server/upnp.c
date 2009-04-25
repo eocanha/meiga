@@ -1,6 +1,6 @@
 #include <upnp.h>
 
-#define CALLBACK_TIMEOUT (3*1000)
+#define CALLBACK_TIMEOUT (5*1000)
 
 #define ACTION_NULL       0
 #define ACTION_CONNECT    1
@@ -48,6 +48,11 @@ static void
 callback_action_connect (GUPnPControlPoint *cp,
                          GUPnPServiceProxy *proxy,
                          gpointer           userdata);
+
+static void
+callback_action_ask_ip (GUPnPServiceProxy *proxy,
+                        GUPnPServiceProxyAction *action,
+                        gpointer user_data);
 
 static int
 callback_timeout (gpointer userdata);
@@ -146,7 +151,7 @@ upnpstatecontext_process_next_action (UPNPStateContext *sc)
       break;
     case ACTION_ASK_IP:
       action_ask_ip(sc);
-      asynch = FALSE;
+      asynch = TRUE;
       break;
     case ACTION_REDIRECT:
       action_redirect(sc);
@@ -161,6 +166,34 @@ upnpstatecontext_process_next_action (UPNPStateContext *sc)
     }
 
     if (asynch) break;
+  }
+}
+
+static void
+action_connect (UPNPStateContext *sc)
+{
+  /* Only connect if the connection isn't already opened */
+  if (!(sc->cp)) {
+    /* Create a new GUPnP Context.  By here we are using the default GLib main
+       context, and connecting to the current machine's default IP on an
+       automatically generated port. */
+    sc->context = gupnp_context_new (NULL, NULL, 0, NULL);
+
+    /* Create a Control Point targeting WAN IP Connection services */
+    sc->cp = gupnp_control_point_new
+      (sc->context, "urn:schemas-upnp-org:service:WANIPConnection:1");
+
+    sc->last_callback_id = g_signal_connect (sc->cp,
+                                             "service-proxy-available",
+                                             G_CALLBACK (callback_action_connect),
+                                             (gpointer) sc);
+    sc->proxy = NULL;
+
+    /* Enqueue the watchdog timeout that will disable the callback if it */
+    /* lasts too much */
+    upnpstatecontext_push_timeout (sc);
+
+    gssdp_resource_browser_set_active (GSSDP_RESOURCE_BROWSER (sc->cp), TRUE);
   }
 }
 
@@ -211,49 +244,37 @@ callback_timeout (gpointer userdata)
 }
 
 static void
-action_connect (UPNPStateContext *sc)
-{
-  /* Only connect if the connection isn't already opened */
-  if (!(sc->cp)) {
-    /* Create a new GUPnP Context.  By here we are using the default GLib main
-       context, and connecting to the current machine's default IP on an
-       automatically generated port. */
-    sc->context = gupnp_context_new (NULL, NULL, 0, NULL);
-
-    /* Create a Control Point targeting WAN IP Connection services */
-    sc->cp = gupnp_control_point_new
-      (sc->context, "urn:schemas-upnp-org:service:WANIPConnection:1");
-
-    sc->last_callback_id = g_signal_connect (sc->cp,
-                                             "service-proxy-available",
-                                             G_CALLBACK (callback_action_connect),
-                                             (gpointer) sc);
-
-    /* Enqueue the watchdog timeout that will disable the callback if it */
-    /* lasts too much */
-    upnpstatecontext_push_timeout (sc);
-
-    gssdp_resource_browser_set_active (GSSDP_RESOURCE_BROWSER (sc->cp), TRUE);
-  }
-}
-
-static void
 action_ask_ip (UPNPStateContext *sc)
 {
   upnpstatecontext_clear(sc);
 
+  gupnp_service_proxy_begin_action (sc->proxy,
+                                    /* Action name and error location */
+                                    "GetExternalIPAddress",
+                                    callback_action_ask_ip,
+                                    sc,
+                                    /* IN args */
+                                    NULL, NULL);
+
+  /* No callback/timeout management for this action */
+}
+
+static void
+callback_action_ask_ip (GUPnPServiceProxy *proxy,
+                        GUPnPServiceProxyAction *action,
+                        gpointer user_data)
+{
+  UPNPStateContext *sc = (UPNPStateContext*) user_data;
   GError *error = NULL;
   char *ip = NULL;
 
-  gupnp_service_proxy_send_action (sc->proxy,
-           /* Action name and error location */
-           "GetExternalIPAddress", &error,
-           /* IN args */
-           NULL,
-           /* OUT args */
-           "NewExternalIPAddress",
-           G_TYPE_STRING, &ip,
-           NULL);
+  gupnp_service_proxy_end_action (proxy,
+                                  action,
+                                  &error,
+                                  /* OUT args */
+                                  "NewExternalIPAddress",
+                                  G_TYPE_STRING, &ip,
+                                  NULL);
 
   if (error == NULL) {
     sc->result = g_strdup_printf("External IP address is %s", ip);
@@ -264,6 +285,8 @@ action_ask_ip (UPNPStateContext *sc)
     sc->success = FALSE;
     g_error_free (error);
   }
+  upnpstatecontext_clear(sc);
+  upnpstatecontext_process_next_action(sc);
 }
 
 static void
@@ -377,15 +400,15 @@ main (int argc, char **argv)
 
   sc = upnpstatecontext_new(mainloop);
 
-  //  upnp_get_public_ip(sc);
-
+  upnp_get_public_ip(sc);
+  /*
   upnp_port_redirect(sc,
                      8001,
                      8001,
                      "192.168.2.70",
                      "From Gnome to the world",
                      5*60);
-
+  */
   /* Enter the main loop */
   g_main_loop_run (mainloop);
 
