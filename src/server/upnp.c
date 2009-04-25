@@ -23,6 +23,11 @@ upnpstatecontext_set_action_seq(UPNPStateContext *sc,
 static void
 upnpstatecontext_set_result(UPNPStateContext *sc,
                             gchar *result);
+static void
+upnpstatecontext_push_timeout (UPNPStateContext *sc);
+
+static void
+upnpstatecontext_pop_timeout (UPNPStateContext *sc);
 
 static void
 upnpstatecontext_process_next_action (UPNPStateContext *sc);
@@ -38,6 +43,14 @@ action_redirect (UPNPStateContext *sc);
 
 static void
 action_return (UPNPStateContext *sc);
+
+static void
+callback_action_connect (GUPnPControlPoint *cp,
+                         GUPnPServiceProxy *proxy,
+                         gpointer           userdata);
+
+static int
+callback_timeout (gpointer userdata);
 
 /** IMPLEMENTATION **/
 
@@ -97,6 +110,23 @@ upnpstatecontext_free (UPNPStateContext *sc)
 }
 
 static void
+upnpstatecontext_push_timeout (UPNPStateContext *sc)
+{
+  sc->cancel_timeout = FALSE;
+  (sc->num_running_timeouts)++;
+  g_timeout_add (CALLBACK_TIMEOUT,
+                 (GSourceFunc) callback_timeout,
+                 (gpointer) sc);
+}
+
+static void
+upnpstatecontext_pop_timeout (UPNPStateContext *sc)
+{
+  /* Tell the timeout to stop when it wakes up */
+  sc->cancel_timeout = TRUE;
+}
+
+static void
 upnpstatecontext_process_next_action (UPNPStateContext *sc)
 {
   gchar next_action;
@@ -135,23 +165,20 @@ upnpstatecontext_process_next_action (UPNPStateContext *sc)
 }
 
 static void
-service_proxy_available_cb (GUPnPControlPoint *cp,
-                            GUPnPServiceProxy *proxy,
-                            gpointer           userdata)
+callback_action_connect (GUPnPControlPoint *cp,
+                         GUPnPServiceProxy *proxy,
+                         gpointer           userdata)
 {
   UPNPStateContext *sc = (UPNPStateContext*) userdata;
 
-  /** Disconnect the timeout */
-  sc->cancel_timeout = TRUE;
+  upnpstatecontext_pop_timeout(sc);
   sc->proxy = proxy;
-
   upnpstatecontext_clear(sc);
-
   upnpstatecontext_process_next_action(sc);
 }
 
 static int
-timeout_cb (gpointer userdata)
+callback_timeout (gpointer userdata)
 {
   UPNPStateContext *sc = (UPNPStateContext*) userdata;
   gboolean cancel_timeout = sc->cancel_timeout;
@@ -161,7 +188,8 @@ timeout_cb (gpointer userdata)
   /* If this timeout isn't the last one, it should never be triggered */
   /* because if there are other timeouts enqueued it means that the   */
   /* action related to this timeout succeeded and this timeout has no */
-  /* sense */
+  /* sense. It it's the last one, check cancel_timeout to see if it   */
+  /* has been cancelled */
   if (sc->num_running_timeouts == 0) sc->cancel_timeout = FALSE;
   if (sc->num_running_timeouts > 0) return FALSE;
   else if (cancel_timeout) return FALSE;
@@ -198,17 +226,12 @@ action_connect (UPNPStateContext *sc)
 
     sc->last_callback_id = g_signal_connect (sc->cp,
                                              "service-proxy-available",
-                                             G_CALLBACK (service_proxy_available_cb),
+                                             G_CALLBACK (callback_action_connect),
                                              (gpointer) sc);
 
     /* Enqueue the watchdog timeout that will disable the callback if it */
     /* lasts too much */
-    sc->cancel_timeout = FALSE;
-    (sc->num_running_timeouts)++;
-    g_timeout_add (
-                   CALLBACK_TIMEOUT,
-                   (GSourceFunc) timeout_cb,
-                   (gpointer) sc);
+    upnpstatecontext_push_timeout (sc);
 
     gssdp_resource_browser_set_active (GSSDP_RESOURCE_BROWSER (sc->cp), TRUE);
   }
@@ -363,8 +386,7 @@ main (int argc, char **argv)
                      "From Gnome to the world",
                      5*60);
 
-  /* Enter the main loop. This will start the search and result in callbacks to
-     service_proxy_available_cb. */
+  /* Enter the main loop */
   g_main_loop_run (mainloop);
 
   /* Clean up */
