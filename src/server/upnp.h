@@ -18,6 +18,7 @@ typedef struct {
   gchar *task_name;
   gulong last_callback_id;
   gboolean cancel_timeout;
+  gboolean cancel_callback;
   gint num_running_timeouts;
 
   /* Parameter management */

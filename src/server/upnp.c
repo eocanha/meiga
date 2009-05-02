@@ -123,6 +123,7 @@ static void
 upnpstatecontext_push_timeout (UPNPStateContext *sc)
 {
   sc->cancel_timeout = FALSE;
+  sc->cancel_callback = FALSE;
   (sc->num_running_timeouts)++;
   g_timeout_add (CALLBACK_TIMEOUT,
                  (GSourceFunc) callback_timeout,
@@ -209,7 +210,9 @@ callback_action_connect (GUPnPControlPoint *cp,
 {
   UPNPStateContext *sc = (UPNPStateContext*) userdata;
 
-  upnpstatecontext_pop_timeout(sc);
+  if (sc->cancel_callback) return;
+  else upnpstatecontext_pop_timeout(sc);
+
   sc->proxy = proxy;
   upnpstatecontext_clear(sc);
   upnpstatecontext_process_next_action(sc);
@@ -232,9 +235,12 @@ callback_timeout (gpointer userdata)
   if (sc->num_running_timeouts > 0) return FALSE;
   else if (cancel_timeout) return FALSE;
 
-  /** Timeout triggered: Disconnect the callback */
-  if (sc->cp && sc->last_callback_id)
+  /* Timeout triggered: Disconnect signal callbacks and tell normal
+  /* callbacks not to execute */
+  if (sc->cp && sc->last_callback_id) {
     g_signal_handler_disconnect(sc->cp, sc->last_callback_id);
+  }
+  sc->cancel_callback = TRUE;
 
   /** Point the action sequence to the return action */
   while (*(sc->next_action) && *(sc->next_action)!=ACTION_RETURN)
@@ -264,7 +270,7 @@ action_ask_ip (UPNPStateContext *sc)
                                     /* IN args */
                                     NULL);
 
-  /* No callback/timeout management for this action */
+  upnpstatecontext_push_timeout (sc);
 }
 
 static void
@@ -275,6 +281,9 @@ callback_action_ask_ip (GUPnPServiceProxy *proxy,
   UPNPStateContext *sc = (UPNPStateContext*) user_data;
   GError *error = NULL;
   gchar *ip = NULL;
+
+  if (sc->cancel_callback) return;
+  else upnpstatecontext_pop_timeout(sc);
 
   gupnp_service_proxy_end_action (proxy,
                                   action,
@@ -328,7 +337,7 @@ action_redirect (UPNPStateContext *sc)
     "NewLeaseDuration", G_TYPE_STRING, new_lease_duration,
     NULL);
 
-  /* No callback/timeout management for this action */
+  upnpstatecontext_push_timeout (sc);
 
   g_free(new_external_port);
   g_free(new_internal_port);
@@ -342,6 +351,9 @@ callback_action_redirect  (GUPnPServiceProxy *proxy,
 {
   UPNPStateContext *sc = (UPNPStateContext*) user_data;
   GError *error = NULL;
+
+  if (sc->cancel_callback) return;
+  else upnpstatecontext_pop_timeout(sc);
 
   gupnp_service_proxy_end_action (proxy,
                                   action,
