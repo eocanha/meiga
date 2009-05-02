@@ -54,6 +54,11 @@ callback_action_ask_ip (GUPnPServiceProxy *proxy,
                         GUPnPServiceProxyAction *action,
                         gpointer user_data);
 
+static void
+callback_action_redirect (GUPnPServiceProxy *proxy,
+                          GUPnPServiceProxyAction *action,
+                          gpointer user_data);
+
 static int
 callback_timeout (gpointer userdata);
 
@@ -155,7 +160,7 @@ upnpstatecontext_process_next_action (UPNPStateContext *sc)
       break;
     case ACTION_REDIRECT:
       action_redirect(sc);
-      asynch = FALSE;
+      asynch = TRUE;
       break;
     case ACTION_RETURN:
       action_return(sc);
@@ -246,6 +251,8 @@ callback_timeout (gpointer userdata)
 static void
 action_ask_ip (UPNPStateContext *sc)
 {
+  GError *error = NULL;
+
   upnpstatecontext_clear(sc);
 
   gupnp_service_proxy_begin_action (sc->proxy,
@@ -253,8 +260,9 @@ action_ask_ip (UPNPStateContext *sc)
                                     "GetExternalIPAddress",
                                     callback_action_ask_ip,
                                     sc,
+                                    &error,
                                     /* IN args */
-                                    NULL, NULL);
+                                    NULL);
 
   /* No callback/timeout management for this action */
 }
@@ -266,7 +274,7 @@ callback_action_ask_ip (GUPnPServiceProxy *proxy,
 {
   UPNPStateContext *sc = (UPNPStateContext*) user_data;
   GError *error = NULL;
-  char *ip = NULL;
+  gchar *ip = NULL;
 
   gupnp_service_proxy_end_action (proxy,
                                   action,
@@ -303,10 +311,12 @@ action_redirect (UPNPStateContext *sc)
   new_internal_port = g_strdup_printf("%u", sc->internal_port);
   new_lease_duration = g_strdup_printf("%lu", sc->sec_lease_duration);
 
-  gupnp_service_proxy_send_action (
+  gupnp_service_proxy_begin_action (
     sc->proxy,
-    /* Action name and error location */
-    "AddPortMapping", &error,
+    "AddPortMapping",
+    callback_action_redirect,
+    sc,
+    &error,
     /* IN args */
     "NewRemoteHost", G_TYPE_STRING, "",
     "NewExternalPort", G_TYPE_STRING, new_external_port,
@@ -316,26 +326,43 @@ action_redirect (UPNPStateContext *sc)
     "NewEnabled", G_TYPE_STRING, "1",
     "NewPortMappingDescription", G_TYPE_STRING, sc->description,
     "NewLeaseDuration", G_TYPE_STRING, new_lease_duration,
-    NULL,
-    /* OUT args */
     NULL);
 
+  /* No callback/timeout management for this action */
+
+  g_free(new_external_port);
+  g_free(new_internal_port);
+  g_free(new_lease_duration);
+}
+
+static void
+callback_action_redirect  (GUPnPServiceProxy *proxy,
+                           GUPnPServiceProxyAction *action,
+                           gpointer user_data)
+{
+  UPNPStateContext *sc = (UPNPStateContext*) user_data;
+  GError *error = NULL;
+
+  gupnp_service_proxy_end_action (proxy,
+                                  action,
+                                  &error,
+                                  /* OUT args */
+                                  NULL);
+
   if (error == NULL) {
-    sc->result = g_strdup_printf("Redirection *:%s --> %s:%s for %s seconds performed %s",
-                                 new_external_port,
+    sc->result = g_strdup_printf("Redirection *:%u --> %s:%u for %lu seconds performed",
+                                 sc->external_port,
                                  sc->internal_ip,
-                                 new_internal_port,
-                                 new_lease_duration);
+                                 sc->internal_port,
+                                 sc->sec_lease_duration);
     sc->success = TRUE;
   } else {
     sc->result = g_strdup_printf("Error: %s", error->message);
     sc->success = FALSE;
     g_error_free (error);
   }
-
-  g_free(new_external_port);
-  g_free(new_internal_port);
-  g_free(new_lease_duration);
+  upnpstatecontext_clear(sc);
+  upnpstatecontext_process_next_action(sc);
 }
 
 static void
@@ -400,15 +427,15 @@ main (int argc, char **argv)
 
   sc = upnpstatecontext_new(mainloop);
 
-  upnp_get_public_ip(sc);
-  /*
+  // upnp_get_public_ip(sc);
+
   upnp_port_redirect(sc,
                      8001,
                      8001,
                      "192.168.2.70",
                      "From Gnome to the world",
                      5*60);
-  */
+
   /* Enter the main loop */
   g_main_loop_run (mainloop);
 
