@@ -1,37 +1,11 @@
 #ifndef _UPNP_
 #define _UPNP_
 
-#include <libgupnp/gupnp-control-point.h>
+#include <glib-object.h>
 
 /** PUBLIC DECLARATION */
 
-typedef struct {
-  /* GUPnP management */
-  GUPnPContext *context;
-  GUPnPControlPoint *cp;
-  GUPnPServiceProxy *proxy;
-  GMainLoop *mainloop;
-
-  /* Action sequence management */
-  gchar *action_seq;
-  gchar *next_action; /* Pointer to somewhere inside action_seq */
-  gchar *task_name;
-  gulong last_callback_id;
-  gboolean cancel_timeout;
-  gboolean cancel_callback;
-  gint num_running_timeouts;
-
-  /* Parameter management */
-  guint external_port;
-  guint internal_port;
-  gchar *internal_ip;
-  gchar *description;
-  gulong sec_lease_duration;
-
-  /* Result management */
-  gchar *result;
-  gboolean success;
-} UPNPStateContext;
+typedef struct _UPNPStateContext UPNPStateContext;
 
 UPNPStateContext *
 upnpstatecontext_new (GMainLoop *mainloop);
