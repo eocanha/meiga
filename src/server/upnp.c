@@ -16,7 +16,6 @@ struct _UPNPStateContext {
   GUPnPContext *context;
   GUPnPControlPoint *cp;
   GUPnPServiceProxy *proxy;
-  GMainLoop *mainloop;
 
   /* Action sequence management */
   gchar *action_seq;
@@ -94,11 +93,9 @@ callback_timeout (gpointer userdata);
 /** IMPLEMENTATION **/
 
 UPNPStateContext *
-upnpstatecontext_new (GMainLoop *mainloop)
+upnpstatecontext_new ()
 {
   UPNPStateContext *sc = g_slice_new(UPNPStateContext);
-  g_main_loop_ref(mainloop);
-  sc->mainloop = mainloop;
   return sc;
 }
 
@@ -144,7 +141,6 @@ upnpstatecontext_free (UPNPStateContext *sc)
   g_free(sc->result);
   g_free(sc->internal_ip);
   g_free(sc->description);
-  g_main_loop_unref(sc->mainloop);
   g_slice_free(UPNPStateContext, sc);
 }
 
@@ -411,10 +407,8 @@ action_return (UPNPStateContext *sc)
 {
   if (sc->success) {
     g_printf("%s\n", sc->result);
-    g_main_loop_quit(sc->mainloop);
   } else {
     g_printerr("%s\n", sc->result);
-    g_main_loop_quit(sc->mainloop);
   }
 }
 
@@ -466,7 +460,7 @@ main (int argc, char **argv)
   g_type_init ();
   mainloop = g_main_loop_new (NULL, FALSE);
 
-  sc = upnpstatecontext_new(mainloop);
+  sc = upnpstatecontext_new();
 
   // upnp_get_public_ip(sc);
 

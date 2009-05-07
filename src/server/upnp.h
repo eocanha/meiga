@@ -8,7 +8,7 @@
 typedef struct _UPNPStateContext UPNPStateContext;
 
 UPNPStateContext *
-upnpstatecontext_new (GMainLoop *mainloop);
+upnpstatecontext_new ();
 
 void
 upnpstatecontext_free (UPNPStateContext *sc);
