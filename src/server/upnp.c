@@ -457,7 +457,15 @@ upnp_port_redirect (UPNPStateContext *sc,
   upnpstatecontext_process_next_action(sc);
 }
 
-static int
+void on_complete (gboolean success,
+                  const gchar *result,
+                  gpointer user_data) {
+  GMainLoop *mainloop = (GMainLoop) user_data;
+  gprintf("%s: %s\n", (success?"Success":"Error"), result);
+  mainloop.quit();
+}
+
+int
 main (int argc, char **argv)
 {
   static GMainLoop *mainloop;
@@ -470,16 +478,20 @@ main (int argc, char **argv)
 
   sc = upnpstatecontext_new();
 
-  // upnp_get_public_ip(sc);
+  upnp_get_public_ip(sc,
+                     on_complete,
+                     mainloop);
 
+  /*
   upnp_port_redirect(sc,
                      8001,
                      8001,
-                     "192.168.2.70",
+                     "192.168.1.122.70",
                      "From Gnome to the world",
                      5*60,
                      NULL,
                      NULL);
+  */
 
   /* Enter the main loop */
   g_main_loop_run (mainloop);
