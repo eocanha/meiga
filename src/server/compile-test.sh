@@ -10,9 +10,8 @@ done
 # Show equivalent gcc parameters
 # valac --cc=echo --vapidir=. --pkg=glib-2.0 --pkg=upnp $OPTIONS Test.vala
 
-# Compile to C code
-# valac -C --vapidir=. --pkg=glib-2.0 --pkg=upnp $OPTIONS Test.vala
-
 # Compile to executable
 valac --vapidir=. --pkg=glib-2.0 --pkg=upnp --thread $OPTIONS Test.vala
 
+# Compile to C code
+# valac -C --vapidir=. --pkg=glib-2.0 --pkg=upnp $OPTIONS Test.vala

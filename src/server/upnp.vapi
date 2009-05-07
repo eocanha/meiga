@@ -11,8 +11,12 @@ namespace Upnp {
   [CCode (cheader_filename = "upnp.h", cname = "upnpstatecontext_free")]
   void upnpstatecontext_free (UPNPStateContext *sc);
 
+  [CCode (cheader_filename = "upnp.h", cname = "UpnpActionCompletedCallback")]
+  public delegate void UpnpActionCompletedCallback (bool success, string result);
+
   [CCode (cheader_filename = "upnp.h", cname = "upnp_get_public_ip")]
-  void upnp_get_public_ip (UPNPStateContext *sc);
+  void upnp_get_public_ip (UPNPStateContext *sc,
+						   UpnpActionCompletedCallback? on_complete);
 
   [CCode (cheader_filename = "upnp.h", cname = "upnp_port_redirect")]
   void upnp_port_redirect (UPNPStateContext *sc,
@@ -20,6 +24,7 @@ namespace Upnp {
 						   int internal_port,
 						   string internal_ip,
 						   string description,
-						   ulong sec_lease_duration);
+						   ulong sec_lease_duration,
+						   UpnpActionCompletedCallback? on_complete);
 
 }

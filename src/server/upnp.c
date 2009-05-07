@@ -34,6 +34,8 @@ struct _UPNPStateContext {
   gulong sec_lease_duration;
 
   /* Result management */
+  UpnpActionCompletedCallback on_complete;
+  gpointer on_complete_user_data;
   gchar *result;
   gboolean success;
 };
@@ -405,16 +407,18 @@ callback_action_redirect  (GUPnPServiceProxy *proxy,
 static void
 action_return (UPNPStateContext *sc)
 {
-  if (sc->success) {
-    g_printf("%s\n", sc->result);
-  } else {
-    g_printerr("%s\n", sc->result);
+  if (sc->on_complete != NULL) {
+    sc->on_complete(sc->success, sc->result, sc->on_complete_user_data);
   }
 }
 
 gchar *
-upnp_get_public_ip (UPNPStateContext *sc)
+upnp_get_public_ip (UPNPStateContext *sc,
+                    UpnpActionCompletedCallback on_complete,
+                    gpointer user_data)
 {
+  sc->on_complete = on_complete;
+  sc->on_complete_user_data = user_data;
   upnpstatecontext_set_action_seq(sc, (gchar[]){
       ACTION_CONNECT,
         ACTION_ASK_IP,
@@ -430,7 +434,9 @@ upnp_port_redirect (UPNPStateContext *sc,
                     guint internal_port,
                     gchar *internal_ip,
                     gchar *description,
-                    gulong sec_lease_duration)
+                    gulong sec_lease_duration,
+                    UpnpActionCompletedCallback on_complete,
+                    gpointer user_data)
 {
   sc->external_port = external_port;
   sc->internal_port = internal_port;
@@ -439,6 +445,8 @@ upnp_port_redirect (UPNPStateContext *sc,
   g_free(sc->description);
   sc->description = g_strdup(description);
   sc->sec_lease_duration = sec_lease_duration;
+  sc->on_complete = on_complete;
+  sc->on_complete_user_data = user_data;
 
   upnpstatecontext_set_action_seq(sc, (gchar[]){
       ACTION_CONNECT,
@@ -469,7 +477,9 @@ main (int argc, char **argv)
                      8001,
                      "192.168.2.70",
                      "From Gnome to the world",
-                     5*60);
+                     5*60,
+                     NULL,
+                     NULL);
 
   /* Enter the main loop */
   g_main_loop_run (mainloop);
