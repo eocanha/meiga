@@ -2,7 +2,13 @@ NULL =
 
 AM_CPPFLAGS = \
 	-DDATADIR=\""$(datadir)"\" \
-	$(FGTW_CFLAGS) \
+	$(gthread_CFLAGS) \
+	$(glib_CFLAGS) \
+	$(gobject_CFLAGS) \
+	$(gtk_CFLAGS) \
+	$(dbusglib_CFLAGS) \
+	$(libglade_CFLAGS) \
+	$(gmodule_CFLAGS) \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
 
@@ -26,7 +32,13 @@ fgtw.vala.stamp: $(fgtw_VALASOURCES)
 	touch $@
 
 fgtw_LDADD = \
-	$(FGTW_LIBS) \
+	$(gthread_LIBS) \
+	$(glib_LIBS) \
+	$(gobject_LIBS) \
+	$(gtk_LIBS) \
+	$(dbusglib_LIBS) \
+	$(libglade_LIBS) \
+	$(gmodule_LIBS) \
 	$(NULL)
 
 fgtwextradir = ${datadir}/fgtw/glade
