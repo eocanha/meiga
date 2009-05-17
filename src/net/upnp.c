@@ -460,13 +460,18 @@ upnp_port_redirect (UPNPStateContext *sc,
 void on_complete (gboolean success,
                   const gchar *result,
                   gpointer user_data) {
-  GMainLoop *mainloop = (GMainLoop) user_data;
-  gprintf("%s: %s\n", (success?"Success":"Error"), result);
-  mainloop.quit();
+  GMainLoop *mainloop;
+  mainloop = (GMainLoop*)user_data;
+  g_printf("%s: %s\n", (success?"Success":"Error"), result);
+  g_main_loop_quit(mainloop);
+  exit(success?0:1);
+}
+
+static void print_usage(const gchar *progname) {
 }
 
 int
-main (int argc, char **argv)
+main (int argc, char *argv[])
 {
   static GMainLoop *mainloop;
   UPNPStateContext *sc;
@@ -478,20 +483,46 @@ main (int argc, char **argv)
 
   sc = upnpstatecontext_new();
 
-  upnp_get_public_ip(sc,
-                     on_complete,
-                     mainloop);
+  if (argc == 2 && g_strcmp0(argv[1],"-i") == 0) {
+    upnp_get_public_ip(sc,
+                       on_complete,
+                       mainloop);
+  } else if (argc == 7 && g_strcmp0(argv[1],"-r") == 0) {
+    guint external_port;
+    guint internal_port;
+    gchar *internal_ip;
+    gchar *description;
+    gulong sec_lease_duration;
 
-  /*
-  upnp_port_redirect(sc,
-                     8001,
-                     8001,
-                     "192.168.1.122.70",
-                     "From Gnome to the world",
-                     5*60,
-                     NULL,
-                     NULL);
-  */
+    sscanf(argv[2],"%u",&external_port);
+    sscanf(argv[3],"%u",&internal_port);
+    internal_ip = argv[4];
+    description = argv[5];
+    sscanf(argv[6],"%lu",&sec_lease_duration);
+
+    upnp_port_redirect(sc,
+                       external_port,
+                       internal_port,
+                       internal_ip,
+                       description,
+                       sec_lease_duration,
+                       on_complete,
+                       mainloop);
+  } else {
+    g_printf("Usage: %s [-i | -r "
+             "external_port "
+             "internal_port "
+             "internal_ip "
+             "description "
+             "sec_lease_duration"
+             "]\n\n"
+             "Exit status: "
+             "0 = Success, "
+             "1 = Request failure, "
+             "2 = Syntax error\n",
+             argv[0]);
+    exit(2);
+  }
 
   /* Enter the main loop */
   g_main_loop_run (mainloop);
@@ -500,5 +531,5 @@ main (int argc, char **argv)
   g_main_loop_unref (mainloop);
   upnpstatecontext_free(sc);
 
-  return 0;
+  exit(0);
 }
