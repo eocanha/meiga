@@ -8,7 +8,8 @@
 #define ACTION_ASK_IP     2
 #define ACTION_REDIRECT   3
 #define ACTION_CHECK_MAP  4
-#define ACTION_RETURN     5
+#define ACTION_DELETE     5
+#define ACTION_RETURN     32
 
 /** PRIVATE DECLARATION **/
 
@@ -76,6 +77,9 @@ static void
 action_check_map (UPNPStateContext *sc);
 
 static void
+action_delete (UPNPStateContext *sc);
+
+static void
 action_return (UPNPStateContext *sc);
 
 static void
@@ -97,6 +101,11 @@ static void
 callback_action_check_map (GUPnPServiceProxy *proxy,
                            GUPnPServiceProxyAction *action,
                            gpointer user_data);
+
+static void
+callback_action_delete (GUPnPServiceProxy *proxy,
+                        GUPnPServiceProxyAction *action,
+                        gpointer user_data);
 
 static int
 callback_timeout (gpointer userdata);
@@ -201,6 +210,10 @@ upnpstatecontext_process_next_action (UPNPStateContext *sc)
       break;
     case ACTION_CHECK_MAP:
       action_check_map(sc);
+      asynch = TRUE;
+      break;
+    case ACTION_DELETE:
+      action_delete(sc);
       asynch = TRUE;
       break;
     case ACTION_RETURN:
@@ -484,6 +497,63 @@ callback_action_check_map  (GUPnPServiceProxy *proxy,
 }
 
 static void
+action_delete (UPNPStateContext *sc)
+{
+  GError *error = NULL;
+  gchar *new_external_port;
+
+  upnpstatecontext_clear(sc);
+
+  new_external_port = g_strdup_printf("%u", sc->external_port);
+
+  gupnp_service_proxy_begin_action (
+    sc->proxy,
+    "DeletePortMapping",
+    callback_action_delete,
+    sc,
+    &error,
+    /* IN args */
+    "NewRemoteHost", G_TYPE_STRING, "",
+    "NewExternalPort", G_TYPE_STRING, new_external_port,
+    "NewProtocol", G_TYPE_STRING, "TCP",
+    NULL);
+
+  upnpstatecontext_push_timeout (sc);
+
+  g_free(new_external_port);
+}
+
+static void
+callback_action_delete  (GUPnPServiceProxy *proxy,
+                         GUPnPServiceProxyAction *action,
+                         gpointer user_data)
+{
+  UPNPStateContext *sc = (UPNPStateContext*) user_data;
+  GError *error = NULL;
+
+  if (sc->cancel_callback) return;
+  else upnpstatecontext_pop_timeout(sc);
+
+  gupnp_service_proxy_end_action (proxy,
+                                  action,
+                                  &error,
+                                  /* OUT args */
+                                  NULL);
+
+  if (error == NULL) {
+    sc->result = g_strdup_printf("Deleted redirection *:%u",
+                                 sc->external_port);
+    sc->success = TRUE;
+  } else {
+    sc->result = g_strdup_printf("Error: %s", error->message);
+    sc->success = FALSE;
+    g_error_free (error);
+  }
+  upnpstatecontext_clear(sc);
+  upnpstatecontext_process_next_action(sc);
+}
+
+static void
 action_return (UPNPStateContext *sc)
 {
   if (sc->on_complete != NULL) {
@@ -555,6 +625,25 @@ upnp_check_map (UPNPStateContext *sc,
   upnpstatecontext_process_next_action(sc);
 }
 
+gchar *
+upnp_delete (UPNPStateContext *sc,
+             guint external_port,
+             UpnpActionCompletedCallback on_complete,
+             gpointer user_data)
+{
+  sc->external_port = external_port;
+  sc->on_complete = on_complete;
+  sc->on_complete_user_data = user_data;
+
+  upnpstatecontext_set_action_seq(sc, (gchar[]){
+      ACTION_CONNECT,
+        ACTION_DELETE,
+        ACTION_RETURN,
+        ACTION_NULL});
+  upnpstatecontext_set_task_name(sc,"Delete port redirection");
+  upnpstatecontext_process_next_action(sc);
+}
+
 void on_complete (gboolean success,
                   const gchar *result,
                   gpointer user_data) {
@@ -614,20 +703,32 @@ main (int argc, char *argv[])
                    external_port,
                    on_complete,
                    mainloop);
+  } else if (argc == 3 && g_strcmp0(argv[1],"-d") == 0) {
+    guint external_port;
+    sscanf(argv[2],"%u",&external_port);
+
+    upnp_delete(sc,
+                external_port,
+                on_complete,
+                mainloop);
   } else {
     g_printf("Usage: %s OPTION \n\n"
              "Options:\n"
-             "-i\tQuery external IP\n"
-             "-r"
+             "-i"
+             "\n\tQuery external IP\n"
+             "-r "
              "external_port "
              "internal_port "
              "internal_ip "
              "description "
              "sec_lease_duration"
-             "\tRedirect\n"
-             "-q"
+             "\n\tAdd redirection\n"
+             "-q "
              "external_port"
-             "\tQuery if redirection exists"
+             "\n\tQuery for redirection"
+             "-d "
+             "external_port"
+             "\n\tDelete existing redirection"
              "\n\n"
              "Exit status: "
              "0 = Success, "
