@@ -193,7 +193,7 @@ upnpstatecontext_process_next_action (UPNPStateContext *sc)
     next_action = *(sc->next_action);
     (sc->next_action)++;
 
-    g_debug("Processing next action: '%hhd'", next_action);
+    // g_debug("Processing next action: '%hhd'", next_action);
 
     switch (next_action) {
     case ACTION_CONNECT:
