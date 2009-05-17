@@ -347,7 +347,7 @@ callback_action_ask_ip (GUPnPServiceProxy *proxy,
                                   NULL);
 
   if (error == NULL) {
-    sc->result = g_strdup_printf("External IP address is %s", ip);
+    sc->result = g_strdup_printf("%s", ip);
     sc->success = TRUE;
     g_free (ip);
   } else {

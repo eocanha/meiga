@@ -7,7 +7,7 @@ void on_complete (gboolean success,
                   gpointer user_data) {
   GMainLoop *mainloop;
   mainloop = (GMainLoop*)user_data;
-  g_printf("%s: %s\n", (success?"Success":"Error"), result);
+  g_printf(result);
   g_main_loop_quit(mainloop);
   exit(success?0:1);
 }

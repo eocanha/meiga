@@ -10,13 +10,20 @@ public class Myserver : GLib.Object {
  private GLib.HashTable<string,string> path_mapping;
  private GLib.HashTable<string,string> mimetypes;
  private FromGnomeToTheWorld exposed;
- 
+ private Net net;
+
  public Myserver() {
  }
 
  public void initialize() {
   port=8001;
-  
+
+  net = new Net();
+  net.port = port;
+  net.forward_start();
+
+  stderr.printf("External URL: %s\n", net.url);
+
   initialize_mimetypes();
   path_mapping=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);
     

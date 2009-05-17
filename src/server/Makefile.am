@@ -18,6 +18,7 @@ fgtwserver_VALASOURCES = \
 	MyServer.vala \
 	FromGnomeToTheWorld.vala \
 	Rss.vala \
+	Net.vala \
 	$(NULL)
 
 fgtwserver_SOURCES = \
