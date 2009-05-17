@@ -5,6 +5,7 @@ NULL =
 SUBDIRS = \
 	src/server \
 	src/gui \
+	src/net \
 	po \
 	$(NULL)
 
