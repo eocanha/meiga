@@ -13,6 +13,7 @@ bin_PROGRAMS = fwupnp
 
 fwupnp_SOURCES = \
 	upnp.c \
+	fwupnp.c \
 	$(NULL)
 
 fwupnp_LDADD = \
