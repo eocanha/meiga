@@ -10,11 +10,21 @@ public class Net : GLib.Object {
   }
 
   public void forward_start() {
-	internal_ip = "192.168.2.70";
-
 	string txtout;
 	string txterr;
 	int result;
+
+	GLib.Process.spawn_command_line_sync("fwlocalip",
+										 out txtout,
+										 out txterr,
+										 out result);
+
+	if (result == 0) {
+	  internal_ip = txtout.chomp();
+	} else {
+	  // Don't continue if there's no valid internal IP
+	  return;
+	}
 
 	external_ip = internal_ip;
 

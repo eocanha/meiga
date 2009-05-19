@@ -10,6 +10,7 @@ AM_CPPFLAGS = \
 	$(NULL)
 
 bin_PROGRAMS = fwupnp
+bin_SCRIPTS = fwlocalip
 
 fwupnp_SOURCES = \
 	upnp.c \
