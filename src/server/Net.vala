@@ -33,7 +33,7 @@ public class Net : GLib.Object {
 										 out txterr,
 										 out result);
 
-	if (result == 0) {
+	if (result == 0 && strcmp(txtout,"(null)")!=0) {
 	  external_ip = txtout;
 	  stderr.printf("Found external IP: %s\n", external_ip);
 	  GLib.Process.spawn_command_line_sync("fwupnp -q %d".printf(port),
@@ -59,6 +59,19 @@ public class Net : GLib.Object {
   }
 
   public void forward_stop() {
+	string txtout;
+	string txterr;
+	int result;
+
+	if (internal_ip != external_ip) {
+	  GLib.Process.spawn_command_line_sync("fwupnp -d %d".printf(port),
+										   out txtout,
+										   out txterr,
+										   out result);
+	  if (result == 0) {
+		stderr.printf("Redirection removed\n");
+	  }
+	}
   }
 
 }

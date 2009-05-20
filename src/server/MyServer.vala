@@ -83,6 +83,11 @@ public class Myserver : GLib.Object {
   }
  }
 
+ public void shutdown() {
+  Gtk.main_quit();
+  net.forward_stop();
+ }
+
  public void set_port(int port) {
   this.port=port;
  }

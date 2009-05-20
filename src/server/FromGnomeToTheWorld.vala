@@ -31,5 +31,9 @@ public class FromGnomeToTheWorld : GLib.Object {
   }
   return result;
  }
- 
+
+ public void shutdown() {
+  server.shutdown();
+ }
+
 }

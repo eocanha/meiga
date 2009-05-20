@@ -83,7 +83,7 @@ main (int argc, char *argv[])
              "\n\tAdd redirection\n"
              "-q "
              "external_port"
-             "\n\tQuery for redirection"
+             "\n\tQuery for redirection\n"
              "-d "
              "external_port"
              "\n\tDelete existing redirection"

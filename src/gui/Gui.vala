@@ -276,6 +276,14 @@ public class Gui : GLib.Object {
 
   public void quit() {
     Gtk.main_quit();
+
+    if (remote != null) {
+      try {
+        remote.shutdown();
+      } catch (Error e) {
+        stderr.printf("Remote error shutting down server\n");
+      }
+	}
   }
 
   public static int main(string[] args) {
