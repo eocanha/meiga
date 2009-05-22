@@ -2,10 +2,10 @@ using GLib;
 
 [DBus (name = "com.igalia.Meiga", signals="has_changed")]
 public class Meiga : GLib.Object {
-  private Myserver server;
+  private MeigaServer server;
   public signal void has_changed();
 
-  public Meiga(Myserver server) {
+  public Meiga(MeigaServer server) {
 	this.server = server;
   }
 

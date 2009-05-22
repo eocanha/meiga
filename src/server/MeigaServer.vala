@@ -2,7 +2,7 @@ using GLib;
 using Soup;
 using Gtk;
 
-public class Myserver : GLib.Object {
+public class MeigaServer : GLib.Object {
   const string MIME_TYPES_FILE="/etc/mime.types";
 
   private int port;
@@ -12,7 +12,7 @@ public class Myserver : GLib.Object {
   private Meiga exposed;
   private Net net;
 
-  public Myserver() {
+  public MeigaServer() {
   }
 
   public void initialize() {
@@ -275,7 +275,7 @@ public class Myserver : GLib.Object {
   }
 
   public static void main(string[] args) {
-	Myserver s=new Myserver();
+	MeigaServer s=new MeigaServer();
 	s.initialize();
 	s.exposed.register_path("/home/enrique/IMAGENES","/pictures");
 	Gtk.init(ref args);
