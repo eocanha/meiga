@@ -2,10 +2,11 @@ using GLib;
 
 [DBus (name = "com.igalia.Meiga", signals="has_changed")]
 public class Meiga : GLib.Object {
-  public Myserver server;
+  private Myserver server;
   public signal void has_changed();
 
-  public Meiga() {
+  public Meiga(Myserver server) {
+	this.server = server;
   }
 
   public void register_path(string real_path, string logical_path) {

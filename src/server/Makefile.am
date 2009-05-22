@@ -41,6 +41,15 @@ meigaserver_LDADD = \
 	$(dbusglib_LIBS) \
 	$(NULL)
 
+serviceentry_DATA = com.igalia.Meiga.service
+
+edit = sed -e 's,@BINDIR\@,$(bindir),g' -e 's,@PIXMAPDIR\@,$(pixmapdir),g'
+
+com.igalia.Meiga.service: Makefile com.igalia.Meiga.service.in
+	rm -f com.igalia.Meiga.service com.igalia.Meiga.service.tmp
+	$(edit) com.igalia.Meiga.service.in > com.igalia.Meiga.service.tmp
+	mv com.igalia.Meiga.service.tmp com.igalia.Meiga.service
+
 EXTRA_DIST = \
 	$(meiga_VALASOURCES) \
 	meiga.vala.stamp \

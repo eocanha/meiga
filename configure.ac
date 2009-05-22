@@ -44,6 +44,8 @@ PKG_CHECK_MODULES(libglade, libglade-2.0 >= $GLADE_REQUIRED)
 PKG_CHECK_MODULES(gmodule, gmodule-2.0 >= $GMODULE_REQUIRED)
 PKG_CHECK_MODULES(gupnp, gupnp-1.0 >= $GUPNP_REQUIRED)
 
+serviceentrydir=`$PKG_CONFIG dbus-1 --variable=session_bus_services_dir`
+
 AC_SUBST(gthread_CFLAGS)
 AC_SUBST(gthread_LIBS)
 AC_SUBST(glib_CFLAGS)
@@ -64,6 +66,8 @@ AC_SUBST(gmodule_CFLAGS)
 AC_SUBST(gmodule_LIBS)
 AC_SUBST(gupnp_CFLAGS)
 AC_SUBST(gupnp_LIBS)
+
+AC_SUBST(serviceentrydir)
 
 AC_CONFIG_FILES([Makefile
 	src/server/Makefile

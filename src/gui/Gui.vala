@@ -31,7 +31,6 @@ public class Gui : GLib.Object {
   private string preferred_share;
   private string invitation;
 
-  private dynamic DBus.Object bus;
   private dynamic DBus.Object _remote = null;
   private dynamic DBus.Object remote {
     // Maybe remote DBUS service isn't immediately available, so by using
@@ -182,25 +181,23 @@ public class Gui : GLib.Object {
   private void dbus_init() {
     try {
       var conn = DBus.Bus.get(DBus.BusType.SESSION);
-      bus = conn.get_object(
-							"org.freedesktop.DBus",
-							"/org/freedesktop/DBus",
-							"org.freedesktop.DBus");
-      uint request_name_result = bus.request_name (
-												   "com.igalia.Meiga", (uint) 0);
-      if (request_name_result == DBus.RequestNameReply.PRIMARY_OWNER) {
-        stderr.printf("Remote DBUS service not found\n");
-        // Avoid being pointed as the owners because we aren't
-        bus.release_name("org.gnome.Meiga");
-      } else {
-        _remote = conn.get_object (
-								   "com.igalia.Meiga",
-								   "/com/igalia/Meiga",
-								   "com.igalia.Meiga");
-      }
+	  _remote = conn.get_object (
+								 "com.igalia.Meiga",
+								 "/com/igalia/Meiga",
+								 "com.igalia.Meiga");
     } catch (Error e) {
-	  stderr.printf("Error registering DBUS server: %s\n",e.message);
+	  stderr.printf("Error looking for DBUS server: %s\n",e.message);
     }
+
+	try {
+	  // Test the connection
+	  if (_remote != null) {
+		public_url = _remote.get_public_url();
+	  }
+	} catch (Error e) {
+	  stderr.printf("Error looking for DBUS server: remote object not found\n");
+	  _remote = null;
+	}
   }
 
   private void gui_init() {

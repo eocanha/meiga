@@ -62,8 +62,7 @@ public class Myserver : GLib.Object {
 
   private void initialize_dbus() {
 	try {
-	  this.exposed=new Meiga();
-	  this.exposed.server=this;
+	  this.exposed=new Meiga(this);
 	  this.exposed.has_changed += (o) => { stderr.printf("Has changed\n"); };
 
 	  var conn = DBus.Bus.get(DBus.BusType.SESSION);
