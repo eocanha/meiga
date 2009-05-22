@@ -16,13 +16,13 @@ public class Test : GLib.Object {
 	upnp_get_public_ip(sc, on_complete_callback);
 
 	/*
-	upnp_port_redirect(sc,
-					   8001,
-					   8001,
-					   "192.168.1.10",
-					   "Meiga",
-					   5*60,
-                       on_complete_callback);
+	  upnp_port_redirect(sc,
+	  8001,
+	  8001,
+	  "192.168.1.10",
+	  "Meiga",
+	  5*60,
+	  on_complete_callback);
 	*/
 
 	mainloop.run();

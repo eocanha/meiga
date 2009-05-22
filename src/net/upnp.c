@@ -289,7 +289,7 @@ callback_timeout (gpointer userdata)
   else if (cancel_timeout) return FALSE;
 
   /* Timeout triggered: Disconnect signal callbacks and tell normal
-  /* callbacks not to execute */
+     /* callbacks not to execute */
   if (sc->cp && sc->last_callback_id) {
     g_signal_handler_disconnect(sc->cp, sc->last_callback_id);
   }
@@ -374,21 +374,21 @@ action_redirect (UPNPStateContext *sc)
   new_lease_duration = g_strdup_printf("%lu", sc->sec_lease_duration);
 
   gupnp_service_proxy_begin_action (
-    sc->proxy,
-    "AddPortMapping",
-    callback_action_redirect,
-    sc,
-    &error,
-    /* IN args */
-    "NewRemoteHost", G_TYPE_STRING, "",
-    "NewExternalPort", G_TYPE_STRING, new_external_port,
-    "NewProtocol", G_TYPE_STRING, "TCP",
-    "NewInternalPort", G_TYPE_STRING, new_internal_port,
-    "NewInternalClient", G_TYPE_STRING, sc->internal_ip,
-    "NewEnabled", G_TYPE_STRING, "1",
-    "NewPortMappingDescription", G_TYPE_STRING, sc->description,
-    "NewLeaseDuration", G_TYPE_STRING, new_lease_duration,
-    NULL);
+                                    sc->proxy,
+                                    "AddPortMapping",
+                                    callback_action_redirect,
+                                    sc,
+                                    &error,
+                                    /* IN args */
+                                    "NewRemoteHost", G_TYPE_STRING, "",
+                                    "NewExternalPort", G_TYPE_STRING, new_external_port,
+                                    "NewProtocol", G_TYPE_STRING, "TCP",
+                                    "NewInternalPort", G_TYPE_STRING, new_internal_port,
+                                    "NewInternalClient", G_TYPE_STRING, sc->internal_ip,
+                                    "NewEnabled", G_TYPE_STRING, "1",
+                                    "NewPortMappingDescription", G_TYPE_STRING, sc->description,
+                                    "NewLeaseDuration", G_TYPE_STRING, new_lease_duration,
+                                    NULL);
 
   upnpstatecontext_push_timeout (sc);
 
@@ -441,16 +441,16 @@ action_check_map (UPNPStateContext *sc)
   new_external_port = g_strdup_printf("%u", sc->external_port);
 
   gupnp_service_proxy_begin_action (
-    sc->proxy,
-    "GetSpecificPortMappingEntry",
-    callback_action_check_map,
-    sc,
-    &error,
-    /* IN args */
-    "NewRemoteHost", G_TYPE_STRING, "",
-    "NewExternalPort", G_TYPE_STRING, new_external_port,
-    "NewProtocol", G_TYPE_STRING, "TCP",
-    NULL);
+                                    sc->proxy,
+                                    "GetSpecificPortMappingEntry",
+                                    callback_action_check_map,
+                                    sc,
+                                    &error,
+                                    /* IN args */
+                                    "NewRemoteHost", G_TYPE_STRING, "",
+                                    "NewExternalPort", G_TYPE_STRING, new_external_port,
+                                    "NewProtocol", G_TYPE_STRING, "TCP",
+                                    NULL);
 
   upnpstatecontext_push_timeout (sc);
 
@@ -459,8 +459,8 @@ action_check_map (UPNPStateContext *sc)
 
 static void
 callback_action_check_map  (GUPnPServiceProxy *proxy,
-                           GUPnPServiceProxyAction *action,
-                           gpointer user_data)
+                            GUPnPServiceProxyAction *action,
+                            gpointer user_data)
 {
   UPNPStateContext *sc = (UPNPStateContext*) user_data;
   GError *error = NULL;
@@ -507,16 +507,16 @@ action_delete (UPNPStateContext *sc)
   new_external_port = g_strdup_printf("%u", sc->external_port);
 
   gupnp_service_proxy_begin_action (
-    sc->proxy,
-    "DeletePortMapping",
-    callback_action_delete,
-    sc,
-    &error,
-    /* IN args */
-    "NewRemoteHost", G_TYPE_STRING, "",
-    "NewExternalPort", G_TYPE_STRING, new_external_port,
-    "NewProtocol", G_TYPE_STRING, "TCP",
-    NULL);
+                                    sc->proxy,
+                                    "DeletePortMapping",
+                                    callback_action_delete,
+                                    sc,
+                                    &error,
+                                    /* IN args */
+                                    "NewRemoteHost", G_TYPE_STRING, "",
+                                    "NewExternalPort", G_TYPE_STRING, new_external_port,
+                                    "NewProtocol", G_TYPE_STRING, "TCP",
+                                    NULL);
 
   upnpstatecontext_push_timeout (sc);
 
