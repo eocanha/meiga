@@ -1,4 +1,4 @@
-AC_INIT([fgtw], [0.1.0], [info@igalia.com], [fgtw])
+AC_INIT([meiga], [0.1.0], [info@igalia.com], [meiga])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([dist-bzip2])
@@ -13,7 +13,7 @@ AC_PATH_PROG(VALAC, valac, valac)
 AC_SUBST(VALAC)
 
 AH_TEMPLATE([GETTEXT_PACKAGE], [Package name for gettext])
-GETTEXT_PACKAGE=fgtw
+GETTEXT_PACKAGE=meiga
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
 AC_SUBST(GETTEXT_PACKAGE)
 AM_GLIB_GNU_GETTEXT

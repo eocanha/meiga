@@ -42,7 +42,7 @@ public class Net : GLib.Object {
 										   out result);
 	  if (result != 0) {
 		stderr.printf("Creating redirection\n");
-		GLib.Process.spawn_command_line_sync("fwupnp -r %d %d %s %s %d".printf(port,port,internal_ip,"FromGnomeToTheWorld",0),
+		GLib.Process.spawn_command_line_sync("fwupnp -r %d %d %s %s %d".printf(port,port,internal_ip,"Meiga",0),
 											 out txtout,
 											 out txterr,
 											 out result);

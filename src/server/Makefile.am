@@ -10,29 +10,29 @@ AM_CPPFLAGS = \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
 
-BUILT_SOURCES = fgtw.vala.stamp
+BUILT_SOURCES = meiga.vala.stamp
 
-bin_PROGRAMS = fgtwserver
+bin_PROGRAMS = meigaserver
 
-fgtwserver_VALASOURCES = \
-	MyServer.vala \
-	FromGnomeToTheWorld.vala \
+meigaserver_VALASOURCES = \
+	MeigaServer.vala \
+	Meiga.vala \
 	Rss.vala \
 	Net.vala \
 	$(NULL)
 
-fgtwserver_SOURCES = \
-	$(fgtwserver_VALASOURCES:.vala=.c) \
-	$(fgtwserver_VALASOURCES:.vala=.h) \
+meigaserver_SOURCES = \
+	$(meigaserver_VALASOURCES:.vala=.c) \
+	$(meigaserver_VALASOURCES:.vala=.h) \
 	$(NULL)
 
-fgtw.vala.stamp: $(fgtwserver_VALASOURCES)
+meiga.vala.stamp: $(meigaserver_VALASOURCES)
 	$(VALAC) -C \
 	--thread --pkg=libsoup-2.4 --pkg=gtk+-2.0 --pkg=dbus-glib-1 \
 	--basedir $(top_srcdir)/src/server $^
 	touch $@
 
-fgtwserver_LDADD = \
+meigaserver_LDADD = \
 	$(gthread_LIBS) \
 	$(glib_LIBS) \
 	$(gobject_LIBS) \
@@ -42,8 +42,8 @@ fgtwserver_LDADD = \
 	$(NULL)
 
 EXTRA_DIST = \
-	$(fgtw_VALASOURCES) \
-	fgtw.vala.stamp \
+	$(meiga_VALASOURCES) \
+	meiga.vala.stamp \
 	$(NULL)
 
 DISTCLEANFILES = \

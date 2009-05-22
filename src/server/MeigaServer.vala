@@ -9,7 +9,7 @@ public class Myserver : GLib.Object {
  private Soup.Server server;
  private GLib.HashTable<string,string> path_mapping;
  private GLib.HashTable<string,string> mimetypes;
- private FromGnomeToTheWorld exposed;
+ private Meiga exposed;
  private Net net;
 
  public Myserver() {
@@ -62,7 +62,7 @@ public class Myserver : GLib.Object {
 
  private void initialize_dbus() {
   try {
-   this.exposed=new FromGnomeToTheWorld();
+   this.exposed=new Meiga();
    this.exposed.server=this;
    this.exposed.has_changed += (o) => { stderr.printf("Has changed\n"); };
   
@@ -71,10 +71,10 @@ public class Myserver : GLib.Object {
     "org.freedesktop.DBus",
     "/org/freedesktop/DBus",
     "org.freedesktop.DBus");
-   uint request_name_result = bus.request_name ("org.gnome.FromGnomeToTheWorld", (uint) 0);
+   uint request_name_result = bus.request_name ("com.igalia.Meiga", (uint) 0);
    if (request_name_result == DBus.RequestNameReply.PRIMARY_OWNER) {
     stderr.printf("Registering DBUS service\n");
-    conn.register_object ("/org/gnome/FromGnomeToTheWorld", (GLib.Object)this.exposed);
+    conn.register_object ("/com/igalia/Meiga", (GLib.Object)this.exposed);
    } else {
     stderr.printf("Not registering DBUS service: not primary owner\n");
    }

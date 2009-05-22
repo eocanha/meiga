@@ -4,7 +4,7 @@
 <glade-interface>
 
 <widget class="GtkWindow" id="top">
-  <property name="title" translatable="yes">From Gnome to the World</property>
+  <property name="title" translatable="yes">Meiga</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -542,7 +542,7 @@
 	      <property name="left_margin">0</property>
 	      <property name="right_margin">0</property>
 	      <property name="indent">0</property>
-	      <property name="text" translatable="yes">From Gnome to the World Copyright (C) 2009 Igalia, S.L.
+	      <property name="text" translatable="yes">Meiga - Copyright (C) 2009 Igalia, S.L.
 
 This program comes with ABSOLUTELY NO WARRANTY.
 Licensed under GNU GPL 2.0. This is free software, and you are welcome to redistribute it under certain conditions.

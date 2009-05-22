@@ -9,8 +9,8 @@ SUBDIRS = \
 	po \
 	$(NULL)
 
-fgtwdocdir = ${prefix}/doc/fgtw
-fgtwdoc_DATA = \
+meigadocdir = ${prefix}/doc/meiga
+meigadoc_DATA = \
 	ChangeLog \
 	README \
 	COPYING \
@@ -20,7 +20,7 @@ fgtwdoc_DATA = \
 	$(NULL)
 
 EXTRA_DIST = \
-	$(fgtwdoc_DATA) \
+	$(meigadoc_DATA) \
 	intltool-extract.in \
 	intltool-merge.in \
 	intltool-update.in\

@@ -1,11 +1,11 @@
 using GLib;
 
-[DBus (name = "org.gnome.FromGnomeToTheWorld", signals="has_changed")]
-public class FromGnomeToTheWorld : GLib.Object {
+[DBus (name = "com.igalia.Meiga", signals="has_changed")]
+public class Meiga : GLib.Object {
  public Myserver server;
  public signal void has_changed();
  
- public FromGnomeToTheWorld() {
+ public Meiga() {
  }
 
  public void register_path(string real_path, string logical_path) {

@@ -5,7 +5,7 @@ using Glade;
 using Config;
 
 const string GLADE_FILENAME = "gui.glade";
-const string GLADE_PATH = "glade:"+Config.DATADIR+"/fgtw/glade";
+const string GLADE_PATH = "glade:"+Config.DATADIR+"/meiga/glade";
 
 public class Gui : GLib.Object {
 
@@ -187,16 +187,16 @@ public class Gui : GLib.Object {
         "/org/freedesktop/DBus",
         "org.freedesktop.DBus");
       uint request_name_result = bus.request_name (
-        "org.gnome.FromGnomeToTheWorld", (uint) 0);
+        "com.igalia.Meiga", (uint) 0);
       if (request_name_result == DBus.RequestNameReply.PRIMARY_OWNER) {
         stderr.printf("Remote DBUS service not found\n");
         // Avoid being pointed as the owners because we aren't
-        bus.release_name("org.gnome.FromGnomeToTheWorld");
+        bus.release_name("org.gnome.Meiga");
       } else {
         _remote = conn.get_object (
-          "org.gnome.FromGnomeToTheWorld",
-          "/org/gnome/FromGnomeToTheWorld",
-          "org.gnome.FromGnomeToTheWorld");
+          "com.igalia.Meiga",
+          "/com/igalia/Meiga",
+          "com.igalia.Meiga");
       }
     } catch (Error e) {
      stderr.printf("Error registering DBUS server: %s\n",e.message);

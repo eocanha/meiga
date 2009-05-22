@@ -12,26 +12,26 @@ AM_CPPFLAGS = \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
 
-BUILT_SOURCES = fgtw.vala.stamp
+BUILT_SOURCES = meiga.vala.stamp
 
-bin_PROGRAMS = fgtw
+bin_PROGRAMS = meiga
 
-fgtw_VALASOURCES = \
+meiga_VALASOURCES = \
 	Gui.vala \
 	$(NULL)
 
-fgtw_SOURCES = \
-	$(fgtw_VALASOURCES:.vala=.c) \
-	$(fgtw_VALASOURCES:.vala=.h) \
+meiga_SOURCES = \
+	$(meiga_VALASOURCES:.vala=.c) \
+	$(meiga_VALASOURCES:.vala=.h) \
 	$(NULL)
 
-fgtw.vala.stamp: $(fgtw_VALASOURCES)
+meiga.vala.stamp: $(meiga_VALASOURCES)
 	$(VALAC) -C \
 	--thread --pkg=gtk+-2.0 --pkg=libglade-2.0 --pkg=gmodule-2.0 --pkg=dbus-glib-1 \
 	--vapidir=. --pkg=config --basedir $(top_srcdir)/src/gui $^
 	touch $@
 
-fgtw_LDADD = \
+meiga_LDADD = \
 	$(gthread_LIBS) \
 	$(glib_LIBS) \
 	$(gobject_LIBS) \
@@ -41,15 +41,15 @@ fgtw_LDADD = \
 	$(gmodule_LIBS) \
 	$(NULL)
 
-fgtwextradir = ${datadir}/fgtw/glade
-fgtwextra_DATA = \
+meigaextradir = ${datadir}/meiga/glade
+meigaextra_DATA = \
         glade/gui.glade \
         $(NULL)
 
 EXTRA_DIST = \
-	$(fgtw_VALASOURCES) \
-	$(fgtwextra_DATA) \
-	fgtw.vala.stamp \
+	$(meiga_VALASOURCES) \
+	$(meigaextra_DATA) \
+	meiga.vala.stamp \
 	$(NULL)
 
 DISTCLEANFILES = \

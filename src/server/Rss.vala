@@ -31,7 +31,7 @@ public class RssFeed : GLib.Object {
  public string link { get; set; default=""; }
  public string description { get; set; default="No description"; }
  public Time time { get; set; }
- public string generator { get; set; default="FromGnomeToTheWorld/0.1"; } 
+ public string generator { get; set; default="Meiga/0.1"; } 
  public string language { get; set; default="en"; } 
  
  // It segfaults if defined as a property

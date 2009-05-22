@@ -4,6 +4,6 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-PKG_NAME="fgtw"
+PKG_NAME="meiga"
 
 . gnome-autogen.sh

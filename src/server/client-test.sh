@@ -1,4 +1,4 @@
 #!/bin/sh
-dbus-send --session --dest=org.gnome.FromGnomeToTheWorld \
---print-reply --type=method_call /org/gnome/FromGnomeToTheWorld \
-org.gnome.FromGnomeToTheWorld.GetPathsAsString
+dbus-send --session --dest=com.igalia.Meiga \
+    --print-reply --type=method_call /com/igalia/Meiga \
+    com.igalia.Meiga.GetPathsAsString
