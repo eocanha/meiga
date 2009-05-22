@@ -1,5 +1,6 @@
 using GLib;
 using Gtk;
+using Gdk;
 using Glade;
 using Config;
 
@@ -18,11 +19,17 @@ public class Gui : GLib.Object {
   private Gtk.StatusIcon systray;
   private Gtk.MenuItem systraymenu_restore;
   private Gtk.TreeView files;
+  private Gtk.Statusbar statusbar;
   private Gtk.FileChooserButton localdirectory;
   private Gtk.Entry shareas;
   
+  private Gtk.Clipboard clipboard;
+
   private Gtk.ListStore model;
   private string string_model;
+  private string public_url;
+  private string preferred_share;
+  private string invitation;
   
   private dynamic DBus.Object bus;
   private dynamic DBus.Object _remote = null;
@@ -68,6 +75,7 @@ public class Gui : GLib.Object {
   [CCode (instance_pos = -1)]
   public void on_refresh(Gtk.Widget widget) {
     update_model();
+	update_statusbar();
   }
   
   [CCode (instance_pos = -1)]
@@ -81,6 +89,7 @@ public class Gui : GLib.Object {
       }
     }
     update_model();
+	update_statusbar();
   }
   
   [CCode (instance_pos = -1)]
@@ -122,6 +131,7 @@ public class Gui : GLib.Object {
     
     adddialog.set("visible", false);
     update_model();
+	update_statusbar();
   }
   
   [CCode (instance_pos = -1)]
@@ -134,6 +144,11 @@ public class Gui : GLib.Object {
     aboutdialog.set("visible", false);
   }
   
+  [CCode (instance_pos = -1)]
+  public void on_copy_invitation(Gtk.Widget widget) {
+	clipboard.set_text(invitation, -1);
+  }
+
   // Private methods
   [CCode (instance_pos = -1)]
   private void connect_signals(
@@ -206,6 +221,7 @@ public class Gui : GLib.Object {
     adddialog = (Gtk.Window)xml.get_widget("adddialog");
     aboutdialog = (Gtk.Window)xml.get_widget("aboutdialog");
     files = (Gtk.TreeView)xml.get_widget("files");
+	statusbar = (Gtk.Statusbar)xml.get_widget("statusbar");
     localdirectory = (Gtk.FileChooserButton)xml.get_widget("localdirectory");
     shareas = (Gtk.Entry)xml.get_widget("shareas");
     
@@ -225,7 +241,11 @@ public class Gui : GLib.Object {
       "text", 1, null);
     files.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
 
+	public_url = "";
+	clipboard = Gtk.Clipboard.get(SELECTION_CLIPBOARD);
+
     update_model();
+	update_statusbar();
 
     systray = new Gtk.StatusIcon.from_icon_name("stock_shared-by-me");
     systray.activate += on_systray;
@@ -237,6 +257,7 @@ public class Gui : GLib.Object {
   
   private void update_model_from_string(Gtk.ListStore model, string string_model) {
     model.clear();
+	preferred_share = null;
     if (string_model == null || string_model[0]=='\0') return;
     string[] rows = string_model.split("\n",128);
     for (int i=0; rows[i][0]!='\0'; i++) {
@@ -246,6 +267,9 @@ public class Gui : GLib.Object {
         TreeIter iter;
         model.append (out iter);
         model.set(iter, 0, local_file, 1, shared_as);
+		if (i==0) {
+		  preferred_share = shared_as;
+		}
     }    
   }
 
@@ -254,6 +278,24 @@ public class Gui : GLib.Object {
     if (remote != null) string_model = remote.get_paths_as_string();
     if (string_model == null) string_model = "";
     update_model_from_string(model, string_model);
+  }
+
+  private void update_statusbar() {
+	if (remote != null) {
+      try {
+		public_url = remote.get_public_url();
+		if (public_url != null && public_url.length > 0 && preferred_share != null) {
+		  invitation = public_url + preferred_share;
+		} else {
+		  invitation = "";
+		}
+		statusbar.pop(0);
+		statusbar.push(0, invitation);
+      } catch (Error e) {
+        stderr.printf("Remote error getting public url\n");
+      }
+
+	}
   }
 
   private List<string> get_selected_shares() {

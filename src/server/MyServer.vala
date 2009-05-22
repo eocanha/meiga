@@ -83,6 +83,10 @@ public class Myserver : GLib.Object {
   }
  }
 
+ public string get_public_url() {
+  return net.url;
+ }
+
  public void shutdown() {
   Gtk.main_quit();
   net.forward_stop();

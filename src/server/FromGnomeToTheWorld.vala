@@ -32,6 +32,10 @@ public class FromGnomeToTheWorld : GLib.Object {
   return result;
  }
 
+ public string get_public_url() {
+  return server.get_public_url();
+ }
+
  public void shutdown() {
   server.shutdown();
  }
