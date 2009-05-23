@@ -1,0 +1,14 @@
+Source: meiga
+Section: gnome
+Priority: extra
+Maintainer: Enrique Ocaña González <eocanha@igalia.com>
+Build-Depends: debhelper (>= 4), pkg-config, libgtk2.0-dev, libglade2-dev, libsoup2.2-dev, libsoup2.4-dev, libdbus-1-dev, libgupnp-1.0-dev
+Standards-Version: 3.7.2
+
+Package: meiga
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Lightweight and easy to use web file server for your desktop
+ Meiga shares selected local directories via web and also as
+ an RSS feed. It can reconfigure your LAN router using UPnP
+ to make the share accessible from the Internet.
