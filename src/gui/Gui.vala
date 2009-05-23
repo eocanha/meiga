@@ -202,14 +202,20 @@ public class Gui : GLib.Object {
 
   private void gui_init() {
     string[] path = GLADE_PATH.split(":",8);
+	string iconfile = null;
+
     for (int i=0; path[i]!=null && xml==null; i++) {
       string filename = path[i] + "/" + GLADE_FILENAME;
       xml = new Glade.XML(filename, null, null);
+	  if (xml != null) {
+		iconfile = path[i] + "/" + "meiga-16x16.png";
+	  }
     }
     if (xml==null) {
       stderr.printf("Glade file not found\n");
       quit();
     }
+
     xml.signal_autoconnect_full(connect_signals);
 
     systraymenu = (Gtk.Menu)xml.get_widget("systraymenu");
@@ -223,6 +229,14 @@ public class Gui : GLib.Object {
     shareas = (Gtk.Entry)xml.get_widget("shareas");
 
     Gtk.VBox topvbox=(Gtk.VBox)xml.get_widget("topvbox");
+
+	try {
+	  top.set_icon_from_file(iconfile);
+	  adddialog.set_icon_from_file(iconfile);
+	  aboutdialog.set_icon_from_file(iconfile);
+	} catch (Error e) {
+	  stderr.printf("Icon file not found");
+	}
 
     menu=menushell_to_menubar((Gtk.Menu)xml.get_widget("menu"));
     menu.set("visible",true);
@@ -244,12 +258,13 @@ public class Gui : GLib.Object {
     update_model();
 	update_statusbar();
 
-    systray = new Gtk.StatusIcon.from_icon_name("stock_shared-by-me");
+    systray = new Gtk.StatusIcon.from_file(iconfile);
     systray.activate += on_systray;
     systray.popup_menu += on_systray_menu;
 
     // App is finally shown
     systray.set("visible",true);
+	on_restore(top);
   }
 
   private void update_model_from_string(Gtk.ListStore model, string string_model) {

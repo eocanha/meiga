@@ -44,11 +44,20 @@ meiga_LDADD = \
 meigaextradir = ${datadir}/meiga/glade
 meigaextra_DATA = \
         glade/gui.glade \
+	pixmaps/meiga-16x16.png \
         $(NULL)
+
+meigapixmapsdir = ${datadir}/pixmaps
+meigapixmaps_DATA = \
+	pixmaps/meiga-16x16.png \
+	pixmaps/meiga-32x32.png \
+	$(NULL)
 
 EXTRA_DIST = \
 	$(meiga_VALASOURCES) \
 	$(meigaextra_DATA) \
+	$(meigagladepixmaps_DATA) \
+	$(meigapixmaps_DATA) \
 	meiga.vala.stamp \
 	$(NULL)
 
