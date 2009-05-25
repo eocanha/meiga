@@ -1,5 +1,49 @@
-Installation Instructions
-*************************
+Compilation dependencies
+************************
+
+To compile Meiga you need the following packages installed:
+
+pkg-config
+libgtk2.0-dev    (>= 2.10.0)
+libglade2-dev    (>= 0.22)
+libsoup2.2-dev   (>= 2.2.0)
+libsoup2.4-dev   (>= 2.4.0)
+libdbus-1-dev    (>= 0.74)
+libgupnp-1.0-dev (>= 0.6)
+
+Compilation is reported to work on Ubuntu Hardy.
+
+In addition, the Vala 0.5.7 compiler is needed. You can download
+and compile it yourself from here:
+
+http://download.gnome.org/sources/vala/0.5/vala-0.5.7.tar.bz2
+
+For additional instructions about the Vala compiler, have a look
+to the Vala website:
+
+http://live.gnome.org/Vala
+
+Debian/Ubuntu package construction
+**********************************
+
+If you already have all the dependencies installed, the only
+thing you have to do to create a Debian package is:
+
+./autogen.sh
+./build-package.sh
+
+If you want to compile it on your own, without creating a
+Debian package, follow these steps:
+
+./autogen.sh
+make
+sudo make install
+
+And now... here are the generic instructions that were originally
+in this file.
+
+Installation Instructions (original text about auttools stuff)
+**************************************************************
 
 Copyright (C) 1994, 1995, 1996, 1999, 2000, 2001, 2002, 2004, 2005,
 2006, 2007 Free Software Foundation, Inc.
