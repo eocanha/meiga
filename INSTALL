@@ -14,10 +14,10 @@ libgupnp-1.0-dev   (>= 0.6)
 
 Compilation is reported to work on Ubuntu Hardy.
 
-In addition, the Vala 0.5.7 compiler is needed. You can download
-and compile it yourself from here:
+In addition, the Vala 0.7.2 compiler is needed (0.5.2 is also reported 
+to work). You can download and compile it yourself from here:
 
-http://download.gnome.org/sources/vala/0.5/vala-0.5.7.tar.bz2
+http://download.gnome.org/sources/vala/0.7/vala-0.7.2.tar.bz2
 
 For additional instructions about the Vala compiler, have a look
 to the Vala website:
