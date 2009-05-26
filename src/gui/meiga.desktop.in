@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Categories=Network;FileTransfer;GNOME;GTK;Application;
+Name=Meiga
+GenericName=Lightweight web content server
+Exec=@BINDIR@/meiga
+Icon=meiga
+X-Icon-path=/usr/share/pixmaps
+X-Window-Icon=meiga

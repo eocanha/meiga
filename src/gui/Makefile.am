@@ -41,6 +41,16 @@ meiga_LDADD = \
 	$(gmodule_LIBS) \
 	$(NULL)
 
+launcherdir = ${datadir}/applications
+launcher_DATA = meiga.desktop
+
+edit = sed -e 's,@BINDIR\@,$(bindir),g' -e 's,@PIXMAPDIR\@,$(pixmapdir),g'
+
+meiga.desktop: Makefile meiga.desktop.in
+	rm -f meiga.desktop meiga.desktop.tmp
+	$(edit) meiga.desktop.in > meiga.desktop.tmp
+	mv meiga.desktop.tmp meiga.desktop
+
 meigaextradir = ${datadir}/meiga/glade
 meigaextra_DATA = \
         glade/gui.glade \
@@ -49,15 +59,19 @@ meigaextra_DATA = \
 
 meigapixmapsdir = ${datadir}/pixmaps
 meigapixmaps_DATA = \
-	pixmaps/meiga-16x16.png \
-	pixmaps/meiga-32x32.png \
+	pixmaps/meiga.png \
+	$(NULL)
+
+meigaicon48dir = ${datadir}/icons/hicolor/48x48/apps
+meigaicon48_DATA = \
+	pixmaps/meiga.png \
 	$(NULL)
 
 EXTRA_DIST = \
 	$(meiga_VALASOURCES) \
 	$(meigaextra_DATA) \
-	$(meigagladepixmaps_DATA) \
 	$(meigapixmaps_DATA) \
+	$(meigaicon48_DATA) \
 	meiga.vala.stamp \
 	$(NULL)
 
