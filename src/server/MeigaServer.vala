@@ -277,7 +277,6 @@ public class MeigaServer : GLib.Object {
   public static void main(string[] args) {
 	MeigaServer s=new MeigaServer();
 	s.initialize();
-	s.exposed.register_path("/home/enrique/IMAGENES","/pictures");
 	Gtk.init(ref args);
 	Gtk.main();
 	return;
