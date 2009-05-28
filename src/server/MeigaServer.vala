@@ -181,6 +181,7 @@ public class MeigaServer : GLib.Object {
 	  }
 
 	  response+="</ul>\n";
+	  response+="<br/><br/><i>Served by Meiga</i>\n";
 	  response+="</body>\n</html>\n";
 	  msg.set_response("text/html",Soup.MemoryUse.COPY,response,response.len());
 
