@@ -3,6 +3,7 @@ Compilation dependencies
 
 To compile Meiga you need the following packages installed:
 
+gnome-common
 pkg-config
 libgtk2.0-dev      (>= 2.10.0)
 libglade2-dev      (>= 0.22)

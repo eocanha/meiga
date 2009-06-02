@@ -2,7 +2,7 @@ Source: meiga
 Section: gnome
 Priority: extra
 Maintainer: Enrique Ocaña González <eocanha@igalia.com>
-Build-Depends: debhelper (>= 4), pkg-config, libgtk2.0-dev, libglade2-dev, libsoup2.4-dev, libdbus-glib-1-dev, libgupnp-1.0-dev
+Build-Depends: debhelper (>= 4), gnome-common, pkg-config, libgtk2.0-dev, libglade2-dev, libsoup2.4-dev, libdbus-glib-1-dev, libgupnp-1.0-dev
 Standards-Version: 3.7.2
 
 Package: meiga
