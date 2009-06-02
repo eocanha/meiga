@@ -1,0 +1,47 @@
+Meiga - Lightweight and easy to use web file server for your desktop
+====================================================================
+
+The current trend in the Internet is to publish contents in centralized
+servers to be shared to other people. Nevertheless, sometimes it's handy
+for users to be able to serve their own contents directly from their
+desktops in a convenient way (instead of using a pendrive, for
+instance). Why bothering about publishing your contents if you can share
+them directly from your desktop to the LAN or even to the whole
+Internet?
+
+To satisfy this need we've created Meiga, a tool that makes possible to
+share selected local directories via web. But that's only the beginning.
+In fact, the ultimate goal of the project is to serve as a common
+publishing point for other desktop applications, such as the file
+manager, picture viewers or music players.
+
+Meiga is lightweight, easy to use, network friendly and also application
+friendly. It's written in a mix of Vala and pure C code, using existing
+Gnome technologies to perform its tasks: libsoup is used as a simpler
+alternative to fat web servers, libgupnp is in charge of doing port
+redirections if the network router supports UPnP, and DBUS exposes a
+public API to allow the GUI and third party applications to control what
+is served. Some advanced publishing features are already implemented,
+like the feed server that can render an RSS view of a given directory.
+
+From the educational point of view, the source code of this project is a
+live example of Vala technology usage: pure Vala programming, different
+alternatives to interface Vala with pure C code (using Vapi files or
+running a child executable program) or the usage of a "programmable
+context" to handle sequentiation of asynchronous operations. An
+autotools based build system completes the set of interesting features.
+This system uses a Vapi file to pass configuration parameters from the
+config.h to the Vala program. Finally, some additional rule files allow
+the building of a Debian package, the last step to make the program
+available to final users in a convenient way.
+
+Meiga has been coded using hackfest hours paid by Igalia. The hackfest
+program is an effort to encourage Igalia staff to take part in free
+software projects and communities.
+
+You might also be interested in reading the following files:
+
+- INSTALL: Compilation instructions.
+- AUTHORS: List of main authors and contributors.
+- MAINTAINTERS: List of people currently in charge of the project.
+- COPYING: License text.
