@@ -35,9 +35,9 @@ config.h to the Vala program. Finally, some additional rule files allow
 the building of a Debian package, the last step to make the program
 available to final users in a convenient way.
 
-Meiga has been coded using hackfest hours paid by Igalia. The hackfest
-program is an effort to encourage Igalia staff to take part in free
-software projects and communities.
+Meiga has been sponsored by Igalia as part of its hackfest program. The
+hackfest program is an effort to encourage Igalia staff to take part in
+free software projects and communities.
 
 You might also be interested in reading the following files:
 
