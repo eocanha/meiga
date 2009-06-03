@@ -1,5 +1,8 @@
-Meiga is (C) 2009 Igalia, S.L. <info@igalia.com>
+Copyright (C) 2009 Igalia, S.L. <info@igalia.com>
 
 Meiga is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License version 2 as
 published by the Free Software Foundation.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL-2'.
