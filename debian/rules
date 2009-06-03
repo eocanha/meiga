@@ -23,6 +23,9 @@ else
 	CFLAGS += -O2
 endif
 
+configure: configure.ac
+	NOCONFIGURE=1 ./autogen.sh
+
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.

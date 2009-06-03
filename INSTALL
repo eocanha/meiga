@@ -31,7 +31,6 @@ Debian/Ubuntu package construction
 If you already have all the dependencies installed, the only
 thing you have to do to create a Debian package is:
 
-./autogen.sh
 ./build-package.sh
 
 If you want to compile it on your own, without creating a
