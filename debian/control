@@ -8,7 +8,7 @@ Standards-Version: 3.7.2
 Package: meiga
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: Lightweight and easy to use web file server for your desktop
+Description: Light and easy content server for your desktop
  Meiga shares selected local directories via web and also as
  an RSS feed. It can reconfigure your LAN router using UPnP
  to make the share accessible from the Internet.

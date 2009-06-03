@@ -35,13 +35,13 @@ config.h to the Vala program. Finally, some additional rule files allow
 the building of a Debian package, the last step to make the program
 available to final users in a convenient way.
 
-Meiga has been sponsored by Igalia as part of its hackfest program. The
-hackfest program is an effort to encourage Igalia staff to take part in
-free software projects and communities.
-
 You might also be interested in reading the following files:
 
 - INSTALL: Compilation instructions.
 - AUTHORS: List of main authors and contributors.
 - MAINTAINTERS: List of people currently in charge of the project.
 - COPYING: License text.
+
+More info in the project web:
+
+http://meiga.igalia.com

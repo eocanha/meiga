@@ -8,7 +8,7 @@
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
-  <property name="default_width">250</property>
+  <property name="default_width">300</property>
   <property name="default_height">300</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
@@ -468,6 +468,8 @@
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
+  <property name="default_width">250</property>
+  <property name="default_height">300</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
   <property name="icon_name"></property>
@@ -543,6 +545,8 @@
 	      <property name="right_margin">0</property>
 	      <property name="indent">0</property>
 	      <property name="text" translatable="yes">Meiga - Copyright (C) 2009 Igalia, S.L.
+
+http://meiga.igalia.com
 
 This program comes with ABSOLUTELY NO WARRANTY.
 Licensed under GNU GPL 2.0. This is free software, and you are welcome to redistribute it under certain conditions.
