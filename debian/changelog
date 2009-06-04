@@ -1,3 +1,9 @@
+meiga (0.1.2-1) unstable; urgency=low
+
+  * Minor packaging fixes
+
+ -- Enrique Ocaña González <eocanha@igalia.com>  Fri, 05 May 2009 01:30:00 +0200
+
 meiga (0.1.0-1) unstable; urgency=low
 
   * Initial release
