@@ -185,9 +185,13 @@ public class MeigaServer : GLib.Object {
 	  // unref a normal string. AN unmanaged string shoyuld be used (string *)
 	  msg.set_response(mime,Soup.MemoryUse.COPY,(string *)f.get_contents(),f.get_length());
 	} else if (FileUtils.test(real_path,FileTest.IS_DIR)) {
+	  List<string> files=new List<string>();
 	  Dir d=null;
 	  try {
 		d=Dir.open(real_path,0);
+		for (string f=d.read_name(); f!=null; f=d.read_name()) {
+		  files.insert_sorted(f,GLib.strcmp);
+		}
 	  } catch (FileError e) {
 		serve_file_callback_default(server,msg,path,query,client);
 		return;
@@ -200,7 +204,7 @@ public class MeigaServer : GLib.Object {
 	  response+="Index of "+path+"\n";
 	  response+="<ul>\n";
 
-	  for (string f=d.read_name(); f!=null; f=d.read_name()) {
+	  foreach (string f in files) {
 		response+="<li><a href=\""+path+"/"+f+"\">"+f+"</a></li>";
 	  }
 

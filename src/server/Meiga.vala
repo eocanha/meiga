@@ -49,8 +49,10 @@ public class Meiga : GLib.Object {
 
   public string get_paths_as_string() {
 	HashTable<string,string> t=server.get_paths();
+	List<weak string> keys=t.get_keys().copy();
+	keys.sort(GLib.strcmp);
 	string result="";
-	foreach (string k in t.get_keys()) {
+	foreach (weak string k in keys) {
 	  string v=t.lookup(k);
 	  result+=k+"\t"+v+"\n";
 	}
