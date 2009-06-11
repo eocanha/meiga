@@ -29,8 +29,13 @@ public class Net : GLib.Object {
 
   public int port { get; set; default=8001; }
   public string url { get; private set; default=null; }
+  public Log logger { private get; set; default=null; }
 
   public Net() {
+  }
+
+  private void log(string msg) {
+	if (logger!=null) logger.log(msg);
   }
 
   public void forward_start() {
@@ -59,22 +64,22 @@ public class Net : GLib.Object {
 
 	if (result == 0 && strcmp(txtout,"(null)")!=0) {
 	  external_ip = txtout;
-	  stderr.printf("Found external IP: %s\n", external_ip);
+	  log("Found external IP: %s".printf(external_ip));
 	  GLib.Process.spawn_command_line_sync("fwupnp -q %d".printf(port),
 										   out txtout,
 										   out txterr,
 										   out result);
 	  if (result != 0) {
-		stderr.printf("Creating redirection\n");
+		log("Creating redirection");
 		GLib.Process.spawn_command_line_sync("fwupnp -r %d %d %s %s %d".printf(port,port,internal_ip,"Meiga",0),
 											 out txtout,
 											 out txterr,
 											 out result);
 		if (result == 0) {
-		  stderr.printf("Redirection performed\n");
+		  log("Redirection performed");
 		}
 	  } else {
-		stderr.printf("Redirection already present\n");
+		log("Redirection already present");
 	  }
 
 	}
@@ -93,7 +98,7 @@ public class Net : GLib.Object {
 										   out txterr,
 										   out result);
 	  if (result == 0) {
-		stderr.printf("Redirection removed\n");
+		log("Redirection removed");
 	  }
 	}
   }

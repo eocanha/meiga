@@ -35,18 +35,26 @@ public class MeigaServer : GLib.Object {
   private GLib.HashTable<string,string> mimetypes;
   private Meiga exposed;
   private Net net;
+  public Log logger { public get; private set; default=null; }
 
   public MeigaServer() {
   }
 
+  private void log(string msg) {
+	if (logger!=null) logger.log(msg);
+  }
+
   public void initialize() {
+	logger = new Log();
+
 	port=8001;
 
 	net = new Net();
+	net.logger = logger;
 	net.port = port;
 	net.forward_start();
 
-	stderr.printf("External URL: %s\n", net.url);
+	log("External URL: %s".printf(net.url));
 
 	initialize_mimetypes();
 	path_mapping=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);
@@ -80,14 +88,14 @@ public class MeigaServer : GLib.Object {
 		}
 	  }
 	} catch (FileError e) {
-	  stderr.printf("Error opening file %s\n",MIME_TYPES_FILE);
+	  log("Error opening file %s".printf(MIME_TYPES_FILE));
 	}
   }
 
   private void initialize_dbus() {
 	try {
 	  this.exposed=new Meiga(this);
-	  this.exposed.has_changed += (o) => { stderr.printf("Has changed\n"); };
+	  this.exposed.has_changed += (o) => { log("Has changed"); };
 
 	  var conn = DBus.Bus.get(DBus.BusType.SESSION);
 	  dynamic DBus.Object bus = conn.get_object(
@@ -96,13 +104,13 @@ public class MeigaServer : GLib.Object {
 												"org.freedesktop.DBus");
 	  uint request_name_result = bus.request_name ("com.igalia.Meiga", (uint) 0);
 	  if (request_name_result == DBus.RequestNameReply.PRIMARY_OWNER) {
-		stderr.printf("Registering DBUS service\n");
+		log("Registering DBUS service");
 		conn.register_object ("/com/igalia/Meiga", (GLib.Object)this.exposed);
 	  } else {
-		stderr.printf("Not registering DBUS service: not primary owner\n");
+		log("Not registering DBUS service: not primary owner");
 	  }
 	} catch (Error e) {
-	  stderr.printf("Error registering DBUS server: %s\n",e.message);
+	  log("Error registering DBUS server: %s".printf(e.message));
 	}
   }
 
@@ -122,12 +130,12 @@ public class MeigaServer : GLib.Object {
   public void register_path(string real_path, string logical_path) {
 	if (path_mapping.lookup(logical_path)!=null) return;
 	path_mapping.insert(logical_path,real_path);
-	stderr.printf("Registered logical path '%s' to real path '%s'\n",logical_path,real_path);
+	log("Registered logical path '%s' to real path '%s'".printf(logical_path,real_path));
 	server.add_handler(logical_path,serve_file_callback);
   }
 
   public void unregister_path(string logical_path) {
-	stderr.printf("Unregistered logical path '%s'\n",logical_path);
+	log("Unregistered logical path '%s'".printf(logical_path));
 	path_mapping.remove(logical_path);
   }
 
@@ -156,7 +164,7 @@ public class MeigaServer : GLib.Object {
 	  real_path+="/"+path_tokens[i];
 	}
 
-	stderr.printf("Request: %s --> Serving: %s\n",path,real_path);
+	log("Request: %s --> Serving: %s".printf(path,real_path));
 
 	if (real_path==null) {
 	  serve_file_callback_default(server,msg,path,query,client);
@@ -242,7 +250,7 @@ public class MeigaServer : GLib.Object {
 	  real_path+="/"+path_tokens[i];
 	}
 
-	stderr.printf("Request: %s --> Serving (RSS mode): %s\n",path,real_path);
+	log("Request: %s --> Serving (RSS mode): %s".printf(path,real_path));
 
 	Soup.URI uri=msg.get_uri().copy();
 	string base_url="%s://%s:%u".printf(uri.scheme,uri.host,uri.port);
@@ -292,7 +300,7 @@ public class MeigaServer : GLib.Object {
   public void serve_error(Soup.Message msg, string path, Soup.KnownStatusCode error, string error_message) {
 	msg.set_status(error);
 	msg.set_response("text/html",Soup.MemoryUse.COPY,error_message,error_message.len());
-	stderr.printf("%d - %s: %s\n",error,error_message,path);
+	log("%d - %s: %s".printf(error,error_message,path));
   }
 
   private string? extension_from_path(string path) {

@@ -19,6 +19,7 @@ meigaserver_VALASOURCES = \
 	Meiga.vala \
 	Rss.vala \
 	Net.vala \
+	Log.vala \
 	$(NULL)
 
 meigaserver_SOURCES = \
