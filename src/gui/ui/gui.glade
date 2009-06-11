@@ -174,7 +174,7 @@
       <property name="use_underline">True</property>
 
       <child>
-	<widget class="GtkMenu" id="filemenu_menu">
+	<widget class="GtkMenu" id="filemenumenu">
 
 	  <child>
 	    <widget class="GtkImageMenuItem" id="quit">
@@ -196,7 +196,7 @@
       <property name="use_underline">True</property>
 
       <child>
-	<widget class="GtkMenu" id="sharemenu_menu">
+	<widget class="GtkMenu" id="sharemenumenu">
 
 	  <child>
 	    <widget class="GtkImageMenuItem" id="add">
@@ -570,7 +570,7 @@ http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</property>
 <widget class="GtkMenu" id="systraymenu">
 
   <child>
-    <widget class="GtkMenuItem" id="restore">
+    <widget class="GtkMenuItem" id="tray_restore">
       <property name="visible">True</property>
       <property name="label" translatable="yes">_Restore</property>
       <property name="use_underline">True</property>
@@ -579,7 +579,7 @@ http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</property>
   </child>
 
   <child>
-    <widget class="GtkImageMenuItem" id="copy_invitation">
+    <widget class="GtkImageMenuItem" id="tray_copy_invitation">
       <property name="visible">True</property>
       <property name="tooltip" translatable="yes">Copy URL to paste as invitation</property>
       <property name="label" translatable="yes">_Copy invitation</property>
@@ -608,7 +608,7 @@ http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</property>
   </child>
 
   <child>
-    <widget class="GtkImageMenuItem" id="quit">
+    <widget class="GtkImageMenuItem" id="tray_quit">
       <property name="visible">True</property>
       <property name="label">gtk-quit</property>
       <property name="use_stock">True</property>

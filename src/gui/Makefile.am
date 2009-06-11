@@ -7,7 +7,6 @@ AM_CPPFLAGS = \
 	$(gobject_CFLAGS) \
 	$(gtk_CFLAGS) \
 	$(dbusglib_CFLAGS) \
-	$(libglade_CFLAGS) \
 	$(gmodule_CFLAGS) \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
@@ -27,7 +26,7 @@ meiga_SOURCES = \
 
 meiga.vala.stamp: $(meiga_VALASOURCES)
 	$(VALAC) -C \
-	--thread --pkg=gtk+-2.0 --pkg=libglade-2.0 --pkg=gmodule-2.0 --pkg=dbus-glib-1 \
+	--thread --pkg=gtk+-2.0 --pkg=gmodule-2.0 --pkg=dbus-glib-1 \
 	--vapidir=. --pkg=config --basedir $(top_srcdir)/src/gui $^
 	touch $@
 
@@ -37,7 +36,6 @@ meiga_LDADD = \
 	$(gobject_LIBS) \
 	$(gtk_LIBS) \
 	$(dbusglib_LIBS) \
-	$(libglade_LIBS) \
 	$(gmodule_LIBS) \
 	$(NULL)
 
@@ -51,9 +49,9 @@ meiga.desktop: Makefile meiga.desktop.in
 	$(edit) meiga.desktop.in > meiga.desktop.tmp
 	mv meiga.desktop.tmp meiga.desktop
 
-meigaextradir = ${datadir}/meiga/glade
+meigaextradir = ${datadir}/meiga/ui
 meigaextra_DATA = \
-        glade/gui.glade \
+        ui/gui.ui \
 	pixmaps/meiga-16x16.png \
         $(NULL)
 

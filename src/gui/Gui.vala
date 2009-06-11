@@ -25,23 +25,22 @@
 using GLib;
 using Gtk;
 using Gdk;
-using Glade;
 using Config;
 
-const string GLADE_FILENAME = "gui.glade";
-const string GLADE_PATH = "glade:"+Config.DATADIR+"/meiga/glade";
+const string UI_FILENAME = "gui.ui";
+const string UI_PATH = "ui:"+Config.DATADIR+"/meiga/ui";
 
 public class Gui : GLib.Object {
 
   // Private attributes
-  private Glade.XML xml;
+  private Gtk.Builder builder;
   private Gtk.MenuShell menu;
   private Gtk.Menu systraymenu;
   private Gtk.Window top;
   private Gtk.Window adddialog;
   private Gtk.Window aboutdialog;
   private Gtk.StatusIcon systray;
-  private Gtk.MenuItem systraymenu_restore;
+  private Gtk.Action systraymenu_restore;
   private Gtk.TreeView files;
   private Gtk.Statusbar statusbar;
   private Gtk.FileChooserButton localdirectory;
@@ -173,21 +172,6 @@ public class Gui : GLib.Object {
   }
 
   // Private methods
-  [CCode (instance_pos = -1)]
-  private void connect_signals(
-							   string handler_name, GLib.Object object,
-							   string signal_name, string? signal_data,
-							   GLib.Object? connect_object, bool after) {
-    Module module = Module.open(null, ModuleFlags.BIND_LAZY);
-    void* sym;
-
-    if(!module.symbol(handler_name, out sym)) {
-      stdout.printf("Symbol not found: %s\n",handler_name);
-    } else {
-      GLib.Signal.connect(object, signal_name, (GLib.Callback) sym, this);
-    }
-  }
-
   private Gtk.MenuBar menushell_to_menubar(MenuShell menu) {
     Gtk.MenuBar menubar=new Gtk.MenuBar();
     weak List<Gtk.MenuItem> children=(List<Gtk.MenuItem>)menu.children;
@@ -225,34 +209,40 @@ public class Gui : GLib.Object {
   }
 
   private void gui_init() {
-    string[] path = GLADE_PATH.split(":",8);
+    string[] path = UI_PATH.split(":",8);
 	string iconfile = null;
+	bool gui_loaded = false;
 
-    for (int i=0; path[i]!=null && xml==null; i++) {
-      string filename = path[i] + "/" + GLADE_FILENAME;
-      xml = new Glade.XML(filename, null, null);
-	  if (xml != null) {
+	builder = new Builder ();
+    for (int i=0; path[i]!=null; i++) {
+      string filename = path[i] + "/" + UI_FILENAME;
+	  try {
+		builder.add_from_file (filename);
+		gui_loaded = true;
 		iconfile = path[i] + "/" + "meiga-16x16.png";
+		break;
+	  } catch (Error e) {
+		continue;
 	  }
     }
-    if (xml==null) {
-      stderr.printf("Glade file not found\n");
+    if (!gui_loaded) {
+      stderr.printf("Could not load UI file %s\n", UI_FILENAME);
       quit();
     }
 
-    xml.signal_autoconnect_full(connect_signals);
+    builder.connect_signals(this);
 
-    systraymenu = (Gtk.Menu)xml.get_widget("systraymenu");
-    systraymenu_restore = (Gtk.MenuItem)xml.get_widget("restore");
-    top = (Gtk.Window)xml.get_widget("top");
-    adddialog = (Gtk.Window)xml.get_widget("adddialog");
-    aboutdialog = (Gtk.Window)xml.get_widget("aboutdialog");
-    files = (Gtk.TreeView)xml.get_widget("files");
-	statusbar = (Gtk.Statusbar)xml.get_widget("statusbar");
-    localdirectory = (Gtk.FileChooserButton)xml.get_widget("localdirectory");
-    shareas = (Gtk.Entry)xml.get_widget("shareas");
+    systraymenu = (Gtk.Menu)builder.get_object("systraymenu");
+    systraymenu_restore = (Gtk.Action)builder.get_object("tray_restore");
+    top = (Gtk.Window)builder.get_object("top");
+    adddialog = (Gtk.Window)builder.get_object("adddialog");
+    aboutdialog = (Gtk.Window)builder.get_object("aboutdialog");
+    files = (Gtk.TreeView)builder.get_object("files");
+	statusbar = (Gtk.Statusbar)builder.get_object("statusbar");
+    localdirectory = (Gtk.FileChooserButton)builder.get_object("localdirectory");
+    shareas = (Gtk.Entry)builder.get_object("shareas");
 
-    Gtk.VBox topvbox=(Gtk.VBox)xml.get_widget("topvbox");
+    Gtk.VBox topvbox=(Gtk.VBox)builder.get_object("topvbox");
 
 	try {
 	  top.set_icon_from_file(iconfile);
@@ -262,7 +252,7 @@ public class Gui : GLib.Object {
 	  stderr.printf("Icon file not found");
 	}
 
-    menu=menushell_to_menubar((Gtk.Menu)xml.get_widget("menu"));
+    menu=menushell_to_menubar((Gtk.Menu)builder.get_object("menu"));
     menu.set("visible",true);
     topvbox.pack_start(menu,false,false,0);
 
