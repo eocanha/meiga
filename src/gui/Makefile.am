@@ -49,6 +49,10 @@ meiga.desktop: Makefile meiga.desktop.in
 	$(edit) meiga.desktop.in > meiga.desktop.tmp
 	mv meiga.desktop.tmp meiga.desktop
 
+ui/gui.ui: ui/gui.glade
+	rm -f gui.ui
+	./ui/gtk-builder-convert.py ui/gui.glade ui/gui.ui
+
 meigaextradir = ${datadir}/meiga/ui
 meigaextra_DATA = \
         ui/gui.ui \
