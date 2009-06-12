@@ -45,7 +45,7 @@ public class Gui : GLib.Object {
   private Gtk.Statusbar statusbar;
   private Gtk.FileChooserButton localdirectory;
   private Gtk.Entry shareas;
-
+  private Gtk.TextView logtext;
   private Gtk.Clipboard clipboard;
 
   private Gtk.ListStore model;
@@ -53,6 +53,8 @@ public class Gui : GLib.Object {
   private string public_url;
   private string preferred_share;
   private string invitation;
+  private uint lastlog;
+  private uint on_update_log_source_id;
 
   private dynamic DBus.Object _remote = null;
   private dynamic DBus.Object remote {
@@ -107,7 +109,7 @@ public class Gui : GLib.Object {
       try {
         remote.unregister_path(share);
       } catch (Error e) {
-        stderr.printf("Remote error deleting share '%s'\n", share);
+        log("Remote error deleting share '%s'\n".printf(share));
       }
     }
     update_model();
@@ -144,7 +146,7 @@ public class Gui : GLib.Object {
       try {
         remote.register_path(local_file, shared_as);
       } catch (Error e) {
-        stderr.printf("Remote error sharing '%s' as '%s'\n", local_file, shared_as);
+        log("Remote error sharing '%s' as '%s'\n".printf(local_file, shared_as));
       }
     }
 
@@ -186,6 +188,14 @@ public class Gui : GLib.Object {
     return menubar;
   }
 
+  private void log(string msg) {
+	if (logtext!=null) {
+	  logtext.get_buffer().insert_at_cursor(msg, (int)msg.length);
+	} else {
+	  stderr.printf("%s",msg);
+	}
+  }
+
   private void dbus_init() {
     try {
       var conn = DBus.Bus.get(DBus.BusType.SESSION);
@@ -194,7 +204,7 @@ public class Gui : GLib.Object {
 								 "/com/igalia/Meiga",
 								 "com.igalia.Meiga");
     } catch (Error e) {
-	  stderr.printf("Error looking for DBUS server: %s\n",e.message);
+	  log("Error looking for DBUS server: %s\n".printf(e.message));
     }
 
 	try {
@@ -203,7 +213,7 @@ public class Gui : GLib.Object {
 		public_url = _remote.get_public_url();
 	  }
 	} catch (Error e) {
-	  stderr.printf("Error looking for DBUS server: remote object not found\n");
+	  log("Error looking for DBUS server: remote object not found\n");
 	  _remote = null;
 	}
   }
@@ -226,7 +236,7 @@ public class Gui : GLib.Object {
 	  }
     }
     if (!gui_loaded) {
-      stderr.printf("Could not load UI file %s\n", UI_FILENAME);
+      log("Could not load UI file %s\n".printf(UI_FILENAME));
       quit();
     }
 
@@ -241,6 +251,7 @@ public class Gui : GLib.Object {
 	statusbar = (Gtk.Statusbar)builder.get_object("statusbar");
     localdirectory = (Gtk.FileChooserButton)builder.get_object("localdirectory");
     shareas = (Gtk.Entry)builder.get_object("shareas");
+	logtext = (Gtk.TextView)builder.get_object("logtext");
 
     Gtk.VBox topvbox=(Gtk.VBox)builder.get_object("topvbox");
 
@@ -249,12 +260,13 @@ public class Gui : GLib.Object {
 	  adddialog.set_icon_from_file(iconfile);
 	  aboutdialog.set_icon_from_file(iconfile);
 	} catch (Error e) {
-	  stderr.printf("Icon file not found");
+	  log("Icon file not found\n");
 	}
 
     menu=menushell_to_menubar((Gtk.Menu)builder.get_object("menu"));
     menu.set("visible",true);
     topvbox.pack_start(menu,false,false,0);
+	topvbox.reorder_child(menu,0);
 
     model = new Gtk.ListStore(2, typeof(string), typeof(string));
     files.set_model(model);
@@ -267,6 +279,7 @@ public class Gui : GLib.Object {
     files.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
 
 	public_url = "";
+	lastlog = 0;
 	clipboard = Gtk.Clipboard.get(SELECTION_CLIPBOARD);
 
     update_model();
@@ -279,6 +292,9 @@ public class Gui : GLib.Object {
     // App is finally shown
     systray.set("visible",true);
 	on_restore(top);
+
+	// Refresh log every 3 seconds
+	on_update_log_source_id = Timeout.add(3000, on_update_log);
   }
 
   private void update_model_from_string(Gtk.ListStore model, string string_model) {
@@ -301,9 +317,41 @@ public class Gui : GLib.Object {
 
   private void update_model() {
     string_model = null;
-    if (remote != null) string_model = remote.get_paths_as_string();
+    if (remote != null) {
+      try {
+		string_model = remote.get_paths_as_string();
+      } catch (Error e) {
+        log("Remote error getting paths\n");
+      }
+	}
     if (string_model == null) string_model = "";
     update_model_from_string(model, string_model);
+  }
+
+  private void update_log() {
+	string new_log_lines = null;
+    if (remote != null) {
+      try {
+		new_log_lines = remote.get_pending_log(lastlog);
+      } catch (Error e) {
+        log("Remote error getting log lines\n");
+      }
+	}
+    if (new_log_lines == null) new_log_lines = "";
+
+	// Count the number of new lines
+	uint j = 0;
+    for (uint i = 0; new_log_lines[i]!='\0'; i++) {
+	  if (new_log_lines[i]=='\n') j++;
+	}
+
+	logtext.get_buffer().insert_at_cursor(new_log_lines, (int)new_log_lines.length);
+	lastlog += j;
+  }
+
+  private bool on_update_log() {
+    update_log();
+	return true;
   }
 
   private void update_statusbar() {
@@ -318,7 +366,7 @@ public class Gui : GLib.Object {
 		statusbar.pop(0);
 		statusbar.push(0, invitation);
       } catch (Error e) {
-        stderr.printf("Remote error getting public url\n");
+        log("Remote error getting public url\n");
       }
 
 	}
@@ -343,13 +391,15 @@ public class Gui : GLib.Object {
   }
 
   public void quit() {
+	Source.remove(on_update_log_source_id);
+
     Gtk.main_quit();
 
     if (remote != null) {
       try {
         remote.shutdown();
       } catch (Error e) {
-        stderr.printf("Remote error shutting down server\n");
+        log("Remote error shutting down server\n");
       }
 	}
   }
