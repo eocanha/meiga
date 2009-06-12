@@ -28,6 +28,8 @@ public class Log : GLib.Object {
   private uint history_offset;
   private uint purge_trigger;
 
+  public signal void changed();
+
   /** Max number of log lines to be recorded */
   public uint history_limit { get; set; default=1024; }
 
@@ -58,6 +60,9 @@ public class Log : GLib.Object {
 	  lines.remove_range(0,lines.len-history_limit);
 	  purge_trigger = 0;
 	}
+
+	// Notify observers
+	changed();
   }
 
   /**

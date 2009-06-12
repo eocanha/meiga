@@ -95,7 +95,6 @@ public class MeigaServer : GLib.Object {
   private void initialize_dbus() {
 	try {
 	  this.exposed=new Meiga(this);
-	  this.exposed.has_changed += (o) => { log("Has changed"); };
 
 	  var conn = DBus.Bus.get(DBus.BusType.SESSION);
 	  dynamic DBus.Object bus = conn.get_object(

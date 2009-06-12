@@ -43,16 +43,6 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkToolButton" id="trefresh">
-                    <property name="visible">True</property>
-                    <property name="stock_id">gtk-refresh</property>
-                    <signal name="clicked" handler="gui_on_refresh"/>
-                  </widget>
-                  <packing>
-                    <property name="expand">False</property>
-                  </packing>
-                </child>
-                <child>
                   <widget class="GtkToolButton" id="tcopy_invitation">
                     <property name="visible">True</property>
                     <property name="stock_id">gtk-copy</property>
@@ -196,15 +186,6 @@
                 <property name="use_underline">True</property>
                 <property name="use_stock">True</property>
                 <signal name="activate" handler="gui_on_remove"/>
-              </widget>
-            </child>
-            <child>
-              <widget class="GtkImageMenuItem" id="refresh">
-                <property name="visible">True</property>
-                <property name="label">gtk-refresh</property>
-                <property name="use_underline">True</property>
-                <property name="use_stock">True</property>
-                <signal name="activate" handler="gui_on_refresh"/>
               </widget>
             </child>
             <child>

@@ -24,23 +24,28 @@
 
 using GLib;
 
-[DBus (name = "com.igalia.Meiga", signals="has_changed")]
+[DBus (name = "com.igalia.Meiga", signals="model_changed, log_changed")]
 public class Meiga : GLib.Object {
   private MeigaServer server;
-  public signal void has_changed();
+  public signal void model_changed();
+  public signal void log_changed();
 
   public Meiga(MeigaServer server) {
 	this.server = server;
+	if (this.server.logger!=null) {
+	  // Forward logger changed signal to our remote observers
+	  this.server.logger.changed += (o) => { this.log_changed(); };
+	}
   }
 
   public void register_path(string real_path, string logical_path) {
 	server.register_path(real_path,logical_path);
-	has_changed();
+	model_changed();
   }
 
   public void unregister_path(string logical_path) {
 	server.unregister_path(logical_path);
-	has_changed();
+	model_changed();
   }
 
   public HashTable<string,string> get_paths() {

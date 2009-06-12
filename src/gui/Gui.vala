@@ -54,7 +54,6 @@ public class Gui : GLib.Object {
   private string preferred_share;
   private string invitation;
   private uint lastlog;
-  private uint on_update_log_source_id;
 
   private dynamic DBus.Object _remote = null;
   private dynamic DBus.Object remote {
@@ -97,12 +96,6 @@ public class Gui : GLib.Object {
   }
 
   [CCode (instance_pos = -1)]
-  public void on_refresh(Gtk.Widget widget) {
-    update_model();
-	update_statusbar();
-  }
-
-  [CCode (instance_pos = -1)]
   public void on_remove(Gtk.Widget widget) {
     if (remote == null) return;
     foreach (string share in get_selected_shares()) {
@@ -112,8 +105,6 @@ public class Gui : GLib.Object {
         log("Remote error deleting share '%s'\n".printf(share));
       }
     }
-    update_model();
-	update_statusbar();
   }
 
   [CCode (instance_pos = -1)]
@@ -154,8 +145,6 @@ public class Gui : GLib.Object {
     shareas.set_text("");
 
     adddialog.set("visible", false);
-    update_model();
-	update_statusbar();
   }
 
   [CCode (instance_pos = -1)]
@@ -216,6 +205,17 @@ public class Gui : GLib.Object {
 	  log("Error looking for DBUS server: remote object not found\n");
 	  _remote = null;
 	}
+
+	// Attach to remote signals
+	if (_remote != null) {
+	  _remote.ModelChanged += this.on_remote_model_changed;
+	  _remote.LogChanged += this.on_remote_log_changed;
+	}
+  }
+
+  public void on_remote_model_changed() {
+	update_model();
+	update_statusbar();
   }
 
   private void gui_init() {
@@ -283,7 +283,7 @@ public class Gui : GLib.Object {
 	clipboard = Gtk.Clipboard.get(SELECTION_CLIPBOARD);
 
     update_model();
-	update_statusbar();
+	update_log();
 
     systray = new Gtk.StatusIcon.from_file(iconfile);
     systray.activate += on_systray;
@@ -292,9 +292,6 @@ public class Gui : GLib.Object {
     // App is finally shown
     systray.set("visible",true);
 	on_restore(top);
-
-	// Refresh log every 3 seconds
-	on_update_log_source_id = Timeout.add(3000, on_update_log);
   }
 
   private void update_model_from_string(Gtk.ListStore model, string string_model) {
@@ -349,9 +346,8 @@ public class Gui : GLib.Object {
 	lastlog += j;
   }
 
-  private bool on_update_log() {
+  public void on_remote_log_changed() {
     update_log();
-	return true;
   }
 
   private void update_statusbar() {
@@ -391,8 +387,6 @@ public class Gui : GLib.Object {
   }
 
   public void quit() {
-	Source.remove(on_update_log_source_id);
-
     Gtk.main_quit();
 
     if (remote != null) {
