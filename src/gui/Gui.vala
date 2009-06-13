@@ -131,7 +131,17 @@ public class Gui : GLib.Object {
     string local_file = localdirectory.get_filename();
     string shared_as = shareas.get_text();
 
-    if (shared_as != null && shared_as[0] != '/') shared_as = "/" + shared_as;
+    if (shared_as != null) {
+	  if (shared_as[0] != '/') shared_as = "/" + shared_as;
+	  if (strcmp(shared_as.replace("/",""),"")==0) {
+		error_dialog("Empty share name not allowed");
+		return;
+	  }
+	  if (strcmp(shared_as,"/rss")==0) {
+		error_dialog("Share name not allowed");
+		return;
+	  }
+	}
 
     if (remote != null) {
       try {
@@ -175,6 +185,18 @@ public class Gui : GLib.Object {
       menubar.append(menuitem);
     }
     return menubar;
+  }
+
+  private void error_dialog(string msg) {
+	Gtk.MessageDialog d = new Gtk.MessageDialog(
+												adddialog,
+												Gtk.DialogFlags.DESTROY_WITH_PARENT,
+												Gtk.MessageType.ERROR,
+												Gtk.ButtonsType.CLOSE,
+												"%s",
+												msg);
+	d.run();
+	d.destroy();
   }
 
   private void log(string msg) {
