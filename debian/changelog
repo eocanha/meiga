@@ -1,3 +1,14 @@
+meiga (0.2.0-1) unstable; urgency=low
+
+  * File and share ordering
+  * Port from libglade to GtkBuilder
+  * Log showing in gui
+  * Automatic refresh
+  * Fixed bug: forbid empty or /rss share names
+  * Spanish and galician translations
+
+ -- Enrique Ocaña González <eocanha@igalia.com>  Mon, 15 Jun 2009 01:15:00 +0200
+
 meiga (0.1.2-1) unstable; urgency=low
 
   * Minor packaging fixes
