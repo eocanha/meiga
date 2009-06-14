@@ -1,6 +1,9 @@
 NULL = 
 
 AM_CPPFLAGS = \
+	-DDATADIR=\""$(datadir)"\" \
+	-DGETTEXT_PACKAGE=\""$(GETTEXT_PACKAGE)"\" \
+	-DLOCALEDIR=\""$(localedir)"\" \
 	$(gthread_CFLAGS) \
 	$(glib_CFLAGS) \
 	$(gobject_CFLAGS) \
@@ -30,7 +33,7 @@ meigaserver_SOURCES = \
 meiga.vala.stamp: $(meigaserver_VALASOURCES)
 	$(VALAC) -C \
 	--thread --pkg=libsoup-2.4 --pkg=gtk+-2.0 --pkg=dbus-glib-1 \
-	--basedir $(top_srcdir)/src/server $^
+	--vapidir=.. --pkg=config --basedir $(top_srcdir)/src/server $^
 	touch $@
 
 meigaserver_LDADD = \

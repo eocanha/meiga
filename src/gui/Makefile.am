@@ -2,6 +2,8 @@ NULL =
 
 AM_CPPFLAGS = \
 	-DDATADIR=\""$(datadir)"\" \
+	-DGETTEXT_PACKAGE=\""$(GETTEXT_PACKAGE)"\" \
+	-DLOCALEDIR=\""$(localedir)"\" \
 	$(gthread_CFLAGS) \
 	$(glib_CFLAGS) \
 	$(gobject_CFLAGS) \
@@ -27,7 +29,7 @@ meiga_SOURCES = \
 meiga.vala.stamp: $(meiga_VALASOURCES)
 	$(VALAC) -C \
 	--thread --pkg=gtk+-2.0 --pkg=gmodule-2.0 --pkg=dbus-glib-1 \
-	--vapidir=. --pkg=config --basedir $(top_srcdir)/src/gui $^
+	--vapidir=.. --pkg=config --basedir $(top_srcdir)/src/gui $^
 	touch $@
 
 meiga_LDADD = \

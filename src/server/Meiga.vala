@@ -78,7 +78,7 @@ public class Meiga : GLib.Object {
 	if (server.logger!=null) {
 	  result = server.logger.get_pending(start);
 	} else if (start==0) {
-	  result = "--- No log available ---";
+	  result = _("--- No log available ---");
 	} else {
 	  result = "";
 	}

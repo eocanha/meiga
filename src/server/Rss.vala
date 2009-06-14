@@ -26,11 +26,11 @@ using GLib;
 
 public class RssNode : GLib.Object {
 
-  public string title { get; set; default="No title"; }
+  public string title { get; set; default=_("No title"); }
   public string link { get; set; default=""; }
   public Time time { get; set; }
-  public string description { get; set; default="No description"; }
-  public string content { get; set; default="No content"; }
+  public string description { get; set; default=_("No description"); }
+  public string content { get; set; default=_("No content"); }
 
   public RssNode() {
 	this.time=Time();
@@ -51,12 +51,12 @@ public class RssNode : GLib.Object {
 
 public class RssFeed : GLib.Object {
 
-  public string title { get; set; default="No title"; }
+  public string title { get; set; default=_("No title"); }
   public string link { get; set; default=""; }
-  public string description { get; set; default="No description"; }
+  public string description { get; set; default=_("No description"); }
   public Time time { get; set; }
   public string generator { get; set; default="Meiga/0.1"; }
-  public string language { get; set; default="en"; }
+  public string language { get; set; default=_("en"); }
 
   // It segfaults if defined as a property
   public List<RssNode> nodes;
@@ -147,7 +147,7 @@ public class RssFeed : GLib.Object {
 			MappedFile f=new MappedFile(path+"/"+name,false);
 			node.description="%s\n".printf((string *)f.get_contents());
 		  } else {
-			node.description="<a href=\"%s\">Download %s</a>\n".printf(node.link,node.title);
+			node.description=_("<a href=\"%s\">Download %s</a>\n").printf(node.link,node.title);
 		  }
 		}
 		node.content=node.description;
@@ -156,7 +156,7 @@ public class RssFeed : GLib.Object {
 	  }
 
 	} catch (Error e) {
-	  stderr.printf("RssFeed.new_from_directory(): Error\n");
+	  stderr.printf(_("RssFeed.new_from_directory(): Error\n"));
 	}
 
 	return rss;

@@ -102,7 +102,7 @@ public class Gui : GLib.Object {
       try {
         remote.unregister_path(share);
       } catch (Error e) {
-        log("Remote error deleting share '%s'\n".printf(share));
+        log(_("Remote error deleting share '%s'\n").printf(share));
       }
     }
   }
@@ -134,11 +134,11 @@ public class Gui : GLib.Object {
     if (shared_as != null) {
 	  if (shared_as[0] != '/') shared_as = "/" + shared_as;
 	  if (strcmp(shared_as.replace("/",""),"")==0) {
-		error_dialog("Empty share name not allowed");
+		error_dialog(_("Empty share name not allowed"));
 		return;
 	  }
 	  if (strcmp(shared_as,"/rss")==0) {
-		error_dialog("Share name not allowed");
+		error_dialog(_("Share name not allowed"));
 		return;
 	  }
 	}
@@ -147,7 +147,7 @@ public class Gui : GLib.Object {
       try {
         remote.register_path(local_file, shared_as);
       } catch (Error e) {
-        log("Remote error sharing '%s' as '%s'\n".printf(local_file, shared_as));
+        log(_("Remote error sharing '%s' as '%s'\n").printf(local_file, shared_as));
       }
     }
 
@@ -215,7 +215,7 @@ public class Gui : GLib.Object {
 								 "/com/igalia/Meiga",
 								 "com.igalia.Meiga");
     } catch (Error e) {
-	  log("Error looking for DBUS server: %s\n".printf(e.message));
+	  log(_("Error looking for DBUS server: %s\n").printf(e.message));
     }
 
 	try {
@@ -224,7 +224,7 @@ public class Gui : GLib.Object {
 		public_url = _remote.get_public_url();
 	  }
 	} catch (Error e) {
-	  log("Error looking for DBUS server: remote object not found\n");
+	  log(_("Error looking for DBUS server: remote object not found\n"));
 	  _remote = null;
 	}
 
@@ -249,6 +249,7 @@ public class Gui : GLib.Object {
     for (int i=0; path[i]!=null; i++) {
       string filename = path[i] + "/" + UI_FILENAME;
 	  try {
+		builder.set_translation_domain("meiga");
 		builder.add_from_file (filename);
 		gui_loaded = true;
 		iconfile = path[i] + "/" + "meiga-16x16.png";
@@ -258,7 +259,7 @@ public class Gui : GLib.Object {
 	  }
     }
     if (!gui_loaded) {
-      log("Could not load UI file %s\n".printf(UI_FILENAME));
+      log(_("Could not load UI file %s\n").printf(UI_FILENAME));
       quit();
     }
 
@@ -282,7 +283,7 @@ public class Gui : GLib.Object {
 	  adddialog.set_icon_from_file(iconfile);
 	  aboutdialog.set_icon_from_file(iconfile);
 	} catch (Error e) {
-	  log("Icon file not found\n");
+	  log(_("Icon file not found\n"));
 	}
 
     menu=menushell_to_menubar((Gtk.Menu)builder.get_object("menu"));
@@ -293,10 +294,10 @@ public class Gui : GLib.Object {
     model = new Gtk.ListStore(2, typeof(string), typeof(string));
     files.set_model(model);
     files.insert_column_with_attributes (
-										 -1, "Local file", new CellRendererText (),
+										 -1, _("Local file"), new CellRendererText (),
 										 "text", 0, null);
     files.insert_column_with_attributes (
-										 -1, "Shared as", new CellRendererText (),
+										 -1, _("Shared as"), new CellRendererText (),
 										 "text", 1, null);
     files.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
 
@@ -340,7 +341,7 @@ public class Gui : GLib.Object {
       try {
 		string_model = remote.get_paths_as_string();
       } catch (Error e) {
-        log("Remote error getting paths\n");
+        log(_("Remote error getting paths\n"));
       }
 	}
     if (string_model == null) string_model = "";
@@ -353,7 +354,7 @@ public class Gui : GLib.Object {
       try {
 		new_log_lines = remote.get_pending_log(lastlog);
       } catch (Error e) {
-        log("Remote error getting log lines\n");
+        log(_("Remote error getting log lines\n"));
       }
 	}
     if (new_log_lines == null) new_log_lines = "";
@@ -384,7 +385,7 @@ public class Gui : GLib.Object {
 		statusbar.pop(0);
 		statusbar.push(0, invitation);
       } catch (Error e) {
-        log("Remote error getting public url\n");
+        log(_("Remote error getting public url\n"));
       }
 
 	}
@@ -415,12 +416,17 @@ public class Gui : GLib.Object {
       try {
         remote.shutdown();
       } catch (Error e) {
-        log("Remote error shutting down server\n");
+        log(_("Remote error shutting down server\n"));
       }
 	}
   }
 
   public static int main(string[] args) {
+	Intl.setlocale(LocaleCategory.ALL,"");
+	Intl.bindtextdomain(Config.GETTEXT_PACKAGE, Config.LOCALEDIR);
+	Intl.bind_textdomain_codeset(Config.GETTEXT_PACKAGE, "UTF-8");
+	Intl.textdomain(Config.GETTEXT_PACKAGE);
+
     Gui gui = new Gui();
     Gtk.init(ref args);
     gui.init();

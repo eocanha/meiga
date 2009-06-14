@@ -50,8 +50,10 @@ public class Net : GLib.Object {
 
 	if (result == 0) {
 	  internal_ip = txtout.chomp();
+	  log(_("Found internal IP: %s").printf(internal_ip));
 	} else {
 	  // Don't continue if there's no valid internal IP
+	  log(_("Local IP not found"));
 	  return;
 	}
 
@@ -64,24 +66,25 @@ public class Net : GLib.Object {
 
 	if (result == 0 && strcmp(txtout,"(null)")!=0) {
 	  external_ip = txtout;
-	  log("Found external IP: %s".printf(external_ip));
+	  log(_("Found external IP: %s").printf(external_ip));
 	  GLib.Process.spawn_command_line_sync("fwupnp -q %d".printf(port),
 										   out txtout,
 										   out txterr,
 										   out result);
 	  if (result != 0) {
-		log("Creating redirection");
+		log(_("Creating redirection"));
 		GLib.Process.spawn_command_line_sync("fwupnp -r %d %d %s %s %d".printf(port,port,internal_ip,"Meiga",0),
 											 out txtout,
 											 out txterr,
 											 out result);
 		if (result == 0) {
-		  log("Redirection performed");
+		  log(_("Redirection performed"));
 		}
 	  } else {
-		log("Redirection already present");
+		log(_("Redirection already present"));
 	  }
-
+	} else {
+	  log(_("External IP not found. Check that your router has UPnP enabled and working"));
 	}
 
 	url="http://%s:%d".printf(external_ip, port);
@@ -98,7 +101,9 @@ public class Net : GLib.Object {
 										   out txterr,
 										   out result);
 	  if (result == 0) {
-		log("Redirection removed");
+		log(_("Redirection removed"));
+	  } else {
+		log(_("Unable to remove redirection"));
 	  }
 	}
   }

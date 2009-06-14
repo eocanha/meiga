@@ -1,3 +1,10 @@
 [encoding: UTF-8]
 # List of source files which contain translatable strings.
-src/mainwindow.vala
+src/net/Test.vala
+src/server/Meiga.vala
+src/server/MeigaServer.vala
+src/server/Net.vala
+src/server/Log.vala
+src/server/Rss.vala
+src/gui/Gui.vala
+src/gui/ui/gui.glade

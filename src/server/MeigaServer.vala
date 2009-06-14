@@ -25,6 +25,7 @@
 using GLib;
 using Soup;
 using Gtk;
+using Config;
 
 public class MeigaServer : GLib.Object {
   const string MIME_TYPES_FILE="/etc/mime.types";
@@ -54,7 +55,7 @@ public class MeigaServer : GLib.Object {
 	net.port = port;
 	net.forward_start();
 
-	log("External URL: %s".printf(net.url));
+	log(_("External URL: %s").printf(net.url));
 
 	initialize_mimetypes();
 	path_mapping=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);
@@ -88,7 +89,7 @@ public class MeigaServer : GLib.Object {
 		}
 	  }
 	} catch (FileError e) {
-	  log("Error opening file %s".printf(MIME_TYPES_FILE));
+	  log(_("Error opening file %s").printf(MIME_TYPES_FILE));
 	}
   }
 
@@ -103,13 +104,13 @@ public class MeigaServer : GLib.Object {
 												"org.freedesktop.DBus");
 	  uint request_name_result = bus.request_name ("com.igalia.Meiga", (uint) 0);
 	  if (request_name_result == DBus.RequestNameReply.PRIMARY_OWNER) {
-		log("Registering DBUS service");
+		log(_("Registering DBUS service"));
 		conn.register_object ("/com/igalia/Meiga", (GLib.Object)this.exposed);
 	  } else {
-		log("Not registering DBUS service: not primary owner");
+		log(_("Not registering DBUS service: not primary owner"));
 	  }
 	} catch (Error e) {
-	  log("Error registering DBUS server: %s".printf(e.message));
+	  log(_("Error registering DBUS server: %s").printf(e.message));
 	}
   }
 
@@ -129,12 +130,12 @@ public class MeigaServer : GLib.Object {
   public void register_path(string real_path, string logical_path) {
 	if (path_mapping.lookup(logical_path)!=null) return;
 	path_mapping.insert(logical_path,real_path);
-	log("Registered logical path '%s' to real path '%s'".printf(logical_path,real_path));
+	log(_("Registered logical path '%s' to real path '%s'").printf(logical_path,real_path));
 	server.add_handler(logical_path,serve_file_callback);
   }
 
   public void unregister_path(string logical_path) {
-	log("Unregistered logical path '%s'".printf(logical_path));
+	log(_("Unregistered logical path '%s'").printf(logical_path));
 	path_mapping.remove(logical_path);
   }
 
@@ -163,7 +164,7 @@ public class MeigaServer : GLib.Object {
 	  real_path+="/"+path_tokens[i];
 	}
 
-	log("Request: %s --> Serving: %s".printf(path,real_path));
+	log(_("Request: %s --> Serving: %s").printf(path,real_path));
 
 	if (real_path==null) {
 	  serve_file_callback_default(server,msg,path,query,client);
@@ -208,7 +209,7 @@ public class MeigaServer : GLib.Object {
 
 	  string response="";
 	  response+="<html>\n<body>\n";
-	  response+="Index of "+path+"\n";
+	  response+=_("Index of %s\n").printf(path);
 	  response+="<ul>\n";
 
 	  foreach (string f in files) {
@@ -216,7 +217,9 @@ public class MeigaServer : GLib.Object {
 	  }
 
 	  response+="</ul>\n";
-	  response+="<br/><br/><i>Served by <a href=\"http://meiga.igalia.com\">Meiga</a></i>\n";
+	  response+="<br/><br/><i>";
+	  response+=_("Served by <a href=\"http://meiga.igalia.com\">Meiga</a>");
+	  response+="</i>\n";
 	  response+="</body>\n</html>\n";
 	  msg.set_response("text/html",Soup.MemoryUse.COPY,response,response.len());
 
@@ -249,7 +252,7 @@ public class MeigaServer : GLib.Object {
 	  real_path+="/"+path_tokens[i];
 	}
 
-	log("Request: %s --> Serving (RSS mode): %s".printf(path,real_path));
+	log(_("Request: %s --> Serving (RSS mode): %s").printf(path,real_path));
 
 	Soup.URI uri=msg.get_uri().copy();
 	string base_url="%s://%s:%u".printf(uri.scheme,uri.host,uri.port);
@@ -282,7 +285,10 @@ public class MeigaServer : GLib.Object {
 	  msg.set_response(mime,Soup.MemoryUse.COPY,(string *)f.get_contents(),f.get_length());
 	} else if (FileUtils.test(real_path,FileTest.IS_DIR)) {
 	  msg.set_status(Soup.KnownStatusCode.OK);
-	  RssFeed rss=RssFeed.new_from_directory(real_path, base_url+composed_path, composed_path, "Documents under "+composed_path);
+	  RssFeed rss=RssFeed.new_from_directory(real_path,
+											 base_url+composed_path,
+											 composed_path,
+											 _("Documents under %s").printf(composed_path));
 
 	  string response=rss.to_string();
 	  msg.set_response("application/rss+xml",Soup.MemoryUse.COPY,response,response.len());
@@ -293,7 +299,7 @@ public class MeigaServer : GLib.Object {
 
   public void serve_file_callback_default (Soup.Server server, Soup.Message msg, string path,
 										   GLib.HashTable? query, Soup.ClientContext? client) {
-	serve_error(msg,path,Soup.KnownStatusCode.NOT_FOUND,"File not found");
+	serve_error(msg,path,Soup.KnownStatusCode.NOT_FOUND,_("File not found"));
   }
 
   public void serve_error(Soup.Message msg, string path, Soup.KnownStatusCode error, string error_message) {
@@ -311,6 +317,11 @@ public class MeigaServer : GLib.Object {
   }
 
   public static void main(string[] args) {
+	Intl.setlocale(LocaleCategory.ALL,"");
+	Intl.bindtextdomain(Config.GETTEXT_PACKAGE, Config.LOCALEDIR);
+	Intl.bind_textdomain_codeset(Config.GETTEXT_PACKAGE, "UTF-8");
+	Intl.textdomain(Config.GETTEXT_PACKAGE);
+
 	MeigaServer s=new MeigaServer();
 	s.initialize();
 	Gtk.init(ref args);

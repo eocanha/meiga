@@ -1,1 +1,2 @@
-src/mainwindow.c
+src/gui/ui/gtk-builder-convert.py
+src/gui/ui/gui.ui
