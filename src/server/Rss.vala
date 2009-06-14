@@ -55,7 +55,7 @@ public class RssFeed : GLib.Object {
   public string link { get; set; default=""; }
   public string description { get; set; default=_("No description"); }
   public Time time { get; set; }
-  public string generator { get; set; default="Meiga/0.1"; }
+  public string generator { get; set; default="%s/%s".printf(Config.PACKAGE,Config.VERSION); }
   public string language { get; set; default=_("en"); }
 
   // It segfaults if defined as a property

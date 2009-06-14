@@ -209,6 +209,7 @@ public class MeigaServer : GLib.Object {
 
 	  string response="";
 	  response+="<html>\n<body>\n";
+	  response+="<!-- generator=\"%s/%s\" -->\n".printf(Config.PACKAGE,Config.VERSION);
 	  response+=_("Index of %s\n").printf(path);
 	  response+="<ul>\n";
 
@@ -218,7 +219,7 @@ public class MeigaServer : GLib.Object {
 
 	  response+="</ul>\n";
 	  response+="<br/><br/><i>";
-	  response+=_("Served by <a href=\"http://meiga.igalia.com\">Meiga</a>");
+	  response+=_("Served by <a href=\"http://meiga.igalia.com\">Meiga %s</a>").printf(Config.VERSION);
 	  response+="</i>\n";
 	  response+="</body>\n</html>\n";
 	  msg.set_response("text/html",Soup.MemoryUse.COPY,response,response.len());

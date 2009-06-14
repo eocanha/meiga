@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: meiga\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-14 21:12+0200\n"
+"POT-Creation-Date: 2009-06-15 00:46+0200\n"
 "PO-Revision-Date: 2009-06-14 21:12+0200\n"
 "Last-Translator: Enrique Ocaña González <eocanha@igalia.com>\n"
 "Language-Team: Galician <gl_ES@li.org>\n"
@@ -64,8 +64,9 @@ msgid "Index of %s\n"
 msgstr "Índice de %s\n"
 
 #: ../src/server/MeigaServer.vala:221
-msgid "Served by <a href=\"http://meiga.igalia.com\">Meiga</a>"
-msgstr "Servido por <a href=\"http://meiga.igalia.com\">Meiga</a>"
+#, c-format
+msgid "Served by <a href=\"http://meiga.igalia.com\">Meiga %s</a>"
+msgstr "Servido por <a href=\"http://meiga.igalia.com\">Meiga %s</a>"
 
 #: ../src/server/MeigaServer.vala:255
 #, c-format
@@ -77,8 +78,8 @@ msgstr "Petición: %s --> Servindo (modo RSS): %s"
 msgid "Documents under %s"
 msgstr "Documentos baixo %s"
 
-#: ../src/server/MeigaServer.vala:302
 #
+#: ../src/server/MeigaServer.vala:302
 msgid "File not found"
 msgstr "Arquivo non atopado"
 
