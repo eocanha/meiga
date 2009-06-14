@@ -201,7 +201,10 @@ public class Gui : GLib.Object {
 
   private void log(string msg) {
 	if (logtext!=null) {
-	  logtext.get_buffer().insert_at_cursor(msg, (int)msg.length);
+	  Gtk.TextBuffer b = logtext.get_buffer();
+	  Gtk.TextIter end;
+	  b.get_end_iter(out end);
+	  logtext.get_buffer().insert(end,msg, -1);
 	} else {
 	  stderr.printf("%s",msg);
 	}
@@ -365,7 +368,7 @@ public class Gui : GLib.Object {
 	  if (new_log_lines[i]=='\n') j++;
 	}
 
-	logtext.get_buffer().insert_at_cursor(new_log_lines, (int)new_log_lines.length);
+	log(new_log_lines);
 	lastlog += j;
   }
 

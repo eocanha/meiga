@@ -78,6 +78,7 @@ public class Log : GLib.Object {
 	  result.append(line);
 	  result.append("\n");
 	}
+	stderr.printf(result.str);
 	return result.str;
   }
 
