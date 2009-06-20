@@ -1,3 +1,11 @@
+meiga (0.2.0-2) UNRELEASED; urgency=low
+
+  * Add 'Homepage' field
+  * Change priority from 'extra' to 'optional'
+  * Change build-dependency from vala to valac
+
+ -- Alberto García <agarcia@igalia.com>  Sat, 20 Jun 2009 19:48:07 +0200
+
 meiga (0.2.0-1) unstable; urgency=low
 
   * File and share ordering
