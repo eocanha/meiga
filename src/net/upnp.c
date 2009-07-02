@@ -25,14 +25,16 @@
 #include <upnp.h>
 #include <libgupnp/gupnp-control-point.h>
 
-#define CALLBACK_TIMEOUT (5*1000)
+#define CALLBACK_TIMEOUT_NORMAL (5*1000)
+#define CALLBACK_TIMEOUT_FAST   (1*1000)
 
 #define ACTION_NULL       0
 #define ACTION_CONNECT    1
-#define ACTION_ASK_IP     2
-#define ACTION_REDIRECT   3
-#define ACTION_CHECK_MAP  4
-#define ACTION_DELETE     5
+#define ACTION_CONNECT2   2
+#define ACTION_ASK_IP     3
+#define ACTION_REDIRECT   4
+#define ACTION_CHECK_MAP  5
+#define ACTION_DELETE     6
 #define ACTION_RETURN     32
 
 /** PRIVATE DECLARATION **/
@@ -83,13 +85,24 @@ static void
 upnpstatecontext_push_timeout (UPNPStateContext *sc);
 
 static void
+upnpstatecontext_push_timeout_full (UPNPStateContext *sc,
+                                    GSourceFunc custom_callback_timeout,
+                                    guint time);
+
+static void
 upnpstatecontext_pop_timeout (UPNPStateContext *sc);
+
+static int
+upnpstatecontext_ontrigger_timeout (UPNPStateContext *sc);
 
 static void
 upnpstatecontext_process_next_action (UPNPStateContext *sc);
 
 static void
 action_connect (UPNPStateContext *sc);
+
+static void
+action_connect2 (UPNPStateContext *sc);
 
 static void
 action_ask_ip(UPNPStateContext *sc);
@@ -133,6 +146,9 @@ callback_action_delete (GUPnPServiceProxy *proxy,
 
 static int
 callback_timeout (gpointer userdata);
+
+static int
+callback_timeout_action_connect (gpointer userdata);
 
 /** IMPLEMENTATION **/
 
@@ -191,11 +207,21 @@ upnpstatecontext_free (UPNPStateContext *sc)
 static void
 upnpstatecontext_push_timeout (UPNPStateContext *sc)
 {
+  upnpstatecontext_push_timeout_full(sc,
+                                     callback_timeout,
+                                     CALLBACK_TIMEOUT_NORMAL);
+}
+
+static void
+upnpstatecontext_push_timeout_full (UPNPStateContext *sc,
+                                    GSourceFunc custom_callback_timeout,
+                                    guint time)
+{
   sc->cancel_timeout = FALSE;
   sc->cancel_callback = FALSE;
   (sc->num_running_timeouts)++;
-  g_timeout_add (CALLBACK_TIMEOUT,
-                 (GSourceFunc) callback_timeout,
+  g_timeout_add (time,
+                 (GSourceFunc) custom_callback_timeout,
                  (gpointer) sc);
 }
 
@@ -222,6 +248,10 @@ upnpstatecontext_process_next_action (UPNPStateContext *sc)
     switch (next_action) {
     case ACTION_CONNECT:
       action_connect(sc);
+      asynch = TRUE;
+      break;
+    case ACTION_CONNECT2:
+      action_connect2(sc);
       asynch = TRUE;
       break;
     case ACTION_ASK_IP:
@@ -274,9 +304,45 @@ action_connect (UPNPStateContext *sc)
 
     /* Enqueue the watchdog timeout that will disable the callback if it */
     /* lasts too much */
-    upnpstatecontext_push_timeout (sc);
+    upnpstatecontext_push_timeout_full (sc,
+                                        callback_timeout_action_connect,
+                                        CALLBACK_TIMEOUT_FAST);
 
     gssdp_resource_browser_set_active (GSSDP_RESOURCE_BROWSER (sc->cp), TRUE);
+  } else {
+    upnpstatecontext_process_next_action(sc);
+  }
+}
+
+static void
+action_connect2 (UPNPStateContext *sc)
+{
+  /* Only connect if the connection isn't already opened */
+  if (!(sc->cp)) {
+    /* Create a new GUPnP Context.  By here we are using the default GLib main
+       context, and connecting to the current machine's default IP on an
+       automatically generated port. */
+    sc->context = gupnp_context_new (NULL, NULL, 0, NULL);
+
+    /* Create a Control Point targeting WAN PPP Connection services */
+    sc->cp = gupnp_control_point_new
+      (sc->context, "urn:schemas-upnp-org:service:WANPPPConnection:1");
+
+    sc->last_callback_id = g_signal_connect (sc->cp,
+                                             "service-proxy-available",
+                                             G_CALLBACK (callback_action_connect),
+                                             (gpointer) sc);
+    sc->proxy = NULL;
+
+    /* Enqueue the watchdog timeout that will disable the callback if it */
+    /* lasts too much */
+    upnpstatecontext_push_timeout_full (sc,
+                                        callback_timeout,
+                                        CALLBACK_TIMEOUT_FAST);
+
+    gssdp_resource_browser_set_active (GSSDP_RESOURCE_BROWSER (sc->cp), TRUE);
+  } else {
+    upnpstatecontext_process_next_action(sc);
   }
 }
 
@@ -296,9 +362,7 @@ callback_action_connect (GUPnPControlPoint *cp,
 }
 
 static int
-callback_timeout (gpointer userdata)
-{
-  UPNPStateContext *sc = (UPNPStateContext*) userdata;
+upnpstatecontext_ontrigger_timeout (UPNPStateContext *sc) {
   gboolean cancel_timeout = sc->cancel_timeout;
 
   (sc->num_running_timeouts)--;
@@ -313,11 +377,39 @@ callback_timeout (gpointer userdata)
   else if (cancel_timeout) return FALSE;
 
   /* Timeout triggered: Disconnect signal callbacks and tell normal
-     /* callbacks not to execute */
+     callbacks not to execute */
   if (sc->cp && sc->last_callback_id) {
     g_signal_handler_disconnect(sc->cp, sc->last_callback_id);
   }
   sc->cancel_callback = TRUE;
+
+  // TRUE = Execution must continue after this call
+  return TRUE;
+}
+
+static int
+callback_timeout_action_connect (gpointer userdata)
+{
+  UPNPStateContext *sc = (UPNPStateContext*) userdata;
+  if (!upnpstatecontext_ontrigger_timeout(sc)) return FALSE;
+
+  /** Point the action sequence to the alternative connect action */
+  while (*(sc->next_action) && *(sc->next_action)!=ACTION_CONNECT2)
+    (sc->next_action)++;
+
+  /** Reset the control point */
+  sc->cp = NULL;
+
+  upnpstatecontext_process_next_action(sc);
+
+  return FALSE;
+}
+
+static int
+callback_timeout (gpointer userdata)
+{
+  UPNPStateContext *sc = (UPNPStateContext*) userdata;
+  if (!upnpstatecontext_ontrigger_timeout(sc)) return FALSE;
 
   /** Point the action sequence to the return action */
   while (*(sc->next_action) && *(sc->next_action)!=ACTION_RETURN)
@@ -594,6 +686,7 @@ upnp_get_public_ip (UPNPStateContext *sc,
   sc->on_complete_user_data = user_data;
   upnpstatecontext_set_action_seq(sc, (gchar[]){
       ACTION_CONNECT,
+        ACTION_CONNECT2,
         ACTION_ASK_IP,
         ACTION_RETURN,
         ACTION_NULL});
@@ -623,6 +716,7 @@ upnp_port_redirect (UPNPStateContext *sc,
 
   upnpstatecontext_set_action_seq(sc, (gchar[]){
       ACTION_CONNECT,
+        ACTION_CONNECT2,
         ACTION_REDIRECT,
         ACTION_RETURN,
         ACTION_NULL});
@@ -642,6 +736,7 @@ upnp_check_map (UPNPStateContext *sc,
 
   upnpstatecontext_set_action_seq(sc, (gchar[]){
       ACTION_CONNECT,
+        ACTION_CONNECT2,
         ACTION_CHECK_MAP,
         ACTION_RETURN,
         ACTION_NULL});
@@ -661,6 +756,7 @@ upnp_delete (UPNPStateContext *sc,
 
   upnpstatecontext_set_action_seq(sc, (gchar[]){
       ACTION_CONNECT,
+        ACTION_CONNECT2,
         ACTION_DELETE,
         ACTION_RETURN,
         ACTION_NULL});
