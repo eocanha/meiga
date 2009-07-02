@@ -32,6 +32,7 @@ void on_complete (gboolean success,
   GMainLoop *mainloop;
   mainloop = (GMainLoop*)user_data;
   g_printf(result);
+  g_printf("\n");
   g_main_loop_quit(mainloop);
   exit(success?0:1);
 }

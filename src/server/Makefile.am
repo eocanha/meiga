@@ -2,6 +2,7 @@ NULL =
 
 AM_CPPFLAGS = \
 	-DDATADIR=\""$(datadir)"\" \
+	-DBINDIR=\""$(bindir)"\" \
 	-DGETTEXT_PACKAGE=\""$(GETTEXT_PACKAGE)"\" \
 	-DLOCALEDIR=\""$(localedir)"\" \
 	$(gthread_CFLAGS) \

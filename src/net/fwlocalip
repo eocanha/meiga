@@ -25,6 +25,11 @@
 
 # Gets IP addr of the interface having the default gateway
 
+
+# We can't rely on the PATH being properly set if this tool is executed
+# from a DBUS daemon
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:$PATH"
+
 GWIFACE=`ip route | grep 'default via' | { read _ _ _ _ I _; echo $I; }`
 IP=`ip addr show dev $GWIFACE | grep 'inet ' | { read _ J _; echo $J; } | sed 's/\/[0-9]*//'`
 

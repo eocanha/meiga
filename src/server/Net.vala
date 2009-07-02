@@ -22,6 +22,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+using Config;
+
 public class Net : GLib.Object {
 
   private string external_ip = null;
@@ -43,7 +45,7 @@ public class Net : GLib.Object {
 	string txterr;
 	int result;
 
-	GLib.Process.spawn_command_line_sync("fwlocalip",
+	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
 										 out txtout,
 										 out txterr,
 										 out result);
@@ -52,39 +54,43 @@ public class Net : GLib.Object {
 	  internal_ip = txtout.chomp();
 	  log(_("Found internal IP: %s").printf(internal_ip));
 	} else {
-	  // Don't continue if there's no valid internal IP
 	  log(_("Local IP not found"));
+	  internal_ip = "127.0.0.1";
 	  return;
 	}
 
 	external_ip = internal_ip;
 
-	GLib.Process.spawn_command_line_sync("fwupnp -i",
-										 out txtout,
-										 out txterr,
-										 out result);
-
-	if (result == 0 && strcmp(txtout,"(null)")!=0) {
-	  external_ip = txtout;
-	  log(_("Found external IP: %s").printf(external_ip));
-	  GLib.Process.spawn_command_line_sync("fwupnp -q %d".printf(port),
+	// Don't redirect if there's no valid internal IP
+	if (strcmp(internal_ip,"127.0.0.1")!=0) {
+	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -i",
 										   out txtout,
 										   out txterr,
 										   out result);
-	  if (result != 0) {
-		log(_("Creating redirection"));
-		GLib.Process.spawn_command_line_sync("fwupnp -r %d %d %s %s %d".printf(port,port,internal_ip,"Meiga",0),
+	  txtout = txtout.chomp();
+
+	  if (result == 0 && strcmp(txtout,"(null)")!=0) {
+		external_ip = txtout;
+		log(_("Found external IP: %s").printf(external_ip));
+		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -q %d".printf(port),
 											 out txtout,
 											 out txterr,
 											 out result);
-		if (result == 0) {
-		  log(_("Redirection performed"));
+		if (result != 0) {
+		  log(_("Creating redirection"));
+		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -r %d %d %s %s %d".printf(port,port,internal_ip,"Meiga",0),
+											   out txtout,
+											   out txterr,
+											   out result);
+		  if (result == 0) {
+			log(_("Redirection performed"));
+		  }
+		} else {
+		  log(_("Redirection already present"));
 		}
 	  } else {
-		log(_("Redirection already present"));
+		log(_("External IP not found. Check that your router has UPnP enabled and working"));
 	  }
-	} else {
-	  log(_("External IP not found. Check that your router has UPnP enabled and working"));
 	}
 
 	url="http://%s:%d".printf(external_ip, port);
@@ -96,7 +102,7 @@ public class Net : GLib.Object {
 	int result;
 
 	if (internal_ip != external_ip) {
-	  GLib.Process.spawn_command_line_sync("fwupnp -d %d".printf(port),
+	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -d %d".printf(port),
 										   out txtout,
 										   out txterr,
 										   out result);
