@@ -6,26 +6,15 @@ meiga (0.2.0-2) UNRELEASED; urgency=low
 
  -- Alberto García <agarcia@igalia.com>  Sat, 20 Jun 2009 19:48:07 +0200
 
-meiga (0.2.0-1) unstable; urgency=low
-
-  * File and share ordering
-  * Port from libglade to GtkBuilder
-  * Log showing in gui
-  * Automatic refresh
-  * Fixed bug: forbid empty or /rss share names
-  * Spanish and galician translations
-
- -- Enrique Ocaña González <eocanha@igalia.com>  Mon, 15 Jun 2009 01:15:00 +0200
-
 meiga (0.1.2-1) unstable; urgency=low
 
-  * Minor packaging fixes
+  * New upstream release
 
  -- Enrique Ocaña González <eocanha@igalia.com>  Fri, 05 May 2009 01:30:00 +0200
 
 meiga (0.1.0-1) unstable; urgency=low
 
-  * Initial release
+  * New upstream release
 
  -- Enrique Ocaña González <eocanha@igalia.com>  Sun, 24 May 2009 00:08:22 +0200
 
