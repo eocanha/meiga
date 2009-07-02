@@ -1,10 +1,11 @@
-meiga (0.2.0-2) UNRELEASED; urgency=low
+meiga (0.2.1-1) unstable; urgency=low
 
   * Add 'Homepage' field
   * Change priority from 'extra' to 'optional'
   * Change build-dependency from vala to valac
+  * Rebuid changelog
 
- -- Alberto García <agarcia@igalia.com>  Sat, 20 Jun 2009 19:48:07 +0200
+ -- Enrique Ocaña González <eocanha@igalia.com>  Thu, 02 Jul 2009 16:56:44 +0200
 
 meiga (0.1.2-1) unstable; urgency=low
 

@@ -1,8 +1,8 @@
-meiga (0.2.0) - Mon, 15 Jun 2009 01:15:00 +0200
+meiga (0.2.1) - Thu, 02 Jul 2009 16:56:44 +0200
 
-  * File and share ordering
-  * Port from libglade to GtkBuilder
-  * Log showing in gui
-  * Automatic refresh
-  * Fixed bug: forbid empty or /rss share names
-  * Spanish and galician translations
+  * Fixed bug: No PATH set from DBUS daemon prevents external commands to
+	be found
+  * Fixed bug: Look for a WANPPPConnection when a WANIPConnection isn't
+	available
+  * Minor packaging fixes
+  * Created a real changelog
