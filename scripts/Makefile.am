@@ -1,12 +1,12 @@
 NULL = 
 
 nautilusdir = ${datadir}/nautilus-scripts
-nautilus_DATA = \
-        nautilus-scripts/Share on Meiga... \
+nautilus_SCRIPTS = \
+        share-on-meiga \
         $(NULL)
 
 EXTRA_DIST = \
-	$(nautilus_DATA) \
+	$(nautilus_SCRIPTS) \
 	$(NULL)
 
 DISTCLEANFILES = \

@@ -248,7 +248,7 @@ public class Gui : GLib.Object {
 	// user's directory, create it
 	string menudir = Environment.get_home_dir() + "/.gnome2/nautilus-scripts/";
 	string menulink = menudir + _("Share on Meiga...");
-	string menufile = Config.DATADIR + "/nautilus-scripts/" + "Share on Meiga...";
+	string menufile = Config.DATADIR + "/nautilus-scripts/" + "share-on-meiga";
 	if (!FileUtils.test(menulink,
 						FileTest.EXISTS)) {
 	  log(_("Creating Nautilus context menu for Meiga %s --> %s")
