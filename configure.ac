@@ -79,6 +79,7 @@ AC_CONFIG_FILES([Makefile
 	src/server/Makefile
 	src/gui/Makefile
 	src/net/Makefile
+	scripts/Makefile
 	po/Makefile.in])
 
 AC_OUTPUT

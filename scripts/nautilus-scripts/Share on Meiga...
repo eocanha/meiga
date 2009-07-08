@@ -1,0 +1,15 @@
+#!/bin/sh
+FILE=`echo "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" | { read X; echo $X; }`
+if [ -d "$FILE" ]
+then
+  SHARE=/`basename "$FILE"`
+  SHARE=`zenity --entry --title="Share on Meiga" --text="Share name for directory '$FILE'" --entry-text="$SHARE"`
+  if [ -n "$SHARE" ]
+  then
+    dbus-send --session --dest=com.igalia.Meiga \
+    --print-reply --type=method_call /com/igalia/Meiga \
+    com.igalia.Meiga.RegisterPath string:"$FILE" string:"$SHARE" > /dev/null 
+  fi
+else
+  zenity --error --text="Meiga sharing is only available for directories"
+fi

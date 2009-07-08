@@ -243,6 +243,21 @@ public class Gui : GLib.Object {
 	update_statusbar();
   }
 
+  private void nautilus_init() {
+	// If there's no link to the Nautilus menu entry in the
+	// user's directory, create it
+	string menudir = Environment.get_home_dir() + "/.gnome2/nautilus-scripts/";
+	string menulink = menudir + _("Share on Meiga...");
+	string menufile = Config.DATADIR + "/nautilus-scripts/" + "Share on Meiga...";
+	if (!FileUtils.test(menulink,
+						FileTest.EXISTS)) {
+	  log(_("Creating Nautilus context menu for Meiga %s --> %s")
+		  .printf(menulink,menufile));
+	  DirUtils.create_with_parents(menudir,0700);
+	  FileUtils.symlink(menufile, menulink);
+	}
+  }
+
   private void gui_init() {
     string[] path = UI_PATH.split(":",8);
 	string iconfile = null;
@@ -410,6 +425,7 @@ public class Gui : GLib.Object {
   // Public methods
   public void init() {
     gui_init();
+	nautilus_init();
   }
 
   public void quit() {
