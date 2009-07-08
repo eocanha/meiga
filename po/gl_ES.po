@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: meiga\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-15 00:46+0200\n"
+"POT-Creation-Date: 2009-07-08 02:58+0200\n"
 "PO-Revision-Date: 2009-06-14 21:12+0200\n"
 "Last-Translator: Enrique Ocaña González <eocanha@igalia.com>\n"
 "Language-Team: Galician <gl_ES@li.org>\n"
@@ -58,71 +58,70 @@ msgstr "Ruta lóxica desrexistrada '%s'"
 msgid "Request: %s --> Serving: %s"
 msgstr "Petición: %s --> Servindo: %s"
 
-#: ../src/server/MeigaServer.vala:212
+#: ../src/server/MeigaServer.vala:213
 #, c-format
 msgid "Index of %s\n"
 msgstr "Índice de %s\n"
 
-#: ../src/server/MeigaServer.vala:221
+#: ../src/server/MeigaServer.vala:222
 #, c-format
 msgid "Served by <a href=\"http://meiga.igalia.com\">Meiga %s</a>"
 msgstr "Servido por <a href=\"http://meiga.igalia.com\">Meiga %s</a>"
 
-#: ../src/server/MeigaServer.vala:255
+#: ../src/server/MeigaServer.vala:256
 #, c-format
 msgid "Request: %s --> Serving (RSS mode): %s"
 msgstr "Petición: %s --> Servindo (modo RSS): %s"
 
-#: ../src/server/MeigaServer.vala:291
+#: ../src/server/MeigaServer.vala:292
 #, c-format
 msgid "Documents under %s"
 msgstr "Documentos baixo %s"
 
 #
-#: ../src/server/MeigaServer.vala:302
+#: ../src/server/MeigaServer.vala:303
 msgid "File not found"
 msgstr "Arquivo non atopado"
 
-#: ../src/server/Net.vala:53
+#: ../src/server/Net.vala:55
 #, c-format
 msgid "Found internal IP: %s"
 msgstr "IP interna atopada: %s"
 
 #
-#. Don't continue if there's no valid internal IP
-#: ../src/server/Net.vala:56
+#: ../src/server/Net.vala:57
 msgid "Local IP not found"
 msgstr "IP local non atopada"
 
-#: ../src/server/Net.vala:69
+#: ../src/server/Net.vala:74
 #, c-format
 msgid "Found external IP: %s"
 msgstr "IP externa atopada: %s"
 
-#: ../src/server/Net.vala:75
+#: ../src/server/Net.vala:80
 msgid "Creating redirection"
 msgstr "Creando redirección"
 
-#: ../src/server/Net.vala:81
+#: ../src/server/Net.vala:86
 msgid "Redirection performed"
 msgstr "Redirección realizada"
 
-#: ../src/server/Net.vala:84
+#: ../src/server/Net.vala:89
 msgid "Redirection already present"
 msgstr "Redirección xa presente"
 
-#: ../src/server/Net.vala:87
+#: ../src/server/Net.vala:92
 msgid ""
 "External IP not found. Check that your router has UPnP enabled and working"
 msgstr ""
 "IP externa non atopada. Comprobe que o seu router ten UPnP activado e "
 "funcionando"
 
-#: ../src/server/Net.vala:104
+#: ../src/server/Net.vala:110
 msgid "Redirection removed"
 msgstr "Redirección eliminada"
 
-#: ../src/server/Net.vala:106
+#: ../src/server/Net.vala:112
 msgid "Unable to remove redirection"
 msgstr "Imposible eliminar redirección"
 
@@ -171,45 +170,54 @@ msgstr "Nome de elemento compartido non permitido"
 msgid "Remote error sharing '%s' as '%s'\n"
 msgstr "Erro remoto compartindo '%s' como '%s'\n"
 
-#: ../src/gui/Gui.vala:218
+#: ../src/gui/Gui.vala:221
 #, c-format
 msgid "Error looking for DBUS server: %s\n"
 msgstr "Erro buscando servidor DBUS: %s\n"
 
-#: ../src/gui/Gui.vala:227
+#: ../src/gui/Gui.vala:230
 msgid "Error looking for DBUS server: remote object not found\n"
 msgstr "Erro buscando servidor DBUS: obxecto remoto non atopado\n"
 
-#: ../src/gui/Gui.vala:262
+#: ../src/gui/Gui.vala:250
+msgid "Share on Meiga..."
+msgstr "Compartir en Meiga..."
+
+#: ../src/gui/Gui.vala:254
+#, c-format
+msgid "Creating Nautilus context menu for Meiga %s --> %s"
+msgstr "Creando menú de contexto de Nautilus para Meiga %s --> %s"
+
+#: ../src/gui/Gui.vala:280
 #, c-format
 msgid "Could not load UI file %s\n"
 msgstr "Non se puido cargar arquivo de UI\n"
 
-#: ../src/gui/Gui.vala:286
+#: ../src/gui/Gui.vala:304
 msgid "Icon file not found\n"
 msgstr "Arquivo de icono non atopado\n"
 
-#: ../src/gui/Gui.vala:297
+#: ../src/gui/Gui.vala:315
 msgid "Local file"
 msgstr "Arquivo local"
 
-#: ../src/gui/Gui.vala:300
+#: ../src/gui/Gui.vala:318
 msgid "Shared as"
 msgstr "Compartido como"
 
-#: ../src/gui/Gui.vala:344
+#: ../src/gui/Gui.vala:362
 msgid "Remote error getting paths\n"
 msgstr "Erro remoto obtendo rutas\n"
 
-#: ../src/gui/Gui.vala:357
+#: ../src/gui/Gui.vala:375
 msgid "Remote error getting log lines\n"
 msgstr "Erro remoto obtendo liñas de rexistro\n"
 
-#: ../src/gui/Gui.vala:388
+#: ../src/gui/Gui.vala:406
 msgid "Remote error getting public url\n"
 msgstr "Erro remoto obtendo url pública\n"
 
-#: ../src/gui/Gui.vala:419
+#: ../src/gui/Gui.vala:438
 msgid "Remote error shutting down server\n"
 msgstr "Erro remoto detendo o servidor\n"
 
