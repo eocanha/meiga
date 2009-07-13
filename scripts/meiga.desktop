@@ -1,0 +1,16 @@
+[Desktop Entry]
+ServiceTypes=inode/directory
+Actions=shareOnMeiga;
+X-KDE-AuthorizeAction=shell_access
+Type=Application
+
+Name=Meiga
+
+[Desktop Action shareOnMeiga]
+Name=Share on Meiga...
+Name[es]=Compartir en Meiga...
+Name[gl_ES]=Compartir en Meiga...
+X-Icon-path=/usr/share/pixmaps
+Icon=meiga
+Exec=/usr/share/nautilus-scripts/share-on-meiga %f
+X-Ubuntu-Gettext-Domain=desktop_kdebase

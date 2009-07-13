@@ -1,5 +1,12 @@
 #!/bin/sh
-FILE=`echo "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" | { read X; echo $X; }`
+
+if [ $# -gt 0 ]
+then
+ FILE=$1
+else
+ FILE=`echo "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" | { read X; echo $X; }`
+fi
+
 if [ -d "$FILE" ]
 then
   SHARE=/`basename "$FILE"`
