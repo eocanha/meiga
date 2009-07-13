@@ -251,7 +251,7 @@ public class Gui : GLib.Object {
 	string menufile = Config.DATADIR + "/nautilus-scripts/" + "share-on-meiga";
 	if (!FileUtils.test(menulink,
 						FileTest.EXISTS)) {
-	  log(_("Creating Nautilus context menu for Meiga %s --> %s")
+	  log(_("Creating Nautilus context menu for Meiga %s --> %s\n")
 		  .printf(menulink,menufile));
 	  DirUtils.create_with_parents(menudir,0700);
 	  FileUtils.symlink(menufile, menulink);
