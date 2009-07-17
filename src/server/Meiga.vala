@@ -48,6 +48,10 @@ public class Meiga : GLib.Object {
 	model_changed();
   }
 
+  public uint get_gui_pid() {
+	return server.gui_pid;
+  }
+
   public HashTable<string,string> get_paths() {
 	return server.get_paths();
   }

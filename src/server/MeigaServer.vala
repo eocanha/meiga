@@ -37,6 +37,7 @@ public class MeigaServer : GLib.Object {
   private Meiga exposed;
   private Net net;
   public Log logger { public get; private set; default=null; }
+  public uint gui_pid { public get; private set; default=0; }
 
   public MeigaServer() {
   }
@@ -127,7 +128,18 @@ public class MeigaServer : GLib.Object {
 	this.port=port;
   }
 
+  public void register_gui(uint gui_pid) {
+	this.gui_pid = gui_pid;
+  }
+
   public void register_path(string real_path, string logical_path) {
+	// For security reasons, don't allow path registering if
+	// there's no GUI to monitor it
+	if (gui_pid == 0) {
+	  log(_("Attempted to register path without GUI started. Ignoring."));
+	  return;
+	}
+
 	if (path_mapping.lookup(logical_path)!=null) return;
 	path_mapping.insert(logical_path,real_path);
 	log(_("Registered logical path '%s' to real path '%s'").printf(logical_path,real_path));
@@ -135,6 +147,13 @@ public class MeigaServer : GLib.Object {
   }
 
   public void unregister_path(string logical_path) {
+	// For security reasons, don't allow path unregistering if
+	// there's no GUI to monitor it
+	if (gui_pid == 0) {
+	  log(_("Attempted to unregister path without GUI started. Ignoring."));
+	  return;
+	}
+
 	log(_("Unregistered logical path '%s'").printf(logical_path));
 	path_mapping.remove(logical_path);
   }
