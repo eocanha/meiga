@@ -26,6 +26,7 @@ using GLib;
 using Gtk;
 using Gdk;
 using Config;
+using Posix;
 
 const string UI_FILENAME = "gui.ui";
 const string UI_PATH = "ui:"+Config.DATADIR+"/meiga/ui";
@@ -54,6 +55,7 @@ public class Gui : GLib.Object {
   private string preferred_share;
   private string invitation;
   private uint lastlog;
+  private uint pid;
 
   private dynamic DBus.Object _remote = null;
   private dynamic DBus.Object remote {
@@ -224,7 +226,7 @@ public class Gui : GLib.Object {
 	try {
 	  // Test the connection
 	  if (_remote != null) {
-		public_url = _remote.get_public_url();
+		_remote.register_gui(pid);
 	  }
 	} catch (Error e) {
 	  log(_("Error looking for DBUS server: remote object not found\n"));
@@ -318,6 +320,8 @@ public class Gui : GLib.Object {
 										 -1, _("Shared as"), new CellRendererText (),
 										 "text", 1, null);
     files.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
+
+	pid = (uint)Posix.getpid();
 
 	public_url = "";
 	lastlog = 0;

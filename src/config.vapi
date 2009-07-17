@@ -32,3 +32,13 @@ namespace Config {
   public const string VERSION;
 }
 
+[CCode (cprefix = "", lower_case_cprefix = "")]
+namespace Posix {
+  [SimpleType]
+  [IntegerType (rank = 6)]
+  [CCode (cname = "pid_t", default_value = "0", cheader_filename = "sys/types.h")]
+  public struct pid_t {
+  }
+  [CCode (cheader_filename = "unistd.h")]
+  public pid_t getpid ();
+}
