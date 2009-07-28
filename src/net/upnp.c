@@ -25,8 +25,8 @@
 #include <upnp.h>
 #include <libgupnp/gupnp-control-point.h>
 
-#define CALLBACK_TIMEOUT_NORMAL (20*1000)
-#define CALLBACK_TIMEOUT_FAST   (1*1000)
+#define CALLBACK_TIMEOUT_NORMAL (10*1000)
+#define CALLBACK_TIMEOUT_FAST   (5*1000)
 
 #define ACTION_NULL       0
 #define ACTION_CONNECT    1
