@@ -99,6 +99,9 @@ static void
 upnpstatecontext_process_next_action (UPNPStateContext *sc);
 
 static void
+upnpstatecontext_debug (UPNPStateContext *sc, const gchar *msg);
+
+static void
 action_connect (UPNPStateContext *sc);
 
 static void
@@ -217,6 +220,9 @@ upnpstatecontext_push_timeout_full (UPNPStateContext *sc,
                                     GSourceFunc custom_callback_timeout,
                                     guint time)
 {
+#ifdef DEBUG
+  upnpstatecontext_debug(sc, "push_timeout_full");
+#endif
   sc->cancel_timeout = FALSE;
   sc->cancel_callback = FALSE;
   (sc->num_running_timeouts)++;
@@ -228,6 +234,9 @@ upnpstatecontext_push_timeout_full (UPNPStateContext *sc,
 static void
 upnpstatecontext_pop_timeout (UPNPStateContext *sc)
 {
+#ifdef DEBUG
+  upnpstatecontext_debug(sc, "pop_timeout");
+#endif
   /* Tell the timeout to stop when it wakes up */
   sc->cancel_timeout = TRUE;
 }
@@ -391,6 +400,9 @@ static int
 callback_timeout_action_connect (gpointer userdata)
 {
   UPNPStateContext *sc = (UPNPStateContext*) userdata;
+#ifdef DEBUG
+  upnpstatecontext_debug(sc, "callback_timeout_action_connect");
+#endif
   if (!upnpstatecontext_ontrigger_timeout(sc)) return FALSE;
 
   /** Point the action sequence to the alternative connect action */
@@ -409,6 +421,9 @@ static int
 callback_timeout (gpointer userdata)
 {
   UPNPStateContext *sc = (UPNPStateContext*) userdata;
+#ifdef DEBUG
+  upnpstatecontext_debug(sc, "callback_timeout");
+#endif
   if (!upnpstatecontext_ontrigger_timeout(sc)) return FALSE;
 
   /** Point the action sequence to the return action */
@@ -683,6 +698,32 @@ action_return (UPNPStateContext *sc)
   if (sc->on_complete != NULL) {
     sc->on_complete(sc->success, sc->result, sc->on_complete_user_data);
   }
+}
+
+static void
+upnpstatecontext_debug (UPNPStateContext *sc, const gchar *msg)
+{
+  printf("%s:\n"
+         "action_seq = %u\n"
+         "next_action = %u\n"
+         "task_name = %s\n"
+         "last_callback_id = %lu\n"
+         "cancel_timeout = %d\n"
+         "cancel_callback = %d\n"
+         "num_running_timeouts = %d\n"
+         "result = %s\n"
+         "success = %d\n"
+         "\n",
+         msg,
+         *(sc->action_seq),
+         *(sc->next_action),
+         sc->task_name,
+         sc->last_callback_id,
+         sc->cancel_timeout,
+         sc->cancel_callback,
+         sc->num_running_timeouts,
+         sc->result,
+         sc->success);
 }
 
 gchar *
