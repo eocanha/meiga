@@ -53,6 +53,16 @@ PKG_CHECK_MODULES(dbusglib, dbus-glib-1 >= $DBUSGLIB_REQUIRED)
 PKG_CHECK_MODULES(gmodule, gmodule-2.0 >= $GMODULE_REQUIRED)
 PKG_CHECK_MODULES(gupnp, gupnp-1.0 >= $GUPNP_REQUIRED)
 
+# Syntax changes in gupnp 0.12 and above
+echo -n "checking for gupnp >= 0.12... "
+if $PKG_CONFIG --atleast-version=0.12 gupnp-1.0
+then
+    AC_DEFINE([HAVE_GUPNP_0_12],[1],[Defined if libgupnp >= 0.12])
+    echo "yes"
+else
+    echo "no"
+fi
+
 serviceentrydir=`$PKG_CONFIG dbus-1 --variable=session_bus_services_dir`
 launcherdir="\${datadir}/applications"
 

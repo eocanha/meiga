@@ -25,7 +25,7 @@
 #include <upnp.h>
 #include <libgupnp/gupnp-control-point.h>
 
-#define CALLBACK_TIMEOUT_NORMAL (5*1000)
+#define CALLBACK_TIMEOUT_NORMAL (20*1000)
 #define CALLBACK_TIMEOUT_FAST   (1*1000)
 
 #define ACTION_NULL       0
@@ -435,7 +435,9 @@ action_ask_ip (UPNPStateContext *sc)
                                     "GetExternalIPAddress",
                                     callback_action_ask_ip,
                                     sc,
+#ifndef HAVE_GUPNP_0_12
                                     &error,
+#endif
                                     /* IN args */
                                     NULL);
 
@@ -494,7 +496,9 @@ action_redirect (UPNPStateContext *sc)
                                     "AddPortMapping",
                                     callback_action_redirect,
                                     sc,
+#ifndef HAVE_GUPNP_0_12
                                     &error,
+#endif
                                     /* IN args */
                                     "NewRemoteHost", G_TYPE_STRING, "",
                                     "NewExternalPort", G_TYPE_STRING, new_external_port,
@@ -561,7 +565,9 @@ action_check_map (UPNPStateContext *sc)
                                     "GetSpecificPortMappingEntry",
                                     callback_action_check_map,
                                     sc,
+#ifndef HAVE_GUPNP_0_12
                                     &error,
+#endif
                                     /* IN args */
                                     "NewRemoteHost", G_TYPE_STRING, "",
                                     "NewExternalPort", G_TYPE_STRING, new_external_port,
@@ -627,7 +633,9 @@ action_delete (UPNPStateContext *sc)
                                     "DeletePortMapping",
                                     callback_action_delete,
                                     sc,
+#ifndef HAVE_GUPNP_0_12
                                     &error,
+#endif
                                     /* IN args */
                                     "NewRemoteHost", G_TYPE_STRING, "",
                                     "NewExternalPort", G_TYPE_STRING, new_external_port,
