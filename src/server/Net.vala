@@ -26,21 +26,66 @@ using Config;
 
 public class Net : GLib.Object {
 
-  private string external_ip = null;
-  private string internal_ip = null;
+  private weak Thread worker = null;
 
-  public int port { get; set; default=8001; }
-  public string url { get; private set; default=null; }
-  public Log logger { private get; set; default=null; }
+  private string _external_ip;
+  public string external_ip {
+	private owned get { string r; lock (worker) { r = _external_ip; } return r; }
+	private set { lock (worker) { _external_ip = value; } }
+  }
+
+  private string _internal_ip;
+  public string internal_ip {
+	private owned get { string r; lock (worker) { r = _internal_ip; } return r; }
+	private set { lock (worker) { _internal_ip = value; } }
+  }
+
+  private int _port;
+  public int port {
+	owned get { int r; lock (worker) { r = _port; } return r; }
+	set { lock (worker) { _port = value; } }
+  }
+
+  private string _url = null;
+  public string url {
+	owned get { string r; lock (worker) { r = _url; } return r; }
+	private set { lock (worker) { _url = value; } }
+  }
+
+  private Log _logger;
+  public Log logger {
+	private owned get { Log r; lock (worker) { r = _logger; } return r; }
+	set { lock (worker) { _logger = value; } }
+  }
 
   public Net() {
+	port = 8001;
+	url = null;
+	logger = null;
   }
 
   private void log(string msg) {
-	if (logger!=null) logger.log(msg);
+	if (_logger!=null) _logger.log(msg);
   }
 
   public void forward_start() {
+	try {
+	  worker = Thread.create(forward_upnp_start, true);
+	} catch (SpawnError e) {
+	  debug("Spawn error");
+	} catch (ThreadError e) {
+	  debug("Thread error");
+	}
+  }
+
+  public void forward_stop() {
+	forward_upnp_stop();
+  }
+
+  private void *forward_upnp_start() {
+	string internal_ip;
+	string external_ip;
+	string url;
 	string txtout;
 	string txterr;
 	int result;
@@ -56,7 +101,7 @@ public class Net : GLib.Object {
 	} else {
 	  log(_("Local IP not found"));
 	  internal_ip = "127.0.0.1";
-	  return;
+	  return null;
 	}
 
 	external_ip = internal_ip;
@@ -69,7 +114,8 @@ public class Net : GLib.Object {
 										   out result);
 	  txtout = txtout.chomp();
 
-	  if (result == 0 && strcmp(txtout,"(null)")!=0) {
+	  if (result == 0 && strcmp(txtout,"")!=0
+		  && strcmp(txtout,"(null)")!=0) {
 		external_ip = txtout;
 		log(_("Found external IP: %s").printf(external_ip));
 		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -q %d".printf(port),
@@ -94,9 +140,15 @@ public class Net : GLib.Object {
 	}
 
 	url="http://%s:%d".printf(external_ip, port);
+
+	set("internal_ip",internal_ip);
+	set("external_ip",external_ip);
+	set("url",url);
+
+	return null;
   }
 
-  public void forward_stop() {
+  public void forward_upnp_stop() {
 	string txtout;
 	string txterr;
 	int result;

@@ -36,8 +36,11 @@ public class MeigaServer : GLib.Object {
   private GLib.HashTable<string,string> mimetypes;
   private Meiga exposed;
   private Net net;
+
   public Log logger { public get; private set; default=null; }
   public uint gui_pid { public get; private set; default=0; }
+
+  public signal void model_changed();
 
   public MeigaServer() {
   }
@@ -56,7 +59,10 @@ public class MeigaServer : GLib.Object {
 	net.port = port;
 	net.forward_start();
 
-	log(_("External URL: %s").printf(net.url));
+	net.notify["url"] += (s, p) => {
+	  log(_("External URL: %s").printf(get_public_url()));
+	  model_changed();
+	};
 
 	initialize_mimetypes();
 	path_mapping=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);

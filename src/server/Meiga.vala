@@ -36,6 +36,8 @@ public class Meiga : GLib.Object {
 	  // Forward logger changed signal to our remote observers
 	  this.server.logger.changed += (o) => { this.log_changed(); };
 	}
+	// Forward model changed signal to our remote observers
+	this.server.model_changed += (o) => { this.model_changed(); };
   }
 
   public void register_path(string real_path, string logical_path) {
