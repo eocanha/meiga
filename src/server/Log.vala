@@ -42,8 +42,14 @@ public class Log : GLib.Object {
 	purge_trigger = 0;
   }
 
-  /** Logs a line of text */
+  /** Logs a line of text (thread safe) */
   public void log(string msg) {
+	LogTask t = new LogTask(msg, this);
+	t.idle_add();
+  }
+
+  /** Thread unsafe implementation */
+  public void log_impl(string msg) {
 	// Workaround for memory management problems
 	string *s = "%s".printf(msg);
 	lines.add(s);
@@ -82,4 +88,25 @@ public class Log : GLib.Object {
 	return result.str;
   }
 
+}
+
+public class LogTask : GLib.Object {
+  public string msg;
+  public Log logger;
+
+  public LogTask(string msg, Log logger) {
+	this.msg = msg;
+	this.logger = logger;
+  }
+
+  public void idle_add() {
+	this.ref();
+	Idle.add(log_on_idle);
+  }
+
+  public bool log_on_idle() {
+	this.logger.log_impl(this.msg);
+	this.unref();
+	return false;
+  }
 }
