@@ -1,2 +1,10 @@
 #!/bin/sh
-echo "$SSH_PASSWORD"
+
+# Uses SSH_ASKPASS environment var if defined or
+# calls ssh-askpass to prompt for a password
+
+COUNT=`echo -n "$SSH_PASSWORD" | wc -m`
+if [ '(' "$COUNT" -eq 0 ')' -a '(' $DISPLAY ')' -a '(' `which ssh-askpass` ')' ]
+then ssh-askpass
+else echo "$SSH_PASSWORD"
+fi
