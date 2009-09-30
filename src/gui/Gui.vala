@@ -56,6 +56,7 @@ public class Gui : GLib.Object {
   private string invitation;
   private uint lastlog;
   private uint pid;
+  private string display;
 
   private dynamic DBus.Object _remote = null;
   private dynamic DBus.Object remote {
@@ -226,7 +227,7 @@ public class Gui : GLib.Object {
 	try {
 	  // Test the connection
 	  if (_remote != null) {
-		_remote.register_gui(pid);
+		_remote.register_gui(pid, display);
 	  }
 	} catch (Error e) {
 	  log(_("Error looking for DBUS server: remote object not found\n"));
@@ -322,6 +323,7 @@ public class Gui : GLib.Object {
     files.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
 
 	pid = (uint)Posix.getpid();
+	display = Environment.get_variable("DISPLAY");
 
 	public_url = "";
 	lastlog = 0;

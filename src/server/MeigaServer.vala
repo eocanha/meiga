@@ -39,6 +39,7 @@ public class MeigaServer : GLib.Object {
 
   public Log logger { public get; private set; default=null; }
   public uint gui_pid { public get; private set; default=0; }
+  public string display { public get; private set; default=null; }
 
   public signal void model_changed();
 
@@ -54,16 +55,6 @@ public class MeigaServer : GLib.Object {
 
 	port=8001;
 
-	net = new Net();
-	net.logger = logger;
-	net.port = port;
-	net.forward_start();
-
-	net.notify["url"] += (s, p) => {
-	  log(_("External URL: %s").printf(get_public_url()));
-	  model_changed();
-	};
-
 	initialize_mimetypes();
 	path_mapping=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);
 
@@ -73,6 +64,18 @@ public class MeigaServer : GLib.Object {
 	server.run_async();
 
 	initialize_dbus();
+  }
+
+  public void initialize_net() {
+	net = new Net();
+	net.logger = logger;
+	net.port = port;
+	net.display = display;
+	net.forward_start();
+	net.notify["url"] += (s, p) => {
+	  log(_("External URL: %s").printf(get_public_url()));
+	  model_changed();
+	};
   }
 
   private void initialize_mimetypes() {
@@ -134,8 +137,10 @@ public class MeigaServer : GLib.Object {
 	this.port=port;
   }
 
-  public void register_gui(uint gui_pid) {
+  public void register_gui(uint gui_pid, string display) {
 	this.gui_pid = gui_pid;
+	this.display = display;
+	if (this.net == null) initialize_net();
   }
 
   public void register_path(string real_path, string logical_path) {

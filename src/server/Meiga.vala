@@ -54,8 +54,12 @@ public class Meiga : GLib.Object {
 	return server.gui_pid;
   }
 
-  public void register_gui(uint gui_pid) {
-	server.register_gui(gui_pid);
+  public string get_display() {
+	return server.display;
+  }
+
+  public void register_gui(uint gui_pid, string display) {
+	server.register_gui(gui_pid, display);
   }
 
   public HashTable<string,string> get_paths() {

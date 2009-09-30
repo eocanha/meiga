@@ -97,6 +97,12 @@ public class Net : GLib.Object {
 	set { lock (worker) { _ssh_password = value; } }
   }
 
+  private string _display = null;
+  public string display {
+	owned get { string r; lock (worker) { r = _display; } return r; }
+	set { lock (worker) { _display = value; } }
+  }
+
   private Log _logger;
   public Log logger {
 	private owned get { Log r; lock (worker) { r = _logger; } return r; }
@@ -111,6 +117,7 @@ public class Net : GLib.Object {
 	redirection_status = REDIRECTION_STATUS_NONE;
 	ssh_host = "";
 	ssh_user = "";
+	display = "";
   }
 
   private void log(string msg) {
@@ -298,6 +305,8 @@ public class Net : GLib.Object {
 	  Environment.set_variable("SSH_USER", ssh_user, true);
 	  Environment.set_variable("SSH_PASSWORD", ssh_password, true);
 	  Environment.set_variable("SSH_PORT", ssh_port, true);
+	  Environment.set_variable("DISPLAY", display, true);
+
 	  try {
 		bresult = Process.spawn_sync (null,
 							sshcmd_argv,
