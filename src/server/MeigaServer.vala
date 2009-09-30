@@ -71,11 +71,11 @@ public class MeigaServer : GLib.Object {
 	net.logger = logger;
 	net.port = port;
 	net.display = display;
-	net.forward_start();
 	net.notify["url"] += (s, p) => {
 	  log(_("External URL: %s").printf(get_public_url()));
 	  model_changed();
 	};
+	net.redirection_type = Net.REDIRECTION_TYPE_SSH;
   }
 
   private void initialize_mimetypes() {
@@ -129,8 +129,8 @@ public class MeigaServer : GLib.Object {
   }
 
   public void shutdown() {
-	Gtk.main_quit();
-	net.forward_stop();
+	net.redirection_type = Net.REDIRECTION_TYPE_NONE;
+	Idle.add_full(Priority.LOW, () => { Gtk.main_quit(); return false; });
   }
 
   public void set_port(int port) {

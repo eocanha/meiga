@@ -61,10 +61,17 @@ public class Net : GLib.Object {
 	private set { lock (worker) { _url = value; } }
   }
 
+  private int _previous_redirection_type;
   private int _redirection_type;
   public int redirection_type {
 	owned get { int r; lock (worker) { r = _redirection_type; } return r; }
-	set { lock (worker) { _redirection_type = value; } }
+	set {
+	  lock (worker) {
+		_previous_redirection_type = _redirection_type;
+		_redirection_type = value;
+		Idle.add (forward_reload);
+	  }
+	}
   }
 
   private int _redirection_status;
@@ -113,7 +120,8 @@ public class Net : GLib.Object {
 	port = 8001;
 	url = null;
 	logger = null;
-	redirection_type = REDIRECTION_TYPE_SSH;
+	_previous_redirection_type = REDIRECTION_TYPE_NONE;
+	_redirection_type = REDIRECTION_TYPE_NONE;
 	redirection_status = REDIRECTION_STATUS_NONE;
 	ssh_host = "";
 	ssh_user = "";
@@ -124,7 +132,15 @@ public class Net : GLib.Object {
 	if (_logger!=null) _logger.log(msg);
   }
 
-  public void forward_start() {
+  public bool forward_reload() {
+	if (_redirection_type != _previous_redirection_type) {
+	  forward_stop();
+	  forward_start();
+	}
+	return false;
+  }
+
+  private void forward_start() {
 	switch (redirection_type) {
 	case REDIRECTION_TYPE_UPNP:
 	  try {
@@ -147,8 +163,8 @@ public class Net : GLib.Object {
 	}
   }
 
-  public void forward_stop() {
-	switch (redirection_type) {
+  private void forward_stop() {
+	switch (_previous_redirection_type) {
 	case REDIRECTION_TYPE_UPNP:
 	  forward_upnp_stop();
 	  break;
