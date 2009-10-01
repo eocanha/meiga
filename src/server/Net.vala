@@ -67,6 +67,8 @@ public class Net : GLib.Object {
 	owned get { int r; lock (worker) { r = _redirection_type; } return r; }
 	set {
 	  lock (worker) {
+		// Don't allow type changing in the middle of a change process
+		if (_redirection_status == REDIRECTION_STATUS_PENDING) return;
 		_previous_redirection_type = _redirection_type;
 		_redirection_type = value;
 		Idle.add (forward_reload);

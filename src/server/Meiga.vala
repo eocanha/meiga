@@ -82,6 +82,18 @@ public class Meiga : GLib.Object {
 	return server.get_public_url();
   }
 
+  public int get_redirection_type() {
+	return server.get_redirection_type();
+  }
+
+  public void set_redirection_type(int redirection_type) {
+	server.set_redirection_type(redirection_type);
+  }
+
+  public int get_redirection_status() {
+	return server.get_redirection_status();
+  }
+
   public void shutdown() {
 	server.shutdown();
   }

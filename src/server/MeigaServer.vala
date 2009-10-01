@@ -71,11 +71,17 @@ public class MeigaServer : GLib.Object {
 	net.logger = logger;
 	net.port = port;
 	net.display = display;
+	net.redirection_type = Net.REDIRECTION_TYPE_NONE;
 	net.notify["url"] += (s, p) => {
 	  log(_("External URL: %s").printf(get_public_url()));
 	  model_changed();
 	};
-	net.redirection_type = Net.REDIRECTION_TYPE_SSH;
+	net.notify["redirection_type"] += (s, p) => {
+	  model_changed();
+	};
+	net.notify["redirection_status"] += (s, p) => {
+	  model_changed();
+	};
   }
 
   private void initialize_mimetypes() {
@@ -167,6 +173,24 @@ public class MeigaServer : GLib.Object {
 
 	log(_("Unregistered logical path '%s'").printf(logical_path));
 	path_mapping.remove(logical_path);
+  }
+
+  public int get_redirection_type() {
+	// GUI should have registered itself before changing redirection type
+	if (net==null) return Net.REDIRECTION_TYPE_NONE;
+	else return net.redirection_type;
+  }
+
+  public void set_redirection_type(int redirection_type) {
+	// GUI should have registered itself before changing redirection type
+	if (net==null) return;
+	net.redirection_type = redirection_type;
+  }
+
+  public int get_redirection_status() {
+	// GUI should have registered itself before changing redirection status
+	if (net==null) return Net.REDIRECTION_STATUS_NONE;
+	else return net.redirection_status;
   }
 
   public HashTable<string,string> get_paths() {
