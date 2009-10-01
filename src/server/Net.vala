@@ -57,7 +57,7 @@ public class Net : GLib.Object {
 
   private string _url = null;
   public string url {
-	owned get { string r; lock (worker) { r = _url; } return r; }
+	owned get { string r; lock (worker) { r = (_url==null)?"":_url; } return r; }
 	private set { lock (worker) { _url = value; } }
   }
 
@@ -124,7 +124,7 @@ public class Net : GLib.Object {
 	logger = null;
 	_previous_redirection_type = REDIRECTION_TYPE_NONE;
 	_redirection_type = REDIRECTION_TYPE_NONE;
-	redirection_status = REDIRECTION_STATUS_NONE;
+	_redirection_status = REDIRECTION_STATUS_NONE;
 	ssh_host = "";
 	ssh_user = "";
 	display = "";
@@ -186,7 +186,7 @@ public class Net : GLib.Object {
 	int status;
 
 	status = REDIRECTION_STATUS_PENDING;
-	set("redirection_status",status);
+	Idle.add( () => { set("redirection_status",REDIRECTION_STATUS_PENDING); return false; });
 
 	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
 										 out txtout,
@@ -199,7 +199,7 @@ public class Net : GLib.Object {
 	} else {
 	  log(_("Local IP not found"));
 	  internal_ip = "127.0.0.1";
-	  set("redirection_status",REDIRECTION_STATUS_ERROR);
+	  Idle.add( () => { set("redirection_status",REDIRECTION_STATUS_ERROR); return false; });
 	  return null;
 	}
 
@@ -273,7 +273,7 @@ public class Net : GLib.Object {
 	  }
 	}
 
-	redirection_status = REDIRECTION_STATUS_NONE;
+	Idle.add( () => { set("redirection_status", REDIRECTION_STATUS_NONE); return false; });
   }
 
   private void *forward_ssh_start() {
@@ -287,7 +287,7 @@ public class Net : GLib.Object {
 	int status;
 
 	status = REDIRECTION_STATUS_PENDING;
-	set("redirection_status",status);
+	Idle.add( () => { set("redirection_status", REDIRECTION_STATUS_PENDING); return false; });
 
 	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
 										 out txtout,
@@ -300,7 +300,7 @@ public class Net : GLib.Object {
 	} else {
 	  log(_("Local IP not found"));
 	  internal_ip = "127.0.0.1";
-	  set("redirection_status",REDIRECTION_STATUS_ERROR);
+	  Idle.add( () => { set("redirection_status",REDIRECTION_STATUS_ERROR); return false; } );
 	  return null;
 	}
 
@@ -355,7 +355,6 @@ public class Net : GLib.Object {
 	set("external_ip",external_ip);
 	set("url",url);
 	set("redirection_status",status);
-
 	return null;
   }
 
@@ -383,7 +382,7 @@ public class Net : GLib.Object {
 	  }
 	}
 
-	redirection_status = REDIRECTION_STATUS_NONE;
+	Idle.add( () => { redirection_status = REDIRECTION_STATUS_NONE; return false; });
   }
 
 }

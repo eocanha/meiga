@@ -94,6 +94,22 @@ public class Meiga : GLib.Object {
 	return server.get_redirection_status();
   }
 
+  public void set_ssh_host(string ssh_host) {
+	server.set_ssh_host(ssh_host);
+  }
+
+  public void set_ssh_port(string ssh_port) {
+	server.set_ssh_port(ssh_port);
+  }
+
+  public void set_ssh_user(string ssh_user) {
+	server.set_ssh_user(ssh_user);
+  }
+
+  public void set_ssh_password(string ssh_password) {
+	server.set_ssh_password(ssh_password);
+  }
+
   public void shutdown() {
 	server.shutdown();
   }

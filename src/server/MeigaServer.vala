@@ -76,10 +76,10 @@ public class MeigaServer : GLib.Object {
 	  log(_("External URL: %s").printf(get_public_url()));
 	  model_changed();
 	};
-	net.notify["redirection_type"] += (s, p) => {
+	net.notify["redirection-type"] += (s, p) => {
 	  model_changed();
 	};
-	net.notify["redirection_status"] += (s, p) => {
+	net.notify["redirection-status"] += (s, p) => {
 	  model_changed();
 	};
   }
@@ -191,6 +191,30 @@ public class MeigaServer : GLib.Object {
 	// GUI should have registered itself before changing redirection status
 	if (net==null) return Net.REDIRECTION_STATUS_NONE;
 	else return net.redirection_status;
+  }
+
+  public void set_ssh_host(string ssh_host) {
+	// GUI should have registered itself before doing changes
+	if (net==null) return;
+	net.ssh_host=ssh_host;
+  }
+
+  public void set_ssh_port(string ssh_port) {
+	// GUI should have registered itself before doing changes
+	if (net==null) return;
+	net.ssh_port=ssh_port;
+  }
+
+  public void set_ssh_user(string ssh_user) {
+	// GUI should have registered itself before doing changes
+	if (net==null) return;
+	net.ssh_user=ssh_user;
+  }
+
+  public void set_ssh_password(string ssh_password) {
+	// GUI should have registered itself before doing changes
+	if (net==null) return;
+	net.ssh_password=ssh_password;
   }
 
   public HashTable<string,string> get_paths() {

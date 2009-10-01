@@ -43,6 +43,12 @@ public class Gui : GLib.Object {
   private Gtk.StatusIcon systray;
   private Gtk.Action systraymenu_restore;
   private Gtk.TreeView files;
+  private Gtk.ComboBox redirection_type;
+  private Gtk.Entry ssh_host;
+  private Gtk.Entry ssh_port;
+  private Gtk.Entry ssh_user;
+  private Gtk.Entry ssh_password;
+  private Gtk.Button redirection_apply;
   private Gtk.Statusbar statusbar;
   private Gtk.FileChooserButton localdirectory;
   private Gtk.Entry shareas;
@@ -119,6 +125,20 @@ public class Gui : GLib.Object {
   [CCode (instance_pos = -1)]
   public void on_quit(Gtk.Widget widget) {
     quit();
+  }
+
+  [CCode (instance_pos = -1)]
+  public void on_redirection_apply(Gtk.Widget widget) {
+	if (remote == null) return;
+	try {
+	  remote.set_ssh_host(ssh_host.get_text());
+	  remote.set_ssh_port(ssh_port.get_text());
+	  remote.set_ssh_user(ssh_user.get_text());
+	  remote.set_ssh_password(ssh_password.get_text());
+	  remote.set_redirection_type(redirection_type.get_active());
+	} catch (Error e) {
+	  log(_("Remote error applying redirection options\n"));
+	}
   }
 
   [CCode (instance_pos = -1)]
@@ -292,6 +312,13 @@ public class Gui : GLib.Object {
     adddialog = (Gtk.Window)builder.get_object("adddialog");
     aboutdialog = (Gtk.Window)builder.get_object("aboutdialog");
     files = (Gtk.TreeView)builder.get_object("files");
+	redirection_type = (Gtk.ComboBox)builder.get_object("cbredirection_type");
+	ssh_host = (Gtk.Entry)builder.get_object("essh_host");
+	ssh_port = (Gtk.Entry)builder.get_object("essh_port");
+	ssh_user = (Gtk.Entry)builder.get_object("essh_user");
+	ssh_password = (Gtk.Entry)builder.get_object("essh_password");
+	ssh_user = (Gtk.Entry)builder.get_object("essh_user");
+	redirection_apply = (Gtk.Button)builder.get_object("bredirection_apply");
 	statusbar = (Gtk.Statusbar)builder.get_object("statusbar");
     localdirectory = (Gtk.FileChooserButton)builder.get_object("localdirectory");
     shareas = (Gtk.Entry)builder.get_object("shareas");
@@ -360,6 +387,12 @@ public class Gui : GLib.Object {
   }
 
   private void update_model() {
+	// Setting REDIRECTION_STATUS_PENDING ensures that the options will
+	// be shaded unless the server confirms its status
+	int int_redirection_status = 1;
+	int int_redirection_type = 0;
+	bool enable_redirection_options;
+
     string_model = null;
     if (remote != null) {
       try {
@@ -367,9 +400,26 @@ public class Gui : GLib.Object {
       } catch (Error e) {
         log(_("Remote error getting paths\n"));
       }
+      try {
+		int_redirection_type = remote.get_redirection_type();
+		int_redirection_status = remote.get_redirection_status();
+      } catch (Error e) {
+        log(_("Remote error getting redirection options\n"));
+      }
 	}
     if (string_model == null) string_model = "";
     update_model_from_string(model, string_model);
+
+	redirection_type.set_active(int_redirection_type);
+
+	// Disable redirection settings when redirection process is pending
+	enable_redirection_options = (int_redirection_status != 1);
+	redirection_type.set_sensitive(enable_redirection_options);
+	ssh_host.set_sensitive(enable_redirection_options);
+	ssh_port.set_sensitive(enable_redirection_options);
+	ssh_user.set_sensitive(enable_redirection_options);
+	ssh_password.set_sensitive(enable_redirection_options);
+	redirection_apply.set_sensitive(enable_redirection_options);
   }
 
   private void update_log() {
@@ -400,14 +450,24 @@ public class Gui : GLib.Object {
   private void update_statusbar() {
 	if (remote != null) {
       try {
+		int status = remote.get_redirection_status();
+		string string_status;
 		public_url = remote.get_public_url();
 		if (public_url != null && public_url.length > 0 && preferred_share != null) {
 		  invitation = public_url + preferred_share;
+		  string_status = " - ";
 		} else {
 		  invitation = "";
+		  string_status = "";
+		}
+		switch (status) {
+		case 0: string_status += _("Direct connection"); break;
+		case 1: string_status += _("Performing redirection"); break;
+		case 2: string_status += _("Redirection performed"); break;
+		case 3: string_status += _("Redirection error"); break;
 		}
 		statusbar.pop(0);
-		statusbar.push(0, invitation);
+		statusbar.push(0, invitation+string_status);
       } catch (Error e) {
         log(_("Remote error getting public url\n"));
       }
