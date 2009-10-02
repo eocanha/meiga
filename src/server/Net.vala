@@ -128,6 +128,8 @@ public class Net : GLib.Object {
 	ssh_host = "";
 	ssh_user = "";
 	display = "";
+	// Get URL info
+	forward_none_start();
   }
 
   private void log(string msg) {
@@ -144,6 +146,10 @@ public class Net : GLib.Object {
 
   private void forward_start() {
 	switch (redirection_type) {
+	case REDIRECTION_TYPE_NONE:
+	  // Synchronous call
+	  forward_none_start();
+	  break;
 	case REDIRECTION_TYPE_UPNP:
 	  try {
 		worker = Thread.create(forward_upnp_start, true);
@@ -174,6 +180,36 @@ public class Net : GLib.Object {
 	  forward_ssh_stop();
 	  break;
 	}
+  }
+
+  private void *forward_none_start() {
+	string internal_ip;
+	string url;
+	string txtout;
+	string txterr;
+	int result;
+
+	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
+										 out txtout,
+										 out txterr,
+										 out result);
+
+	if (result == 0) {
+	  internal_ip = txtout.chomp();
+	  log(_("Found internal IP: %s").printf(internal_ip));
+	} else {
+	  log(_("Local IP not found"));
+	  internal_ip = "127.0.0.1";
+	}
+
+	url="http://%s:%d".printf(internal_ip, port);
+
+	set("internal_ip",internal_ip);
+	set("external_ip",internal_ip);
+	set("url",url);
+	set("redirection_status",REDIRECTION_STATUS_NONE);
+
+	return null;
   }
 
   private void *forward_upnp_start() {
