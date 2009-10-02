@@ -156,7 +156,7 @@ public class Net : GLib.Object {
 	  } catch (SpawnError e) {
 		log(_("Error spawning UPNP redirector process"));
 	  } catch (ThreadError e) {
-		log(_("Thread creating thread for UPNP redirector process"));
+		log(_("Error creating thread for UPNP redirector process"));
 	  }
 	  break;
 	case REDIRECTION_TYPE_SSH:
@@ -165,7 +165,7 @@ public class Net : GLib.Object {
 	  } catch (SpawnError e) {
 		log(_("Error spawning UPNP redirector process"));
 	  } catch (ThreadError e) {
-		log(_("Thread creating thread for UPNP redirector process"));
+		log(_("Error creating thread for UPNP redirector process"));
 	  }
 	  break;
 	}
