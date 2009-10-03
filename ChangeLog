@@ -1,3 +1,13 @@
+meiga (0.3.0) - Sat, 03 Oct 2009 01:49:00 +0200
+
+  * Context menus for Nautilus and Konqueror
+  * Prevent server operation until a GUI has been registered
+  * Fixed bug: Use proper syntax for gupnp calls depending on the version
+	detected
+  * Redirection process is now asynchronous by using threads
+  * Ssh redirection backend
+  * DISPLAY environment variable forwarded to MeigaServer
+
 meiga (0.2.1) - Thu, 02 Jul 2009 16:56:44 +0200
 
   * Fixed bug: No PATH set from DBUS daemon prevents external commands to
