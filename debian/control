@@ -8,7 +8,7 @@ Homepage: http://meiga.igalia.com/
 
 Package: meiga
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ssh-askpass, openssh-client
 Description: Light and easy content server for your desktop
  Meiga shares selected local directories via web and also as
  an RSS feed. It can reconfigure your LAN router using UPnP
