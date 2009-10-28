@@ -7,4 +7,4 @@ src/server/Net.vala
 src/server/Log.vala
 src/server/Rss.vala
 src/gui/Gui.vala
-src/gui/ui/gui.glade
+src/gui/ui/gui.ui

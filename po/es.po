@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: meiga\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-03 01:21+0200\n"
+"POT-Creation-Date: 2009-10-28 22:33+0100\n"
 "PO-Revision-Date: 2009-06-13 21:41+0200\n"
 "Last-Translator: Enrique Ocaña González <eocanha@igalia.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -121,7 +121,7 @@ msgid "Creating redirection"
 msgstr "Creando redirección"
 
 #: ../src/server/Net.vala:267 ../src/server/Net.vala:374
-#: ../src/gui/Gui.vala:466
+#: ../src/gui/Gui.vala:496
 msgid "Redirection performed"
 msgstr "Redirección realizada"
 
@@ -155,7 +155,8 @@ msgstr "Creando túnel SSH"
 
 #: ../src/server/Net.vala:377
 msgid "Error creating SSH tunnel. Check config parameters and password."
-msgstr "Error creando túnel SSH. Compruebe parámetros de configuración y password."
+msgstr ""
+"Error creando túnel SSH. Compruebe parámetros de configuración y password."
 
 #: ../src/server/Net.vala:382
 msgid "Error spawning SSH redirector process"
@@ -238,90 +239,95 @@ msgstr "No se ha podido cargar archivo de UI\n"
 msgid "Icon file not found\n"
 msgstr "Archivo de icono no encontrado\n"
 
-#: ../src/gui/Gui.vala:345
+#: ../src/gui/Gui.vala:342
+msgid "None"
+msgstr "Ninguna"
+
+#: ../src/gui/Gui.vala:344
+msgid "UPnP"
+msgstr "UPnP"
+
+#: ../src/gui/Gui.vala:346
+msgid "SSH"
+msgstr "SSH"
+
+#: ../src/gui/Gui.vala:354
+msgid "Meiga - Copyright (C) 2009 Igalia, S.L.\n"
+msgstr "Meiga - Copyright (C) 2009 Igalia, S.L.\n"
+
+#: ../src/gui/Gui.vala:375
 msgid "Local file"
 msgstr "Archivo local"
 
-#: ../src/gui/Gui.vala:348
+#: ../src/gui/Gui.vala:378
 msgid "Shared as"
 msgstr "Compartido como"
 
-#: ../src/gui/Gui.vala:401
+#: ../src/gui/Gui.vala:431
 msgid "Remote error getting paths\n"
 msgstr "Error remoto obteniendo rutas\n"
 
-#: ../src/gui/Gui.vala:407
+#: ../src/gui/Gui.vala:437
 #, fuzzy
 msgid "Remote error getting redirection options\n"
 msgstr "Error remoto obteniendo líneas de registro\n"
 
-#: ../src/gui/Gui.vala:431
+#: ../src/gui/Gui.vala:461
 msgid "Remote error getting log lines\n"
 msgstr "Error remoto obteniendo líneas de registro\n"
 
-#: ../src/gui/Gui.vala:464
+#: ../src/gui/Gui.vala:494
 msgid "Direct connection"
 msgstr "Conexión directa"
 
-#: ../src/gui/Gui.vala:465
+#: ../src/gui/Gui.vala:495
 #, fuzzy
 msgid "Performing redirection"
 msgstr "Creando redirección"
 
-#: ../src/gui/Gui.vala:467
+#: ../src/gui/Gui.vala:497
 #, fuzzy
 msgid "Redirection error"
 msgstr "Redirección realizada"
 
-#: ../src/gui/Gui.vala:472
+#: ../src/gui/Gui.vala:502
 msgid "Remote error getting public url\n"
 msgstr "Error remoto obteniendo url pública\n"
 
-#: ../src/gui/Gui.vala:504
+#: ../src/gui/Gui.vala:534
 msgid "Remote error shutting down server\n"
 msgstr "Error remoto deteniendo el servidor\n"
 
-#: ../src/gui/ui/gui.glade.h:1
 msgid "<b>SSH options</b>"
 msgstr "<b>Opciones SSH</b>"
 
-#: ../src/gui/ui/gui.glade.h:2
 msgid "About"
 msgstr "Acerca de"
 
-#: ../src/gui/ui/gui.glade.h:3
 msgid "Add path"
 msgstr "Añadir ruta"
 
-#: ../src/gui/ui/gui.glade.h:4
 msgid "Copy URL to paste as invitation"
 msgstr "Copiar URL para pegar como invitación"
 
-#: ../src/gui/ui/gui.glade.h:5
 msgid "File"
 msgstr "Archivo"
 
-#: ../src/gui/ui/gui.glade.h:6
 msgid "Help"
 msgstr "Ayuda"
 
-#: ../src/gui/ui/gui.glade.h:7
 msgid "Host"
 msgstr "Servidor"
 
-#: ../src/gui/ui/gui.glade.h:8
 msgid "Local directory"
 msgstr "Directorio local"
 
-#: ../src/gui/ui/gui.glade.h:9
 msgid "Log"
 msgstr "Registro"
 
-#: ../src/gui/ui/gui.glade.h:10
 msgid "Meiga"
 msgstr "Meiga"
 
-#: ../src/gui/ui/gui.glade.h:11
 msgid ""
 "Meiga - Copyright (C) 2009 Igalia, S.L.\n"
 "\n"
@@ -347,56 +353,32 @@ msgstr ""
 "\n"
 "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
 
-#: ../src/gui/ui/gui.glade.h:21
-msgid ""
-"None\n"
-"UPnP\n"
-"SSH"
-msgstr ""
-"Ninguno\n"
-"UPnP\n"
-"SSH"
-
-#: ../src/gui/ui/gui.glade.h:24
 msgid "Options"
 msgstr "Opciones"
 
-#: ../src/gui/ui/gui.glade.h:25
 msgid "Password\t"
 msgstr "Contraseña\t"
 
-#: ../src/gui/ui/gui.glade.h:26
 msgid "Port"
 msgstr "Puerto"
 
-#: ../src/gui/ui/gui.glade.h:27
-#, fuzzy
 msgid "Port redirection scheme"
-msgstr "Redirección eliminada"
+msgstr "Tipo de redirección"
 
-#: ../src/gui/ui/gui.glade.h:28
 msgid "Share"
 msgstr "Compartir"
 
-#: ../src/gui/ui/gui.glade.h:29
 msgid "Share as"
 msgstr "Compartir como"
 
-#: ../src/gui/ui/gui.glade.h:30
 msgid "Shares"
 msgstr "Elementos compartidos"
 
-#: ../src/gui/ui/gui.glade.h:31
 msgid "User"
 msgstr "Usuario"
 
-#: ../src/gui/ui/gui.glade.h:32
 msgid "_Restore"
 msgstr "_Restaurar"
-
-#: ../src/gui/ui/gui.glade.h:33
-msgid "gtk-apply"
-msgstr ""
 
 msgid "_Copy invitation"
 msgstr "_Copiar invitación"
