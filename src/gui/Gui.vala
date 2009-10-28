@@ -334,6 +334,36 @@ public class Gui : GLib.Object {
 	  log(_("Icon file not found\n"));
 	}
 
+	Gtk.ListStore redirection_type_model = new Gtk.ListStore(1, typeof(string));
+	Gtk.TreeIter redirection_type_model_iter;
+	Gtk.CellRenderer redirection_type_model_cell_renderer;
+	redirection_type.set_model(redirection_type_model);
+	redirection_type_model.append(out redirection_type_model_iter);
+	redirection_type_model.set(redirection_type_model_iter, 0, _("None"), -1);
+	redirection_type_model.append(out redirection_type_model_iter);
+	redirection_type_model.set(redirection_type_model_iter, 0, _("UPnP"), -1);
+	redirection_type_model.append(out redirection_type_model_iter);
+	redirection_type_model.set(redirection_type_model_iter, 0, _("SSH"), -1);
+	redirection_type_model_cell_renderer = new Gtk.CellRendererText();
+	redirection_type.pack_start(redirection_type_model_cell_renderer, true);
+	redirection_type.set_attributes(redirection_type_model_cell_renderer,
+									"text",
+									0);
+
+	Gtk.TextView abouttext = (Gtk.TextView)builder.get_object("abouttext");
+	abouttext.buffer.insert_at_cursor(_("Meiga - Copyright (C) 2009 Igalia, S.L.\n" +
+									  "\n" +
+									  "http://meiga.igalia.com\n" +
+									  "\n" +
+									  "This program comes with ABSOLUTELY NO WARRANTY.\n" +
+									  "Licensed under GNU GPL 2.0. This is free software, and you are welcome to " +
+									  "redistribute it under certain conditions.\n" +
+									  "\n" +
+									  "For more information, see:\n" +
+									  "\n" +
+									  "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html")
+									  , -1);
+
     menu=menushell_to_menubar((Gtk.Menu)builder.get_object("menu"));
     menu.set("visible",true);
     topvbox.pack_start(menu,false,false,0);
