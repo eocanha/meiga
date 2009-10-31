@@ -38,13 +38,13 @@ public class Net : GLib.Object {
   private weak Thread worker = null;
 
   private string _external_ip;
-  public string external_ip {
+  private string external_ip {
 	private owned get { string r; lock (worker) { r = _external_ip; } return r; }
 	private set { lock (worker) { _external_ip = value; } }
   }
 
   private string _internal_ip;
-  public string internal_ip {
+  private string internal_ip {
 	private owned get { string r; lock (worker) { r = _internal_ip; } return r; }
 	private set { lock (worker) { _internal_ip = value; } }
   }
@@ -204,10 +204,10 @@ public class Net : GLib.Object {
 
 	url="http://%s:%d".printf(internal_ip, port);
 
-	set("internal_ip",internal_ip);
-	set("external_ip",internal_ip);
-	set("url",url);
-	set("redirection_status",REDIRECTION_STATUS_NONE);
+	this.internal_ip = internal_ip;
+	this.external_ip = internal_ip;
+	this.url = url;
+	this.redirection_status = REDIRECTION_STATUS_NONE;
 
 	return null;
   }
@@ -222,7 +222,7 @@ public class Net : GLib.Object {
 	int status;
 
 	status = REDIRECTION_STATUS_PENDING;
-	Idle.add( () => { set("redirection_status",REDIRECTION_STATUS_PENDING); return false; });
+	Idle.add( () => { redirection_status = REDIRECTION_STATUS_PENDING; return false; });
 
 	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
 										 out txtout,
@@ -235,7 +235,7 @@ public class Net : GLib.Object {
 	} else {
 	  log(_("Local IP not found"));
 	  internal_ip = "127.0.0.1";
-	  Idle.add( () => { set("redirection_status",REDIRECTION_STATUS_ERROR); return false; });
+	  Idle.add( () => { redirection_status = REDIRECTION_STATUS_ERROR; return false; });
 	  return null;
 	}
 
@@ -279,10 +279,10 @@ public class Net : GLib.Object {
 
 	url="http://%s:%d".printf(external_ip, port);
 
-	set("internal_ip",internal_ip);
-	set("external_ip",external_ip);
-	set("url",url);
-	set("redirection_status",status);
+	internal_ip = internal_ip;
+	external_ip = external_ip;
+	url = url;
+	redirection_status = status;
 
 	return null;
   }
@@ -309,7 +309,7 @@ public class Net : GLib.Object {
 	  }
 	}
 
-	Idle.add( () => { set("redirection_status", REDIRECTION_STATUS_NONE); return false; });
+	Idle.add( () => { redirection_status = REDIRECTION_STATUS_NONE; return false; });
   }
 
   private void *forward_ssh_start() {
@@ -323,7 +323,7 @@ public class Net : GLib.Object {
 	int status;
 
 	status = REDIRECTION_STATUS_PENDING;
-	Idle.add( () => { set("redirection_status", REDIRECTION_STATUS_PENDING); return false; });
+	Idle.add( () => { redirection_status = REDIRECTION_STATUS_PENDING; return false; });
 
 	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
 										 out txtout,
@@ -336,7 +336,7 @@ public class Net : GLib.Object {
 	} else {
 	  log(_("Local IP not found"));
 	  internal_ip = "127.0.0.1";
-	  Idle.add( () => { set("redirection_status",REDIRECTION_STATUS_ERROR); return false; } );
+	  Idle.add( () => { redirection_status = REDIRECTION_STATUS_ERROR; return false; } );
 	  return null;
 	}
 
@@ -387,10 +387,10 @@ public class Net : GLib.Object {
 
 	url="http://%s:%d".printf(external_ip, port);
 
-	set("internal_ip",internal_ip);
-	set("external_ip",external_ip);
-	set("url",url);
-	set("redirection_status",status);
+	internal_ip = internal_ip;
+	external_ip = external_ip;
+	url = url;
+	redirection_status = status;
 	return null;
   }
 
