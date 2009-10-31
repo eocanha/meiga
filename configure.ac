@@ -1,4 +1,4 @@
-AC_INIT([meiga], [0.3.0], [info@igalia.com], [meiga])
+AC_INIT([meiga], [0.3.1], [info@igalia.com], [meiga])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([dist-bzip2])
