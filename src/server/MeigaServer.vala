@@ -286,7 +286,14 @@ public class MeigaServer : GLib.Object {
 	  msg.set_status(Soup.KnownStatusCode.OK);
 
 	  string response="";
-	  response+="<html>\n<body>\n";
+	  response+="<html>\n";
+	  response+="<head>\n";
+	  response+="<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n";
+	  response+="<title>\n";
+	  response+=_("Index of %s\n").printf(path);
+	  response+="</title>\n";
+	  response+="</head>\n";
+	  response+="<body>\n";
 	  response+="<!-- generator=\"%s/%s\" -->\n".printf(Config.PACKAGE,Config.VERSION);
 	  response+=_("Index of %s\n").printf(path);
 	  response+="<ul>\n";
