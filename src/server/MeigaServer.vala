@@ -36,6 +36,8 @@ public class MeigaServer : GLib.Object {
   private GLib.HashTable<string,string> mimetypes;
   private Meiga exposed;
   private Net net;
+  private uint pending_requests;
+  private uint total_requests;
 
   public Log logger { public get; private set; default=null; }
   public uint gui_pid { public get; private set; default=0; }
@@ -54,6 +56,8 @@ public class MeigaServer : GLib.Object {
 	logger = new Log();
 
 	port=8001;
+	pending_requests=0;
+	total_requests=0;
 
 	initialize_mimetypes();
 	path_mapping=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);
@@ -221,6 +225,10 @@ public class MeigaServer : GLib.Object {
 	return path_mapping;
   }
 
+  public string get_requests_stats() {
+	return "%u/%u".printf(pending_requests, total_requests);
+  }
+
   public void serve_file_callback (Soup.Server server, Soup.Message? msg, string path,
 								   GLib.HashTable? query, Soup.ClientContext? client) {
 	string real_path=null;
@@ -241,6 +249,14 @@ public class MeigaServer : GLib.Object {
 	for (int i=j;path_tokens[i]!=null;i++) {
 	  real_path+="/"+path_tokens[i];
 	}
+
+	pending_requests++;
+	total_requests++;
+	model_changed();
+	msg.finished += () => {
+	  pending_requests--;
+	  model_changed();
+	};
 
 	log(_("Request: %s --> Serving: %s").printf(path,real_path));
 

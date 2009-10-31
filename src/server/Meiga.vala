@@ -127,4 +127,9 @@ public class Meiga : GLib.Object {
 
 	return result;
   }
+
+  public string get_requests_stats() {
+	return server.get_requests_stats();
+  }
+
 }

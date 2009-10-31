@@ -490,6 +490,10 @@ public class Gui : GLib.Object {
 		  invitation = "";
 		  string_status = "";
 		}
+
+		string_status += remote.get_requests_stats();
+		string_status += " - ";
+
 		switch (status) {
 		case 0: string_status += _("Direct connection"); break;
 		case 1: string_status += _("Performing redirection"); break;
