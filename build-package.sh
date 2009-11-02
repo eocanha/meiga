@@ -10,6 +10,7 @@ VALA_URL='http://download.gnome.org/sources/vala/0.7/vala-0.7.2.tar.bz2'
 # -------------------------------------------------
 
 VALA_INSTALLED=0
+WKDIR=`pwd`
 if [ "$#" -ge 1 ]
 then if [ "$1" = "-d" ]
   then
@@ -26,7 +27,6 @@ then if [ "$1" = "-d" ]
       VALAC_PATH=`which valac`
       if [ ! -f "$VALAC_PATH" ]
       then
-        pushd .
         cd /tmp
         wget "$VALA_URL"
         tar jxvf vala*.tar.bz2
@@ -34,7 +34,7 @@ then if [ "$1" = "-d" ]
         ./configure
         make
         make install && VALA_INSTALLED=1
-        popd
+        cd "$WKDIR"
         ldconfig
       fi
     else
@@ -66,10 +66,9 @@ dpkg-buildpackage -d -rfakeroot -b -uc
 
 if [ "$VALA_INSTALLED" = "1" ]
 then
-  pushd .
   cd /tmp
   cd vala*
   make uninstall
-  popd
+  cd "$WKDIR"
   ldconfig
 fi
