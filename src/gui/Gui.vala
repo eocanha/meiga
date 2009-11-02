@@ -296,6 +296,7 @@ public class Gui : GLib.Object {
 		iconfile = path[i] + "/" + "meiga-16x16.png";
 		break;
 	  } catch (Error e) {
+		stderr.printf("Error: %s\n",e.message);
 		continue;
 	  }
     }
