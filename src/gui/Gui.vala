@@ -42,6 +42,7 @@ public class Gui : GLib.Object {
   private Gtk.Window aboutdialog;
   private Gtk.StatusIcon systray;
   private Gtk.Action systraymenu_restore;
+  private Gtk.VBox topvbox;
   private Gtk.TreeView files;
   private Gtk.ComboBox redirection_type;
   private Gtk.Entry ssh_host;
@@ -309,23 +310,13 @@ public class Gui : GLib.Object {
 
     systraymenu = (Gtk.Menu)builder.get_object("systraymenu");
     systraymenu_restore = (Gtk.Action)builder.get_object("tray_restore");
-    top = (Gtk.Window)builder.get_object("top");
     adddialog = (Gtk.Window)builder.get_object("adddialog");
     aboutdialog = (Gtk.Window)builder.get_object("aboutdialog");
-    files = (Gtk.TreeView)builder.get_object("files");
-	redirection_type = (Gtk.ComboBox)builder.get_object("cbredirection_type");
-	ssh_host = (Gtk.Entry)builder.get_object("essh_host");
-	ssh_port = (Gtk.Entry)builder.get_object("essh_port");
-	ssh_user = (Gtk.Entry)builder.get_object("essh_user");
-	ssh_password = (Gtk.Entry)builder.get_object("essh_password");
-	ssh_user = (Gtk.Entry)builder.get_object("essh_user");
-	redirection_apply = (Gtk.Button)builder.get_object("bredirection_apply");
-	statusbar = (Gtk.Statusbar)builder.get_object("statusbar");
     localdirectory = (Gtk.FileChooserButton)builder.get_object("localdirectory");
     shareas = (Gtk.Entry)builder.get_object("shareas");
 	logtext = (Gtk.TextView)builder.get_object("logtext");
 
-    Gtk.VBox topvbox=(Gtk.VBox)builder.get_object("topvbox");
+    create_top();
 
 	try {
 	  top.set_icon_from_file(iconfile);
@@ -335,21 +326,6 @@ public class Gui : GLib.Object {
 	  log(_("Icon file not found\n"));
 	}
 
-	Gtk.ListStore redirection_type_model = new Gtk.ListStore(1, typeof(string));
-	Gtk.TreeIter redirection_type_model_iter;
-	Gtk.CellRenderer redirection_type_model_cell_renderer;
-	redirection_type.set_model(redirection_type_model);
-	redirection_type_model.append(out redirection_type_model_iter);
-	redirection_type_model.set(redirection_type_model_iter, 0, _("None"), -1);
-	redirection_type_model.append(out redirection_type_model_iter);
-	redirection_type_model.set(redirection_type_model_iter, 0, _("UPnP"), -1);
-	redirection_type_model.append(out redirection_type_model_iter);
-	redirection_type_model.set(redirection_type_model_iter, 0, _("SSH"), -1);
-	redirection_type_model_cell_renderer = new Gtk.CellRendererText();
-	redirection_type.pack_start(redirection_type_model_cell_renderer, true);
-	redirection_type.set_attributes(redirection_type_model_cell_renderer,
-									"text",
-									0);
 
 	Gtk.TextView abouttext = (Gtk.TextView)builder.get_object("abouttext");
 	abouttext.buffer.insert_at_cursor(_("Meiga - Copyright (C) 2009 Igalia, S.L.\n" +
@@ -369,16 +345,6 @@ public class Gui : GLib.Object {
     menu.set("visible",true);
     topvbox.pack_start(menu,false,false,0);
 	topvbox.reorder_child(menu,0);
-
-    model = new Gtk.ListStore(2, typeof(string), typeof(string));
-    files.set_model(model);
-    files.insert_column_with_attributes (
-										 -1, _("Local file"), new CellRendererText (),
-										 "text", 0, null);
-    files.insert_column_with_attributes (
-										 -1, _("Shared as"), new CellRendererText (),
-										 "text", 1, null);
-    files.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
 
 	pid = (uint)Posix.getpid();
 	display = Environment.get_variable("DISPLAY");
@@ -539,6 +505,226 @@ public class Gui : GLib.Object {
         log(_("Remote error shutting down server\n"));
       }
 	}
+  }
+
+  private void create_top() {
+	top = new Gtk.Window(Gtk.WindowType.TOPLEVEL);
+	top.title = _("Meiga");
+	top.default_height = 400;
+	top.default_width = 350;
+
+	{
+	  topvbox = new Gtk.VBox(false, 0);
+	  {
+		Gtk.HandleBox hb = new Gtk.HandleBox();
+		{
+		  Gtk.Toolbar tb = new Gtk.Toolbar();
+		  {
+			Gtk.ToolButton tadd = new Gtk.ToolButton.from_stock("gtk-add");
+			tb.insert(tadd, -1);
+			tadd.show();
+			tadd.clicked += on_add;
+
+			Gtk.ToolButton tremove = new Gtk.ToolButton.from_stock("gtk-remove");
+			tb.insert(tremove, -1);
+			tremove.show();
+			tremove.clicked += on_remove;
+
+			Gtk.ToolButton tcopy_invitation = new Gtk.ToolButton.from_stock("gtk-copy");
+			tb.insert(tcopy_invitation, -1);
+			tcopy_invitation.show();
+			tcopy_invitation.clicked += on_copy_invitation;
+		  }
+		  hb.add(tb);
+		  tb.show();
+		}
+		Gtk.Notebook nb = new Gtk.Notebook();
+		{
+		  Gtk.ScrolledWindow sw1 = new Gtk.ScrolledWindow(null, null);
+		  {
+			files = new Gtk.TreeView();
+			sw1.add(files);
+			files.show();
+
+			model = new Gtk.ListStore(2, typeof(string), typeof(string));
+			files.set_model(model);
+			files.insert_column_with_attributes (
+												 -1, _("Local file"), new CellRendererText (),
+												 "text", 0, null);
+			files.insert_column_with_attributes (
+												 -1, _("Shared as"), new CellRendererText (),
+												 "text", 1, null);
+			files.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
+		  }
+		  sw1.vscrollbar_policy = Gtk.PolicyType.AUTOMATIC;
+		  sw1.hscrollbar_policy = Gtk.PolicyType.AUTOMATIC;
+		  sw1.shadow_type = Gtk.ShadowType.IN;
+		  nb.append_page(sw1, new Gtk.Label(_("Shares")));
+		  sw1.show();
+
+		  Gtk.ScrolledWindow sw2 = new Gtk.ScrolledWindow(null, null);
+		  {
+			logtext = new Gtk.TextView();
+			logtext.editable = false;
+			logtext.left_margin = 5;
+			logtext.right_margin = 5;
+			logtext.cursor_visible = false;
+			sw2.add(logtext);
+			logtext.show();
+		  }
+		  sw2.vscrollbar_policy = Gtk.PolicyType.AUTOMATIC;
+		  sw2.hscrollbar_policy = Gtk.PolicyType.AUTOMATIC;
+		  sw2.shadow_type = Gtk.ShadowType.IN;
+		  nb.append_page(sw2, new Gtk.Label(_("Log")));
+		  sw2.show();
+
+		  Gtk.ScrolledWindow sw3 = new Gtk.ScrolledWindow(null, null);
+		  {
+			Gtk.VBox vb = new Gtk.VBox(false, 0);
+			{
+			  Gtk.HBox hb2 = new Gtk.HBox(false, 0);
+			  {
+				Gtk.Label l = new Gtk.Label(_("Port redirection scheme"));
+				hb2.pack_start(l, false, false, 5);
+				l.show();
+
+				redirection_type = new Gtk.ComboBox();
+				hb2.pack_start(redirection_type, true, true, 5);
+				redirection_type.show();
+
+				Gtk.ListStore redirection_type_model = new Gtk.ListStore(1, typeof(string));
+				Gtk.TreeIter redirection_type_model_iter;
+				Gtk.CellRenderer redirection_type_model_cell_renderer;
+				redirection_type.set_model(redirection_type_model);
+				redirection_type_model.append(out redirection_type_model_iter);
+				redirection_type_model.set(redirection_type_model_iter, 0, _("None"), -1);
+				redirection_type_model.append(out redirection_type_model_iter);
+				redirection_type_model.set(redirection_type_model_iter, 0, _("UPnP"), -1);
+				redirection_type_model.append(out redirection_type_model_iter);
+				redirection_type_model.set(redirection_type_model_iter, 0, _("SSH"), -1);
+				redirection_type_model_cell_renderer = new Gtk.CellRendererText();
+				redirection_type.pack_start(redirection_type_model_cell_renderer, true);
+				redirection_type.set_attributes(redirection_type_model_cell_renderer,
+												"text",
+												0);
+			  }
+			  vb.pack_start(hb2, false, false, 5);
+			  hb2.show();
+
+			  Gtk.Frame f = new Gtk.Frame(_("<b>SSH options</b>"));
+			  ((Gtk.Label)(f.label_widget)).use_markup = true;
+			  {
+				Gtk.Alignment ga = new Gtk.Alignment((float)0.5, (float)0.5, (float)1.0, (float)1.0);
+				{
+				  Gtk.Table t = new Gtk.Table(4, 2, false);
+				  {
+					Gtk.Label lh = new Gtk.Label(_("Host"));
+					lh.xalign = (float)0.0;
+					t.attach(lh, 0, 1, 0, 1,
+							 Gtk.AttachOptions.FILL,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 3, 3);
+					lh.show();
+
+					ssh_host = new Gtk.Entry();
+					t.attach(ssh_host, 1, 2, 0, 1,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 3, 3);
+					ssh_host.show();
+
+					Gtk.Label lp = new Gtk.Label(_("Port"));
+					lp.xalign = (float)0.0;
+					t.attach(lp, 0, 1, 1, 2,
+							 Gtk.AttachOptions.FILL,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 3, 3);
+					lp.show();
+
+					ssh_port = new Gtk.Entry();
+					t.attach(ssh_port, 1, 2, 1, 2,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 3, 3);
+					ssh_port.show();
+
+					Gtk.Label lu = new Gtk.Label(_("User"));
+					lu.xalign = (float)0.0;
+					t.attach(lu, 0, 1, 2, 3,
+							 Gtk.AttachOptions.FILL,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 3, 3);
+					lu.show();
+
+					ssh_user = new Gtk.Entry();
+					t.attach(ssh_user, 1, 2, 2, 3,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 3, 3);
+					ssh_user.show();
+
+					Gtk.Label lpw = new Gtk.Label(_("Password"));
+					lpw.xalign = (float)0.0;
+					t.attach(lpw, 0, 1, 3, 4,
+							 Gtk.AttachOptions.FILL,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 3, 3);
+					lpw.show();
+
+					ssh_password = new Gtk.Entry();
+					t.attach(ssh_password, 1, 2, 3, 4,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+							 3, 3);
+					ssh_password.visibility = false;
+					ssh_password.invisible_char = '*';
+					ssh_password.show();
+				  }
+				  t.set_col_spacings(5);
+				  t.set_row_spacings(5);
+				  ga.add(t);
+				  t.show();
+				}
+				f.add(ga);
+				ga.show();
+			  }
+			  f.shadow_type = Gtk.ShadowType.NONE;
+			  vb.pack_start(f, false, false, 5);
+			  f.show();
+
+			  redirection_apply = new Gtk.Button.from_stock("gtk-apply");
+			  vb.pack_start(redirection_apply, false, false, 5);
+			  redirection_apply.show();
+
+			  redirection_apply.clicked += on_redirection_apply;
+			}
+			sw3.add_with_viewport(vb);
+			vb.show();
+		  }
+		  sw3.vscrollbar_policy = Gtk.PolicyType.AUTOMATIC;
+		  sw3.hscrollbar_policy = Gtk.PolicyType.AUTOMATIC;
+		  sw3.shadow_type = Gtk.ShadowType.NONE;
+		  nb.append_page(sw3, new Gtk.Label(_("Options")));
+		  sw3.show();
+		}
+		statusbar = new Gtk.Statusbar();
+
+		topvbox.pack_start(hb, false, false, 0);
+		hb.show();
+
+		nb.tab_pos = Gtk.PositionType.BOTTOM;
+		topvbox.pack_start(nb, true, true, 0);
+		nb.show();
+
+		topvbox.pack_start(statusbar, false, false, 0);
+		statusbar.show();
+	  }
+	  top.add(topvbox);
+	  topvbox.show();
+	}
+
+	top.hide += on_top_hide;
+	top.show();
   }
 
   public static int main(string[] args) {
