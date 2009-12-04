@@ -41,7 +41,7 @@ public class Gui : GLib.Object {
   private Gtk.Window adddialog;
   private Gtk.Window aboutdialog;
   private Gtk.StatusIcon systray;
-  private Gtk.Action systraymenu_restore;
+  private Gtk.MenuItem systraymenu_restore;
   private Gtk.VBox topvbox;
   private Gtk.TreeView files;
   private Gtk.ComboBox redirection_type;
@@ -308,14 +308,14 @@ public class Gui : GLib.Object {
 
     builder.connect_signals(this);
 
-    systraymenu = (Gtk.Menu)builder.get_object("systraymenu");
-    systraymenu_restore = (Gtk.Action)builder.get_object("tray_restore");
     adddialog = (Gtk.Window)builder.get_object("adddialog");
     aboutdialog = (Gtk.Window)builder.get_object("aboutdialog");
     localdirectory = (Gtk.FileChooserButton)builder.get_object("localdirectory");
     shareas = (Gtk.Entry)builder.get_object("shareas");
 	logtext = (Gtk.TextView)builder.get_object("logtext");
 
+	create_top_menu();
+	create_systray_menu();
     create_top();
 
 	try {
@@ -341,7 +341,7 @@ public class Gui : GLib.Object {
 									  "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html")
 									  , -1);
 
-    menu=menushell_to_menubar((Gtk.Menu)builder.get_object("menu"));
+    menu=menushell_to_menubar(menu);
     menu.set("visible",true);
     topvbox.pack_start(menu,false,false,0);
 	topvbox.reorder_child(menu,0);
@@ -504,6 +504,92 @@ public class Gui : GLib.Object {
       } catch (Error e) {
         log(_("Remote error shutting down server\n"));
       }
+	}
+  }
+
+  private void create_top_menu() {
+	menu = new Gtk.Menu();
+	{
+	  Gtk.MenuItem filemenu = new Gtk.MenuItem.with_mnemonic(_("_File"));
+	  {
+		Gtk.Menu filemenumenu = new Gtk.Menu();
+		{
+		  Gtk.ImageMenuItem quit = new Gtk.ImageMenuItem.from_stock("gtk-quit", null);
+		  quit.show();
+		  filemenumenu.add(quit);
+		  quit.activate += on_quit;
+		}
+		filemenumenu.show();
+		filemenu.submenu = filemenumenu;
+	  }
+	  filemenu.show();
+	  menu.add(filemenu);
+
+	  Gtk.MenuItem sharemenu = new Gtk.MenuItem.with_mnemonic(_("_Share"));
+	  {
+		Gtk.Menu sharemenumenu = new Gtk.Menu();
+		{
+		  Gtk.ImageMenuItem add = new Gtk.ImageMenuItem.from_stock("gtk-add", null);
+		  add.show();
+		  sharemenumenu.add(add);
+		  add.activate += on_add;
+
+		  Gtk.ImageMenuItem remove = new Gtk.ImageMenuItem.from_stock("gtk-remove", null);
+		  remove.show();
+		  sharemenumenu.add(remove);
+		  remove.activate += on_remove;
+
+		  Gtk.ImageMenuItem copy_invitation = new Gtk.ImageMenuItem.with_mnemonic("_Copy invitation");
+		  copy_invitation.image = new Gtk.Image.from_stock("gtk-copy", Gtk.IconSize.MENU);
+		  copy_invitation.show();
+		  sharemenumenu.add(copy_invitation);
+		  copy_invitation.activate += on_copy_invitation;
+		}
+		sharemenumenu.show();
+		sharemenu.submenu = sharemenumenu;
+	  }
+	  sharemenu.show();
+	  menu.add(sharemenu);
+
+	  Gtk.MenuItem helpmenu = new Gtk.MenuItem.with_mnemonic(_("_Help"));
+	  {
+		Gtk.Menu helpmenumenu = new Gtk.Menu();
+		{
+		  Gtk.ImageMenuItem about = new Gtk.ImageMenuItem.from_stock("gtk-about", null);
+		  about.show();
+		  helpmenumenu.add(about);
+		  about.activate += on_about;
+		}
+		helpmenumenu.show();
+		helpmenu.submenu = helpmenumenu;
+	  }
+	  helpmenu.show();
+	  menu.add(helpmenu);
+	}
+  }
+
+  private void create_systray_menu() {
+	systraymenu = new Gtk.Menu();
+	{
+	  systraymenu_restore = new Gtk.MenuItem.with_mnemonic("_Restore");
+	  systraymenu_restore.show();
+	  systraymenu.add(systraymenu_restore);
+	  systraymenu_restore.activate += on_restore;
+
+	  Gtk.SeparatorMenuItem sep = new Gtk.SeparatorMenuItem();
+	  sep.show();
+	  systraymenu.add(sep);
+
+	  Gtk.ImageMenuItem copy_invitation = new Gtk.ImageMenuItem.with_mnemonic("_Copy invitation");
+	  copy_invitation.image = new Gtk.Image.from_stock("gtk-copy", Gtk.IconSize.MENU);
+	  copy_invitation.show();
+	  systraymenu.add(copy_invitation);
+	  copy_invitation.activate += on_copy_invitation;
+
+	  Gtk.ImageMenuItem quit = new Gtk.ImageMenuItem.from_stock("gtk-quit", null);
+	  quit.show();
+	  systraymenu.add(quit);
+	  quit.activate += on_quit;
 	}
   }
 
