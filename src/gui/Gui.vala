@@ -34,7 +34,6 @@ const string UI_PATH = "ui:"+Config.DATADIR+"/meiga/ui";
 public class Gui : GLib.Object {
 
   // Private attributes
-  private Gtk.Builder builder;
   private Gtk.MenuShell menu;
   private Gtk.Menu systraymenu;
   private Gtk.Window top;
@@ -285,38 +284,17 @@ public class Gui : GLib.Object {
   private void gui_init() {
     string[] path = UI_PATH.split(":",8);
 	string iconfile = null;
-	bool gui_loaded = false;
 
-	builder = new Builder ();
     for (int i=0; path[i]!=null; i++) {
-      string filename = path[i] + "/" + UI_FILENAME;
-	  try {
-		builder.set_translation_domain("meiga");
-		builder.add_from_file (filename);
-		gui_loaded = true;
-		iconfile = path[i] + "/" + "meiga-16x16.png";
-		break;
-	  } catch (Error e) {
-		stderr.printf("Error: %s\n",e.message);
-		continue;
-	  }
+	  iconfile = path[i] + "/" + "meiga-16x16.png";
+	  if (FileUtils.test(iconfile,FileTest.IS_REGULAR)) break;
     }
-    if (!gui_loaded) {
-      log(_("Could not load UI file %s\n").printf(UI_FILENAME));
-      quit();
-    }
-
-    builder.connect_signals(this);
-
-    adddialog = (Gtk.Window)builder.get_object("adddialog");
-    aboutdialog = (Gtk.Window)builder.get_object("aboutdialog");
-    localdirectory = (Gtk.FileChooserButton)builder.get_object("localdirectory");
-    shareas = (Gtk.Entry)builder.get_object("shareas");
-	logtext = (Gtk.TextView)builder.get_object("logtext");
 
 	create_top_menu();
 	create_systray_menu();
     create_top();
+	create_adddialog();
+	create_aboutdialog();
 
 	try {
 	  top.set_icon_from_file(iconfile);
@@ -325,21 +303,6 @@ public class Gui : GLib.Object {
 	} catch (Error e) {
 	  log(_("Icon file not found\n"));
 	}
-
-
-	Gtk.TextView abouttext = (Gtk.TextView)builder.get_object("abouttext");
-	abouttext.buffer.insert_at_cursor(_("Meiga - Copyright (C) 2009 Igalia, S.L.\n" +
-									  "\n" +
-									  "http://meiga.igalia.com\n" +
-									  "\n" +
-									  "This program comes with ABSOLUTELY NO WARRANTY.\n" +
-									  "Licensed under GNU GPL 2.0. This is free software, and you are welcome to " +
-									  "redistribute it under certain conditions.\n" +
-									  "\n" +
-									  "For more information, see:\n" +
-									  "\n" +
-									  "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html")
-									  , -1);
 
     menu=menushell_to_menubar(menu);
     menu.set("visible",true);
@@ -810,7 +773,102 @@ public class Gui : GLib.Object {
 	}
 
 	top.hide += on_top_hide;
+	top.delete_event += top.hide_on_delete;
 	top.show();
+  }
+
+  private void create_adddialog() {
+	adddialog = new Gtk.Dialog();
+	adddialog.title = _("Add path");
+	adddialog.modal = true;
+	adddialog.type_hint = Gdk.WindowTypeHint.DIALOG;
+	adddialog.position = Gtk.WindowPosition.CENTER;
+	{
+	  Gtk.Container content_area = (Gtk.Container)((Gtk.Dialog)adddialog).get_content_area();
+
+	  Gtk.Alignment ga = new Gtk.Alignment((float)0.5, (float)0.5, (float)1.0, (float)1.0);
+	  {
+		Gtk.Table t = new Gtk.Table(2, 2, false);
+		{
+		  Gtk.Label ld = new Gtk.Label(_("Local directory"));
+		  ld.xalign = (float)0.0;
+		  t.attach(ld, 0, 1, 0, 1,
+				   Gtk.AttachOptions.FILL,
+				   Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+				   3, 3);
+		  ld.show();
+
+		  localdirectory = new Gtk.FileChooserButton(_("Select a folder to share"),
+													 Gtk.FileChooserAction.SELECT_FOLDER);
+		  t.attach(localdirectory, 1, 2, 0, 1,
+				   Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+				   Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+				   3, 3);
+		  localdirectory.show();
+
+		  Gtk.Label ls = new Gtk.Label(_("Share as"));
+		  ls.xalign = (float)0.0;
+		  t.attach(ls, 0, 1, 1, 2,
+				   Gtk.AttachOptions.FILL,
+				   Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+				   3, 3);
+		  ls.show();
+
+		  shareas = new Gtk.Entry();
+		  t.attach(shareas, 1, 2, 1, 2,
+				   Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+				   Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+				   3, 3);
+		  shareas.show();
+		}
+		t.set_col_spacings(5);
+		t.set_row_spacings(5);
+		ga.add(t);
+		t.show();
+	  }
+	  content_area.add(ga);
+	  ga.show();
+
+	  Gtk.Container action_area = (Gtk.Container)((Gtk.Dialog)adddialog).get_action_area();
+	  Gtk.Button c = new Gtk.Button.from_stock("gtk-cancel");
+	  action_area.add(c);
+	  c.show();
+	  c.clicked += on_adddialogcancel;
+
+	  Gtk.Button a = new Gtk.Button.from_stock("gtk-ok");
+	  action_area.add(a);
+	  a.show();
+	  a.clicked += on_adddialogok;
+	}
+
+	adddialog.hide += on_adddialogcancel;
+	adddialog.delete_event += adddialog.hide_on_delete;
+  }
+
+  private void create_aboutdialog() {
+	Gtk.AboutDialog a = new Gtk.AboutDialog();
+	aboutdialog = a;
+	a.program_name = _("Meiga");
+	a.version = Config.VERSION;
+	a.copyright = "(C) 2009 Igalia, S.L.";
+	a.license = _("This program comes with ABSOLUTELY NO WARRANTY.\n" +
+				  "Licensed under GNU GPL 2.0. This is free software, and you are welcome to " +
+				  "redistribute it under certain conditions.\n" +
+				  "\n" +
+				  "For more information, see:\n" +
+				  "\n" +
+				  "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html");
+	a.website = "http://meiga.igalia.com";
+	a.modal = true;
+	a.type_hint = Gdk.WindowTypeHint.DIALOG;
+	a.position = Gtk.WindowPosition.CENTER;
+	a.default_height = 300;
+	a.default_width = 300;
+	List blist = ((Gtk.Container)a.get_action_area()).get_children();
+	Gtk.Button b = (Gtk.Button)(blist.last().data);
+	b.clicked += on_aboutdialogclose;
+	a.hide += on_aboutdialogclose;
+	a.delete_event += a.hide_on_delete;
   }
 
   public static int main(string[] args) {
