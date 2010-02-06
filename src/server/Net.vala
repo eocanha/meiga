@@ -313,9 +313,9 @@ public class Net : GLib.Object {
   }
 
   private void *forward_ssh_start() {
-	string internal_ip;
-	string external_ip;
-	string url;
+	string tmp_internal_ip;
+	string tmp_external_ip;
+	string tmp_url;
 	string txtout;
 	string txterr;
 	bool bresult;
@@ -331,27 +331,26 @@ public class Net : GLib.Object {
 										 out result);
 
 	if (result == 0) {
-	  internal_ip = txtout.chomp();
-	  log(_("Found internal IP: %s").printf(internal_ip));
+	  tmp_internal_ip = txtout.chomp();
+	  log(_("Found internal IP: %s").printf(tmp_internal_ip));
 	} else {
 	  log(_("Local IP not found"));
-	  internal_ip = "127.0.0.1";
+	  tmp_internal_ip = "127.0.0.1";
 	  Idle.add( () => { redirection_status = REDIRECTION_STATUS_ERROR; return false; } );
-	  return null;
 	}
 
-	external_ip = internal_ip;
+	tmp_external_ip = tmp_internal_ip;
 
 	// Don't redirect if there's no valid internal IP
 	// or remote host
-	if (strcmp(internal_ip,"127.0.0.1")!=0) {
+	if (strcmp(tmp_internal_ip,"127.0.0.1")!=0) {
 	  string sshcmd = Config.BINDIR+"/fwssh -r ";
 	  string[] sshcmd_argv;
 
-	  external_ip = ssh_host;
-	  sshcmd += "%s %d %s %d".printf(ssh_host, port, internal_ip, port);
+	  tmp_external_ip = ssh_host;
+	  sshcmd += "%s %d %s %d".printf(ssh_host, port, tmp_internal_ip, port);
 
-	  log(_("Using external IP: %s").printf(external_ip));
+	  log(_("Using external IP: %s").printf(tmp_external_ip));
 	  log(_("Creating SSH tunnel"));
 
 	  sshcmd_argv = sshcmd.split_set(" ", 0);
@@ -375,21 +374,21 @@ public class Net : GLib.Object {
 		  status = REDIRECTION_STATUS_DONE;
 		} else {
 		  log(_("Error creating SSH tunnel. Check config parameters and password."));
-		  external_ip = internal_ip;
+		  tmp_external_ip = tmp_internal_ip;
 		  status = REDIRECTION_STATUS_ERROR;
 		}
 	  } catch (SpawnError e) {
 		log(_("Error spawning SSH redirector process"));
-		external_ip = internal_ip;
+		tmp_external_ip = tmp_internal_ip;
 		status = REDIRECTION_STATUS_ERROR;
 	  }
 	}
 
-	url="http://%s:%d".printf(external_ip, port);
+	tmp_url="http://%s:%d".printf(tmp_external_ip, port);
 
-	internal_ip = internal_ip;
-	external_ip = external_ip;
-	url = url;
+	internal_ip = tmp_internal_ip;
+	external_ip = tmp_external_ip;
+	url = tmp_url;
 	redirection_status = status;
 	return null;
   }
@@ -405,16 +404,14 @@ public class Net : GLib.Object {
 	if (status == REDIRECTION_STATUS_DONE ||
 		status == REDIRECTION_STATUS_PENDING ||
 		status == REDIRECTION_STATUS_ERROR) {
-	  if (internal_ip != external_ip) {
-		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwssh -d %d".printf(port),
-											 out txtout,
-											 out txterr,
-											 out result);
-		if (result == 0) {
-		  log(_("Redirection removed"));
-		} else {
-		  log(_("Unable to remove redirection"));
-		}
+	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwssh -d %d".printf(port),
+										   out txtout,
+										   out txterr,
+										   out result);
+	  if (result == 0) {
+		log(_("Redirection removed"));
+	  } else {
+		log(_("Unable to remove redirection"));
 	  }
 	}
 
