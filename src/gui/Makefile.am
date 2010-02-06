@@ -53,7 +53,6 @@ meiga.desktop: Makefile meiga.desktop.in
 
 meigaextradir = ${datadir}/meiga/ui
 meigaextra_DATA = \
-	ui/gui.ui \
 	pixmaps/meiga-16x16.png \
         $(NULL)
 

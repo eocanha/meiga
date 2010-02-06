@@ -28,7 +28,6 @@ using Gdk;
 using Config;
 using Posix;
 
-const string UI_FILENAME = "gui.ui";
 const string UI_PATH = "ui:"+Config.DATADIR+"/meiga/ui";
 
 public class Gui : GLib.Object {
