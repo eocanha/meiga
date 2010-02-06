@@ -139,6 +139,7 @@ public class MeigaServer : GLib.Object {
   }
 
   public void shutdown() {
+	server.quit();
 	net.redirection_type = Net.REDIRECTION_TYPE_NONE;
 	Idle.add_full(Priority.LOW, () => { Gtk.main_quit(); return false; });
   }
