@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: meiga\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-28 22:33+0100\n"
+"POT-Creation-Date: 2010-02-06 19:30+0100\n"
 "PO-Revision-Date: 2009-06-14 21:12+0200\n"
 "Last-Translator: Enrique Ocaña González <eocanha@igalia.com>\n"
 "Language-Team: Galician <gl_ES@li.org>\n"
@@ -20,74 +20,74 @@ msgstr ""
 msgid "--- No log available ---"
 msgstr "--- Rexistro non dispoñible ---"
 
-#: ../src/server/MeigaServer.vala:76
+#: ../src/server/MeigaServer.vala:80
 #, c-format
 msgid "External URL: %s"
 msgstr "A URL externa é: %s"
 
-#: ../src/server/MeigaServer.vala:108
+#: ../src/server/MeigaServer.vala:112
 #, c-format
 msgid "Error opening file %s"
 msgstr "Erro abrindo arquivo %s"
 
-#: ../src/server/MeigaServer.vala:123
+#: ../src/server/MeigaServer.vala:127
 msgid "Registering DBUS service"
 msgstr "Rexistrando servizo DBUS"
 
-#: ../src/server/MeigaServer.vala:126
+#: ../src/server/MeigaServer.vala:130
 msgid "Not registering DBUS service: not primary owner"
 msgstr "Non rexistrando servizo DBUS: non é o propietario principal"
 
-#: ../src/server/MeigaServer.vala:129
+#: ../src/server/MeigaServer.vala:133
 #, c-format
 msgid "Error registering DBUS server: %s"
 msgstr "Erro rexistrando servizo DBUS: %s"
 
-#: ../src/server/MeigaServer.vala:156
+#: ../src/server/MeigaServer.vala:160
 msgid "Attempted to register path without GUI started. Ignoring."
 msgstr "Tentouse rexistrar unha ruta sen iniciar o GUI. Ignorando."
 
-#: ../src/server/MeigaServer.vala:162
+#: ../src/server/MeigaServer.vala:166
 #, c-format
 msgid "Registered logical path '%s' to real path '%s'"
 msgstr "Ruta local '%s' rexistrada a ruta real '%s'"
 
-#: ../src/server/MeigaServer.vala:170
+#: ../src/server/MeigaServer.vala:174
 msgid "Attempted to unregister path without GUI started. Ignoring."
 msgstr "Tentouse desrexistrar unha ruta sen iniciar o GUI. Ignorando."
 
-#: ../src/server/MeigaServer.vala:174
+#: ../src/server/MeigaServer.vala:178
 #, c-format
 msgid "Unregistered logical path '%s'"
 msgstr "Ruta lóxica desrexistrada '%s'"
 
-#: ../src/server/MeigaServer.vala:245
+#: ../src/server/MeigaServer.vala:261
 #, c-format
 msgid "Request: %s --> Serving: %s"
 msgstr "Petición: %s --> Servindo: %s"
 
-#: ../src/server/MeigaServer.vala:291
+#: ../src/server/MeigaServer.vala:309 ../src/server/MeigaServer.vala:314
 #, c-format
 msgid "Index of %s\n"
 msgstr "Índice de %s\n"
 
-#: ../src/server/MeigaServer.vala:300
+#: ../src/server/MeigaServer.vala:323
 #, c-format
 msgid "Served by <a href=\"http://meiga.igalia.com\">Meiga %s</a>"
 msgstr "Servido por <a href=\"http://meiga.igalia.com\">Meiga %s</a>"
 
-#: ../src/server/MeigaServer.vala:334
+#: ../src/server/MeigaServer.vala:357
 #, c-format
 msgid "Request: %s --> Serving (RSS mode): %s"
 msgstr "Petición: %s --> Servindo (modo RSS): %s"
 
-#: ../src/server/MeigaServer.vala:370
+#: ../src/server/MeigaServer.vala:393
 #, c-format
 msgid "Documents under %s"
 msgstr "Documentos baixo %s"
 
 #
-#: ../src/server/MeigaServer.vala:381
+#: ../src/server/MeigaServer.vala:404
 msgid "File not found"
 msgstr "Arquivo non atopado"
 
@@ -121,7 +121,7 @@ msgid "Creating redirection"
 msgstr "Creando redirección"
 
 #: ../src/server/Net.vala:267 ../src/server/Net.vala:374
-#: ../src/gui/Gui.vala:496
+#: ../src/gui/Gui.vala:429
 msgid "Redirection performed"
 msgstr "Redirección realizada"
 
@@ -145,9 +145,9 @@ msgid "Unable to remove redirection"
 msgstr "Imposible eliminar redirección"
 
 #: ../src/server/Net.vala:354
-#, fuzzy, c-format
+#, c-format
 msgid "Using external IP: %s"
-msgstr "IP externa atopada: %s"
+msgstr "Usando IP externa: %s"
 
 #: ../src/server/Net.vala:355
 msgid "Creating SSH tunnel"
@@ -189,197 +189,192 @@ msgstr "<a href=\"%s\">Descargar %s</a>\n"
 msgid "RssFeed.new_from_directory(): Error\n"
 msgstr "RssFeed.new_from_directory(): Erro\n"
 
-#: ../src/gui/Gui.vala:114
+#: ../src/gui/Gui.vala:113
 #, c-format
 msgid "Remote error deleting share '%s'\n"
 msgstr "Erro remoto borrando elemento compartido '%s'\n"
 
-#: ../src/gui/Gui.vala:140
-#, fuzzy
+#: ../src/gui/Gui.vala:139
 msgid "Remote error applying redirection options\n"
-msgstr "Erro remoto obtendo rutas\n"
+msgstr "Erro remoto aplicando opcións de redirección\n"
 
-#: ../src/gui/Gui.vala:160
+#: ../src/gui/Gui.vala:159
 msgid "Empty share name not allowed"
 msgstr "Nome de elemento compartido baleiro non permitido"
 
-#: ../src/gui/Gui.vala:164
+#: ../src/gui/Gui.vala:163
 msgid "Share name not allowed"
 msgstr "Nome de elemento compartido non permitido"
 
-#: ../src/gui/Gui.vala:173
+#: ../src/gui/Gui.vala:172
 #, c-format
 msgid "Remote error sharing '%s' as '%s'\n"
 msgstr "Erro remoto compartindo '%s' como '%s'\n"
 
-#: ../src/gui/Gui.vala:244
+#: ../src/gui/Gui.vala:243
 #, c-format
 msgid "Error looking for DBUS server: %s\n"
 msgstr "Erro buscando servidor DBUS: %s\n"
 
-#: ../src/gui/Gui.vala:253
+#: ../src/gui/Gui.vala:252
 msgid "Error looking for DBUS server: remote object not found\n"
 msgstr "Erro buscando servidor DBUS: obxecto remoto non atopado\n"
 
-#: ../src/gui/Gui.vala:273
+#: ../src/gui/Gui.vala:272
 msgid "Share on Meiga..."
 msgstr "Compartir en Meiga..."
 
-#: ../src/gui/Gui.vala:277
-#, fuzzy, c-format
+#: ../src/gui/Gui.vala:276
+#, c-format
 msgid "Creating Nautilus context menu for Meiga %s --> %s\n"
-msgstr "Creando menú de contexto de Nautilus para Meiga %s --> %s"
+msgstr "Creando menú de contexto de Nautilus para Meiga %s --> %s\n"
 
 #: ../src/gui/Gui.vala:303
-#, c-format
-msgid "Could not load UI file %s\n"
-msgstr "Non se puido cargar arquivo de UI\n"
-
-#: ../src/gui/Gui.vala:334
 msgid "Icon file not found\n"
 msgstr "Arquivo de icono non atopado\n"
 
-#: ../src/gui/Gui.vala:342
-msgid "None"
-msgstr "Ningunha"
-
-#: ../src/gui/Gui.vala:344
-msgid "UPnP"
-msgstr "UPnP"
-
-#: ../src/gui/Gui.vala:346
-msgid "SSH"
-msgstr "SSH"
-
-#: ../src/gui/Gui.vala:354
-msgid "Meiga - Copyright (C) 2009 Igalia, S.L.\n"
-msgstr "Meiga - Copyright (C) 2009 Igalia, S.L.\n"
-
-#: ../src/gui/Gui.vala:375
-msgid "Local file"
-msgstr "Arquivo local"
-
-#: ../src/gui/Gui.vala:378
-msgid "Shared as"
-msgstr "Compartido como"
-
-#: ../src/gui/Gui.vala:431
+#: ../src/gui/Gui.vala:360
 msgid "Remote error getting paths\n"
 msgstr "Erro remoto obtendo rutas\n"
 
-#: ../src/gui/Gui.vala:437
-#, fuzzy
+#: ../src/gui/Gui.vala:366
 msgid "Remote error getting redirection options\n"
-msgstr "Erro remoto obtendo liñas de rexistro\n"
+msgstr "Erro remoto obtendo opcións de redirección\n"
 
-#: ../src/gui/Gui.vala:461
+#: ../src/gui/Gui.vala:390
 msgid "Remote error getting log lines\n"
 msgstr "Erro remoto obtendo liñas de rexistro\n"
 
-#: ../src/gui/Gui.vala:494
+#: ../src/gui/Gui.vala:427
 msgid "Direct connection"
 msgstr "Conexión directa"
 
-#: ../src/gui/Gui.vala:495
-#, fuzzy
+#: ../src/gui/Gui.vala:428
 msgid "Performing redirection"
 msgstr "Creando redirección"
 
-#: ../src/gui/Gui.vala:497
-#, fuzzy
+#: ../src/gui/Gui.vala:430
 msgid "Redirection error"
-msgstr "Redirección realizada"
+msgstr "Erro de redirección"
 
-#: ../src/gui/Gui.vala:502
+#: ../src/gui/Gui.vala:435
 msgid "Remote error getting public url\n"
 msgstr "Erro remoto obtendo url pública\n"
 
-#: ../src/gui/Gui.vala:534
+#: ../src/gui/Gui.vala:467
 msgid "Remote error shutting down server\n"
 msgstr "Erro remoto detendo o servidor\n"
 
-msgid "<b>SSH options</b>"
-msgstr "<b>Opcións SSH</b>"
+#: ../src/gui/Gui.vala:475
+msgid "_File"
+msgstr "_Arquivo"
 
-msgid "About"
-msgstr "Acerca de"
+#: ../src/gui/Gui.vala:490
+msgid "_Share"
+msgstr "_Compartir"
 
-msgid "Add path"
-msgstr "Engadir ruta"
+#: ../src/gui/Gui.vala:516
+msgid "_Help"
+msgstr "Ax_uda"
 
-msgid "Copy URL to paste as invitation"
-msgstr "Copiar URL para pegar como invitación"
-
-msgid "File"
-msgstr "Arquivo"
-
-msgid "Help"
-msgstr "Axuda"
-
-msgid "Host"
-msgstr "Servidor"
-
-msgid "Local directory"
-msgstr "Directorio local"
-
-msgid "Log"
-msgstr "Rexistro"
-
+#: ../src/gui/Gui.vala:560 ../src/gui/Gui.vala:850
 msgid "Meiga"
 msgstr "Meiga"
 
-msgid ""
-"Meiga - Copyright (C) 2009 Igalia, S.L.\n"
-"\n"
-"http://meiga.igalia.com\n"
-"\n"
-"This program comes with ABSOLUTELY NO WARRANTY.\n"
-"Licensed under GNU GPL 2.0. This is free software, and you are welcome to "
-"redistribute it under certain conditions.\n"
-"\n"
-"For more information, see:\n"
-"\n"
-"http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
-msgstr ""
-"Meiga - Copyright (C) 2009 Igalia, S.L.\n"
-"\n"
-"http://meiga.igalia.com\n"
-"\n"
-"Este programa ofrécese SEN NINGUNHA GARANTÍA.\n"
-"Licenciado baixo GNU GPL 2.0. Isto é software libre, e estás invitado/a a "
-"redistribuilo baixo certas condicións.\n"
-"\n"
-"Para máis información, véxase:\n"
-"\n"
-"http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+#: ../src/gui/Gui.vala:600
+msgid "Local file"
+msgstr "Arquivo local"
 
-msgid "Options"
-msgstr "Opcións"
+#: ../src/gui/Gui.vala:603
+msgid "Shared as"
+msgstr "Compartido como"
 
-msgid "Password\t"
-msgstr "Contrasinal\t"
-
-msgid "Port"
-msgstr "Porto"
-
-#, fuzzy
-msgid "Port redirection scheme"
-msgstr "Tipo de redirección"
-
-msgid "Share"
-msgstr "Compartir"
-
-msgid "Share as"
-msgstr "Compartir como"
-
+#: ../src/gui/Gui.vala:610
 msgid "Shares"
 msgstr "Elementos compartidos"
 
+#: ../src/gui/Gui.vala:626
+msgid "Log"
+msgstr "Rexistro"
+
+#: ../src/gui/Gui.vala:635
+msgid "Port redirection scheme"
+msgstr "Tipo de redirección"
+
+#: ../src/gui/Gui.vala:648
+msgid "None"
+msgstr "Ningunha"
+
+#: ../src/gui/Gui.vala:650
+msgid "UPnP"
+msgstr "UPnP"
+
+#: ../src/gui/Gui.vala:652
+msgid "SSH"
+msgstr "SSH"
+
+#: ../src/gui/Gui.vala:662
+msgid "<b>SSH options</b>"
+msgstr "<b>Opcións SSH</b>"
+
+#: ../src/gui/Gui.vala:669
+msgid "Host"
+msgstr "Servidor"
+
+#: ../src/gui/Gui.vala:684
+msgid "Port"
+msgstr "Porto"
+
+#: ../src/gui/Gui.vala:699
 msgid "User"
 msgstr "Usuario"
 
-msgid "_Restore"
-msgstr "_Restaurar"
+#: ../src/gui/Gui.vala:714
+msgid "Password"
+msgstr "Contrasinal"
 
-msgid "_Copy invitation"
-msgstr "_Copiar invitación"
+#: ../src/gui/Gui.vala:755
+msgid "Options"
+msgstr "Opcións"
+
+#: ../src/gui/Gui.vala:781
+msgid "Add path"
+msgstr "Engadir ruta"
+
+#: ../src/gui/Gui.vala:792
+msgid "Local directory"
+msgstr "Directorio local"
+
+#: ../src/gui/Gui.vala:800
+msgid "Select a folder to share"
+msgstr "Selecciona unha carpeta para compartir"
+
+#: ../src/gui/Gui.vala:808
+msgid "Share as"
+msgstr "Compartir como"
+
+#: ../src/gui/Gui.vala:853
+msgid "This program comes with ABSOLUTELY NO WARRANTY.\n"
+msgstr "Este programa subminístrase SEN NINGUNHA GARANTÍA.\n"
+
+#: ../src/gui/Gui.vala:854
+msgid ""
+"Licensed under GNU GPL 2.0. This is free software, and you are welcome to "
+msgstr ""
+"Licenciado baixo GNU GPL 2.0. Isto é software libre e estás convidado a "
+
+#: ../src/gui/Gui.vala:855
+msgid "redistribute it under certain conditions.\n"
+msgstr "redistribuílo baixo certas condicións.\n"
+
+#: ../src/gui/Gui.vala:857
+msgid "For more information, see:\n"
+msgstr "Para máis información, consulta:\n"
+
+#: ../src/gui/Gui.vala:861
+msgid "Xunta de Galicia partially funded this project using "
+msgstr "A Xunta de Galicia financiou parcialmente este proxecto empregando "
+
+#: ../src/gui/Gui.vala:862
+msgid "the European Regional Development Fund (ERDF)\n"
+msgstr "o Fondo Europeo de Desenvolvemento Rexional (FEDER)\n"

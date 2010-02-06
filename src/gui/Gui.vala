@@ -850,16 +850,16 @@ public class Gui : GLib.Object {
 	a.program_name = _("Meiga");
 	a.version = Config.VERSION;
 	a.copyright = "(C) 2009 Igalia, S.L.";
-	a.license = _("This program comes with ABSOLUTELY NO WARRANTY.\n" +
-				  "Licensed under GNU GPL 2.0. This is free software, and you are welcome to " +
-				  "redistribute it under certain conditions.\n" +
+	a.license = _("This program comes with ABSOLUTELY NO WARRANTY.\n") +
+	            _("Licensed under GNU GPL 2.0. This is free software, and you are welcome to ") +
+				_("redistribute it under certain conditions.\n") +
 				  "\n" +
-				  "For more information, see:\n" +
+				_("For more information, see:\n") +
 				  "\n" +
-				  "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+				  "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html\n" +
 				  "\n" +
-				  "Xunta de Galicia partially funded this project using " +
-				  "the European Regional Development Fund (ERDF)\n");
+				_("Xunta de Galicia partially funded this project using ") +
+				_("the European Regional Development Fund (ERDF)\n");
 	a.website = "http://meiga.igalia.com";
 	a.modal = true;
 	a.type_hint = Gdk.WindowTypeHint.DIALOG;
