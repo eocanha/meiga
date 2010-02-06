@@ -856,7 +856,10 @@ public class Gui : GLib.Object {
 				  "\n" +
 				  "For more information, see:\n" +
 				  "\n" +
-				  "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html");
+				  "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+				  "\n" +
+				  "Xunta de Galicia partially funded this project using " +
+				  "the European Regional Development Fund (ERDF)\n");
 	a.website = "http://meiga.igalia.com";
 	a.modal = true;
 	a.type_hint = Gdk.WindowTypeHint.DIALOG;
