@@ -1,0 +1,56 @@
+### CREATE PBUILDER SETUP
+
+pbuilder --create --basetgz /var/cache/pbuilder/base-hardy.tgz --distribution hardy --components "main universe"
+pbuilder --create --basetgz /var/cache/pbuilder/base-intrepid.tgz --distribution intrepid --components "main universe"
+pbuilder --create --basetgz /var/cache/pbuilder/base-jaunty.tgz --distribution jaunty --components "main universe"
+
+### ENTER pbuild
+
+sudo su
+
+DISTRIBUTION=intrepid
+pbuilder --login --basetgz /var/cache/pbuilder/base-$DISTRIBUTION.tgz
+
+### START BUILDING
+
+SNAPSHOT_URL='http://git.igalia.com/cgi-bin/gitweb.cgi?p=meiga.git;a=snapshot;h=d2344959f2d24e73762e2da1dc75b9b43847e70c;sf=tgz'
+
+VALA_URL='http://download.gnome.org/sources/vala/0.7/vala-0.7.2.tar.bz2'
+
+export PATH=/usr/local/bin:$PATH
+
+cd /tmp
+
+apt-get -y --force-yes \
+ install wget flex bison debhelper fakeroot \
+ gnome-common pkg-config \
+ libgtk2.0-dev libglade2-dev libsoup2.2-dev libsoup2.4-dev \
+ libdbus-1-dev libdbus-glib-1-dev libgupnp-1.0-dev
+
+ldconfig
+
+if [ "$VALA_URL" ]
+then
+ wget "$VALA_URL"
+ tar jxvf vala*.tar.bz2
+ cd vala*
+ ./configure
+ make
+ make install
+ cd ..
+ ldconfig
+fi
+
+if [ "$SNAPSHOT_URL" ]
+then
+ wget -O meiga.tgz "$SNAPSHOT_URL"
+ tar zxvf meiga.tgz
+ cd meiga
+ ./autogen.sh
+ ./build-package.sh
+ cd ..
+fi
+
+### TAKE THE BUILT FILE AT /var/cache/pbuilder/build/*/tmp/meiga*.deb BEFORE EXITING
+
+cp /var/cache/pbuilder/build/*/tmp/meiga*.deb /tmp/
