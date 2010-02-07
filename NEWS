@@ -1,6 +1,7 @@
-meiga (0.3.1) - Sun, 01 Nov 2009 00:36:38 +0200
+meiga (0.3.2) - Sun, 07 Feb 2010 19:10:04 +0100      
 
-  * Fixed GtkBuilder ui file and deprecated old Glade file
-  * Changed private properties to Vala property assignation
-  * Enhanced HTML headers
-  * Added pending/total transfers counter
+  * Improved package build
+  * Support for Fedora
+  * Removed GtkBuilder support for compatibility with more distributions
+  * Memory and stability improvements
+

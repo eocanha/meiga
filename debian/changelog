@@ -1,3 +1,9 @@
+meiga (0.3.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Enrique Ocaña González <eocanha@igalia.com>  Sun, 07 Feb 2010 19:10:04 +0100      
+
 meiga (0.3.1-1) unstable; urgency=low
 
   * New upstream Halloween release (buh!)
