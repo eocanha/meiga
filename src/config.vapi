@@ -41,4 +41,14 @@ namespace Posix {
   }
   [CCode (cheader_filename = "unistd.h")]
   public pid_t getpid ();
+
+  [CCode (cname = "mode_t", cheader_filename = "sys/types.h")]
+  public struct mode_t {
+  }
+  [CCode (cheader_filename = "fcntl.h")]
+  public int open (string path, int oflag, mode_t mode=0);
+  [CCode (cheader_filename = "unistd.h")]
+  public ssize_t read (int fd, void* buf, size_t count);
+  [CCode (cheader_filename = "unistd.h")]
+  public int close (int fd);
 }

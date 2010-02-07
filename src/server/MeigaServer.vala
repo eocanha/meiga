@@ -26,6 +26,7 @@ using GLib;
 using Soup;
 using Gtk;
 using Config;
+using Posix;
 
 public class MeigaServer : GLib.Object {
   const string MIME_TYPES_FILE="/etc/mime.types";
@@ -268,10 +269,9 @@ public class MeigaServer : GLib.Object {
 	  serve_file_callback_default(server,msg,path,query,client);
 	  return;
 	} else if (FileUtils.test(real_path,FileTest.IS_REGULAR)) {
-	  MappedFile f=null;
-	  try {
-		f=new MappedFile(real_path,false);
-	  } catch (FileError e) {
+	  int f;
+	  f=Posix.open(real_path,0,(Posix.mode_t)0);
+	  if (f==-1) {
 		serve_file_callback_default(server,msg,path,query,client);
 		return;
 	  }
@@ -284,9 +284,26 @@ public class MeigaServer : GLib.Object {
 	  if (extension!=null) mime=mimetypes.lookup(extension);
 	  if (mime==null) mime="application/x-octet-stream";
 
-	  // f.get_contents() returns unmanaged memory, so Vala will segfault trying to
-	  // unref a normal string. AN unmanaged string shoyuld be used (string *)
-	  msg.set_response(mime,Soup.MemoryUse.COPY,(string *)f.get_contents(),f.get_length());
+	  // A chunked encoding should be used to save memory when
+	  // sending huge files
+	  msg.response_headers.set_encoding(Soup.Encoding.CHUNKED);
+	  msg.response_headers.append("content-type", mime);
+
+	  size_t bufsize = 32*1024; // 32KB buffer
+	  void *buffer = (void *)new char[bufsize];
+	  ssize_t n=0;
+	  n=Posix.read(f, buffer, bufsize);
+	  while (n>0) {
+		msg.response_body.append(Soup.MemoryUse.TAKE,
+								 buffer, (size_t)n);
+		server.unpause_message(msg);
+		buffer = (void *)new char[bufsize];
+		n=Posix.read(f, buffer, bufsize);
+	  }
+	  delete buffer;
+	  msg.response_body.complete();
+	  server.unpause_message(msg);
+	  Posix.close(f);
 	} else if (FileUtils.test(real_path,FileTest.IS_DIR)) {
 	  List<string> files=new List<string>();
 	  Dir d=null;
