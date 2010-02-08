@@ -1,0 +1,120 @@
+#!/bin/sh                                              
+
+# Meiga - Lightweight and easy to use web file server for your desktop
+#                                                                     
+# Copyright (C) 2009 Igalia, S.L.                                     
+#                                                                     
+# Authors:                                                            
+#                                                                     
+# Igalia, S.L. <info@igalia.com>                                      
+# Enrique Ocaña González <eocanha@igalia.com>                         
+#                                                                     
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or   
+# (at your option) any later version.                                 
+#                                                                     
+# This program is distributed in the hope that it will be useful,     
+# but WITHOUT ANY WARRANTY; without even the implied warranty of      
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
+# GNU General Public License for more details.                        
+#                                                                     
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.            
+
+# Forward a port using an ssh server
+# Supports the following optional environment variables:
+# FON_PASSWORD                      
+
+# We can't rely on the PATH being properly set if this tool is executed
+# from a DBUS daemon                                                   
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:$PATH"
+
+USER=admin
+PASSWORD=$FON_PASSWORD
+FON_IP=`ip route | grep 'default via' | { read _ _ X _; echo $X; }`
+
+find_redirection() {
+ # Parameter 1: External port
+ wget --quiet -O - --user "$USER" --password "$PASSWORD" "http://$FON_IP/cgi-bin/webif/adv_pf.sh" |
+  grep ffffff | sed -e 's/<[^<>]*>//g' |
+  {
+   while read ID
+   do
+    read PUBPORT
+    read DESTIP
+    read PRIVPORT
+    read PROTOCOL
+    if [ "X$PUBPORT" = "X$1" -a "X$PROTOCOL" = "Xtcp" ]
+    then
+     echo $ID
+    fi
+   done
+  }
+}
+
+find_external_ip() {
+ wget --quiet -O - "http://$FON_IP/cgi-bin/status.sh" |
+  grep IP | sed -e 's/<[^<>]*>//g' | sed -e 's/[^:]*://' | { read X; echo $X; }
+}
+
+case "$1" in
+    "-i")
+	EXTERNAL_IP=`find_external_ip`
+	echo "$EXTERNAL_IP"
+	[ -n "$EXTERNAL_IP" ]
+	exit $?
+        ;;
+    "-r")   
+        export EXTERNAL_PORT="$2"
+        export INTERNAL_IP="$3"  
+        export INTERNAL_PORT="$4"
+
+        if [ -z "$PASSWORD" ]
+        then
+         PASSWORD=`meiga-askpass`
+        fi
+
+	wget --quiet -O /dev/null --user "$USER" --password "$PASSWORD" "http://$FON_IP/cgi-bin/webif/adv_pf.sh?srule=add&destip=$INTERNAL_IP&origp=$EXTERNAL_PORT&destp=$INTERNAL_PORT&sproto=tcp&submit=Add"
+	exit $?
+        ;;                                                               
+    "-q")
+        export EXTERNAL_PORT="$2"
+
+        if [ -z "$PASSWORD" ]
+        then
+         PASSWORD=`meiga-askpass`
+        fi
+
+	export ID=`find_redirection "$EXTERNAL_PORT"`
+        [ -n "$ID" ]
+	exit $?
+        ;;
+    "-d")
+        export EXTERNAL_PORT="$2"
+
+        if [ -z "$PASSWORD" ]
+        then
+         PASSWORD=`meiga-askpass`
+        fi
+
+	export ID=`find_redirection "$EXTERNAL_PORT"`
+	wget --quiet -O /dev/null --user "$USER" --password "$PASSWORD" "http://$FON_IP/cgi-bin/webif/adv_pf.sh?srule=remove&sruledel=$ID&submit=Delete"
+	exit $?
+        ;;
+    *)
+        cat <<EOF
+Usage: fwfon OPTION
+
+Options:
+-i
+        Query external IP
+-r external_port internal_ip internal_port
+        Add redirection
+-q external_port
+        Query for redirection
+-d external_port
+        Delete existing redirection
+EOF
+esac
