@@ -6,4 +6,17 @@ test -z "$srcdir" && srcdir=.
 
 PKG_NAME="meiga"
 
+(test -f $srcdir/configure.ac \
+  && test -d $srcdir/src) || {
+    echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
+    echo " top-level $PKG_NAME directory"
+    exit 1
+}
+
+which gnome-autogen.sh || {
+    echo "You need to install gnome-common from GNOME Git (or from"
+    echo "your OS vendor's package manager)."
+    exit 1
+}
+
 . gnome-autogen.sh
