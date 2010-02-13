@@ -83,6 +83,7 @@ fi
 %{_bindir}/fwupnp
 %{_bindir}/fwssh
 %{_bindir}/fwssh-task
+%{_bindir}/fwfon
 %{_bindir}/meiga
 %{_bindir}/meigaserver
 %{_bindir}/meiga-askpass

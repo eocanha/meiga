@@ -29,6 +29,7 @@ public class Net : GLib.Object {
   public static const int REDIRECTION_TYPE_NONE = 0;
   public static const int REDIRECTION_TYPE_UPNP = 1;
   public static const int REDIRECTION_TYPE_SSH  = 2;
+  public static const int REDIRECTION_TYPE_FON  = 3;
 
   public static const int REDIRECTION_STATUS_NONE = 0;
   public static const int REDIRECTION_STATUS_PENDING = 1;
@@ -163,9 +164,18 @@ public class Net : GLib.Object {
 	  try {
 		worker = Thread.create(forward_ssh_start, true);
 	  } catch (SpawnError e) {
-		log(_("Error spawning UPNP redirector process"));
+		log(_("Error spawning SSH redirector process"));
 	  } catch (ThreadError e) {
-		log(_("Error creating thread for UPNP redirector process"));
+		log(_("Error creating thread for SSH redirector process"));
+	  }
+	  break;
+	case REDIRECTION_TYPE_FON:
+	  try {
+		worker = Thread.create(forward_fon_start, true);
+	  } catch (SpawnError e) {
+		log(_("Error spawning FON redirector process"));
+	  } catch (ThreadError e) {
+		log(_("Error creating thread for FON redirector process"));
 	  }
 	  break;
 	}
@@ -178,6 +188,9 @@ public class Net : GLib.Object {
 	  break;
 	case REDIRECTION_TYPE_SSH:
 	  forward_ssh_stop();
+	  break;
+	case REDIRECTION_TYPE_FON:
+	  forward_fon_stop();
 	  break;
 	}
   }
@@ -405,6 +418,109 @@ public class Net : GLib.Object {
 		status == REDIRECTION_STATUS_PENDING ||
 		status == REDIRECTION_STATUS_ERROR) {
 	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwssh -d %d".printf(port),
+										   out txtout,
+										   out txterr,
+										   out result);
+	  if (result == 0) {
+		log(_("Redirection removed"));
+	  } else {
+		log(_("Unable to remove redirection"));
+	  }
+	}
+
+	Idle.add( () => { redirection_status = REDIRECTION_STATUS_NONE; return false; });
+  }
+
+  private void *forward_fon_start() {
+	string tmp_internal_ip;
+	string tmp_external_ip;
+	string tmp_url;
+	string txtout;
+	string txterr;
+	int result;
+	int status;
+
+	status = REDIRECTION_STATUS_PENDING;
+	Idle.add( () => { redirection_status = REDIRECTION_STATUS_PENDING; return false; });
+
+	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
+										 out txtout,
+										 out txterr,
+										 out result);
+
+	if (result == 0) {
+	  tmp_internal_ip = txtout.chomp();
+	  log(_("Found internal IP: %s").printf(tmp_internal_ip));
+	} else {
+	  log(_("Local IP not found"));
+	  tmp_internal_ip = "127.0.0.1";
+	  Idle.add( () => { redirection_status = REDIRECTION_STATUS_ERROR; return false; });
+	  return null;
+	}
+
+	tmp_external_ip = tmp_internal_ip;
+
+	// Don't redirect if there's no valid internal IP
+	if (strcmp(tmp_internal_ip,"127.0.0.1")!=0) {
+	  Environment.set_variable("FON_PASSWORD", ssh_password, true);
+	  Environment.set_variable("DISPLAY", display, true);
+
+	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -i",
+										   out txtout,
+										   out txterr,
+										   out result);
+	  txtout = txtout.chomp();
+
+	  if (result == 0 && strcmp(txtout,"")!=0
+		  && strcmp(txtout,"(null)")!=0) {
+		tmp_external_ip = txtout;
+		log(_("Found external IP: %s").printf(tmp_external_ip));
+		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -q %d".printf(port),
+											 out txtout,
+											 out txterr,
+											 out result);
+		if (result != 0) {
+		  log(_("Creating redirection"));
+		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -r %d %s %d".printf(port,tmp_internal_ip,port),
+											   out txtout,
+											   out txterr,
+											   out result);
+		  if (result == 0) {
+			log(_("Redirection performed"));
+			status = REDIRECTION_STATUS_DONE;
+		  }
+		} else {
+		  log(_("Redirection already present"));
+		  status = REDIRECTION_STATUS_DONE;
+		}
+	  } else {
+		log(_("External IP not found. Check that you really have a Fonera version 1 router"));
+		status = REDIRECTION_STATUS_ERROR;
+	  }
+	}
+
+	tmp_url="http://%s:%d".printf(tmp_external_ip, port);
+
+	internal_ip = tmp_internal_ip;
+	external_ip = tmp_external_ip;
+	url = tmp_url;
+	redirection_status = status;
+
+	return null;
+  }
+
+  public void forward_fon_stop() {
+	string txtout;
+	string txterr;
+	int result;
+	int status;
+
+	status = redirection_status;
+
+	if (status == REDIRECTION_STATUS_DONE ||
+		status == REDIRECTION_STATUS_PENDING ||
+		status == REDIRECTION_STATUS_ERROR) {
+	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -d %d".printf(port),
 										   out txtout,
 										   out txterr,
 										   out result);

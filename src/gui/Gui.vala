@@ -650,6 +650,8 @@ public class Gui : GLib.Object {
 				redirection_type_model.set(redirection_type_model_iter, 0, _("UPnP"), -1);
 				redirection_type_model.append(out redirection_type_model_iter);
 				redirection_type_model.set(redirection_type_model_iter, 0, _("SSH"), -1);
+				redirection_type_model.append(out redirection_type_model_iter);
+				redirection_type_model.set(redirection_type_model_iter, 0, _("FON"), -1);
 				redirection_type_model_cell_renderer = new Gtk.CellRendererText();
 				redirection_type.pack_start(redirection_type_model_cell_renderer, true);
 				redirection_type.set_attributes(redirection_type_model_cell_renderer,
