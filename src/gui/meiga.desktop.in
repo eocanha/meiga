@@ -9,3 +9,4 @@ Exec=@BINDIR@/meiga
 Icon=meiga
 X-Icon-path=/usr/share/pixmaps
 X-Window-Icon=meiga
+StartupNotify=true
