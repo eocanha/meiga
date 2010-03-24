@@ -288,22 +288,10 @@ public class MeigaServer : GLib.Object {
 	  // sending huge files
 	  msg.response_headers.set_encoding(Soup.Encoding.CHUNKED);
 	  msg.response_headers.append("content-type", mime);
+	  msg.response_body.set_accumulate(false); // Save memory
 
-	  size_t bufsize = 32*1024; // 32KB buffer
-	  void *buffer = (void *)new char[bufsize];
-	  ssize_t n=0;
-	  n=Posix.read(f, buffer, bufsize);
-	  while (n>0) {
-		msg.response_body.append(Soup.MemoryUse.TAKE,
-								 buffer, (size_t)n);
-		server.unpause_message(msg);
-		buffer = (void *)new char[bufsize];
-		n=Posix.read(f, buffer, bufsize);
-	  }
-	  delete buffer;
-	  msg.response_body.complete();
-	  server.unpause_message(msg);
-	  Posix.close(f);
+	  ServerContext *context = new ServerContext(server, msg, f, 512*1024);
+	  context->run();
 	} else if (FileUtils.test(real_path,FileTest.IS_DIR)) {
 	  List<string> files=new List<string>();
 	  Dir d=null;

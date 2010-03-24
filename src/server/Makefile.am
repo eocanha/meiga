@@ -20,6 +20,7 @@ bin_PROGRAMS = meigaserver
 
 meigaserver_VALASOURCES = \
 	MeigaServer.vala \
+	ServerContext.vala \
 	Meiga.vala \
 	Rss.vala \
 	Net.vala \
