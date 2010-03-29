@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: meiga\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-06 19:24+0100\n"
+"POT-Creation-Date: 2010-03-29 15:07+0200\n"
 "PO-Revision-Date: 2009-06-13 21:41+0200\n"
 "Last-Translator: Enrique Ocaña González <eocanha@igalia.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -20,147 +20,167 @@ msgstr ""
 msgid "--- No log available ---"
 msgstr "--- Registro no disponible ---"
 
-#: ../src/server/MeigaServer.vala:80
+#: ../src/server/MeigaServer.vala:81
 #, c-format
 msgid "External URL: %s"
 msgstr "La URL externa es: %s"
 
-#: ../src/server/MeigaServer.vala:112
+#: ../src/server/MeigaServer.vala:113
 #, c-format
 msgid "Error opening file %s"
 msgstr "Error abriendo archivo %s"
 
-#: ../src/server/MeigaServer.vala:127
+#: ../src/server/MeigaServer.vala:128
 msgid "Registering DBUS service"
 msgstr "Registrando servicio DBUS"
 
-#: ../src/server/MeigaServer.vala:130
+#: ../src/server/MeigaServer.vala:131
 msgid "Not registering DBUS service: not primary owner"
 msgstr "No registrando servicio DBUS: no es el propietario principal"
 
-#: ../src/server/MeigaServer.vala:133
+#: ../src/server/MeigaServer.vala:134
 #, c-format
 msgid "Error registering DBUS server: %s"
 msgstr "Error registrando servicio DBUS: %s"
 
-#: ../src/server/MeigaServer.vala:160
+#: ../src/server/MeigaServer.vala:162
 msgid "Attempted to register path without GUI started. Ignoring."
 msgstr "Se intentó registrar una ruta sin haber iniciado el GUI. Ignorando."
 
-#: ../src/server/MeigaServer.vala:166
+#: ../src/server/MeigaServer.vala:168
 #, c-format
 msgid "Registered logical path '%s' to real path '%s'"
 msgstr "Ruta local '%s' registrada a ruta real '%s'"
 
-#: ../src/server/MeigaServer.vala:174
+#: ../src/server/MeigaServer.vala:176
 msgid "Attempted to unregister path without GUI started. Ignoring."
 msgstr "Se intentó desregistrar una ruta sin haber iniciado el GUI. Ignorando."
 
-#: ../src/server/MeigaServer.vala:178
+#: ../src/server/MeigaServer.vala:180
 #, c-format
 msgid "Unregistered logical path '%s'"
 msgstr "Ruta lógica desregistrada '%s'"
 
-#: ../src/server/MeigaServer.vala:261
+#: ../src/server/MeigaServer.vala:263
 #, c-format
 msgid "Request: %s --> Serving: %s"
 msgstr "Petición: %s --> Sirviendo: %s"
 
-#: ../src/server/MeigaServer.vala:309 ../src/server/MeigaServer.vala:314
+#: ../src/server/MeigaServer.vala:315 ../src/server/MeigaServer.vala:320
 #, c-format
 msgid "Index of %s\n"
 msgstr "Índice de %s\n"
 
-#: ../src/server/MeigaServer.vala:323
+#: ../src/server/MeigaServer.vala:329
 #, c-format
 msgid "Served by <a href=\"http://meiga.igalia.com\">Meiga %s</a>"
 msgstr "Servido por <a href=\"http://meiga.igalia.com\">Meiga %s</a>"
 
-#: ../src/server/MeigaServer.vala:357
+#: ../src/server/MeigaServer.vala:363
 #, c-format
 msgid "Request: %s --> Serving (RSS mode): %s"
 msgstr "Petición: %s --> Sirviendo (modo RSS): %s"
 
-#: ../src/server/MeigaServer.vala:393
+#: ../src/server/MeigaServer.vala:399
 #, c-format
 msgid "Documents under %s"
 msgstr "Documentos bajo %s"
 
 #
-#: ../src/server/MeigaServer.vala:404
+#: ../src/server/MeigaServer.vala:410
 msgid "File not found"
 msgstr "Archivo no encontrado"
 
-#: ../src/server/Net.vala:157 ../src/server/Net.vala:166
+#: ../src/server/Net.vala:158
 msgid "Error spawning UPNP redirector process"
 msgstr "Error creando proceso redirector UPNP"
 
-#: ../src/server/Net.vala:159 ../src/server/Net.vala:168
+#: ../src/server/Net.vala:160
 msgid "Error creating thread for UPNP redirector process"
 msgstr "Error creando hilo para proceso redirector UPNP"
 
-#: ../src/server/Net.vala:199 ../src/server/Net.vala:234
-#: ../src/server/Net.vala:335
+#: ../src/server/Net.vala:167 ../src/server/Net.vala:394
+msgid "Error spawning SSH redirector process"
+msgstr "Error creando proceso redirector SSH"
+
+#: ../src/server/Net.vala:169
+msgid "Error creating thread for SSH redirector process"
+msgstr "Error creando hilo para proceso redirector SSH"
+
+#: ../src/server/Net.vala:176
+msgid "Error spawning FON redirector process"
+msgstr "Error creando proceso redirector FON"
+
+#: ../src/server/Net.vala:178
+msgid "Error creating thread for FON redirector process"
+msgstr "Error creando hilo para proceso redirector FON"
+
+#: ../src/server/Net.vala:212 ../src/server/Net.vala:247
+#: ../src/server/Net.vala:348 ../src/server/Net.vala:453
 #, c-format
 msgid "Found internal IP: %s"
 msgstr "IP interna encontrada: %s"
 
 #
-#: ../src/server/Net.vala:201 ../src/server/Net.vala:236
-#: ../src/server/Net.vala:337
+#: ../src/server/Net.vala:214 ../src/server/Net.vala:249
+#: ../src/server/Net.vala:350 ../src/server/Net.vala:455
 msgid "Local IP not found"
 msgstr "IP local no encontrada"
 
-#: ../src/server/Net.vala:255
+#: ../src/server/Net.vala:268 ../src/server/Net.vala:477
 #, c-format
 msgid "Found external IP: %s"
 msgstr "IP externa encontrada: %s"
 
-#: ../src/server/Net.vala:261
+#: ../src/server/Net.vala:274 ../src/server/Net.vala:483
 msgid "Creating redirection"
 msgstr "Creando redirección"
 
-#: ../src/server/Net.vala:267 ../src/server/Net.vala:374
-#: ../src/gui/Gui.vala:429
+#: ../src/server/Net.vala:280 ../src/server/Net.vala:386
+#: ../src/server/Net.vala:489 ../src/gui/Gui.vala:429
 msgid "Redirection performed"
 msgstr "Redirección realizada"
 
-#: ../src/server/Net.vala:271
+#: ../src/server/Net.vala:284 ../src/server/Net.vala:493
 msgid "Redirection already present"
 msgstr "Redirección ya presente"
 
-#: ../src/server/Net.vala:275
+#: ../src/server/Net.vala:288
 msgid ""
 "External IP not found. Check that your router has UPnP enabled and working"
 msgstr ""
 "IP externa no encontrada. Compruebe que su router tiene UPnP activado y "
 "funcionando"
 
-#: ../src/server/Net.vala:305 ../src/server/Net.vala:414
+#: ../src/server/Net.vala:318 ../src/server/Net.vala:425
+#: ../src/server/Net.vala:528
 msgid "Redirection removed"
 msgstr "Redirección eliminada"
 
-#: ../src/server/Net.vala:307 ../src/server/Net.vala:416
+#: ../src/server/Net.vala:320 ../src/server/Net.vala:427
+#: ../src/server/Net.vala:530
 msgid "Unable to remove redirection"
 msgstr "Imposible eliminar redirección"
 
-#: ../src/server/Net.vala:354
+#: ../src/server/Net.vala:366
 #, c-format
 msgid "Using external IP: %s"
 msgstr "Usando IP externa: %s"
 
-#: ../src/server/Net.vala:355
+#: ../src/server/Net.vala:367
 msgid "Creating SSH tunnel"
 msgstr "Creando túnel SSH"
 
-#: ../src/server/Net.vala:377
+#: ../src/server/Net.vala:389
 msgid "Error creating SSH tunnel. Check config parameters and password."
 msgstr ""
 "Error creando túnel SSH. Compruebe parámetros de configuración y password."
 
-#: ../src/server/Net.vala:382
-msgid "Error spawning SSH redirector process"
-msgstr "Error creando proceso redirector SSH"
+#: ../src/server/Net.vala:497
+msgid ""
+"External IP not found. Check that you really have a Fonera version 1 router"
+msgstr ""
+"IP externa no encontrada. Compruebe que su router es realmente una Fonera versión 1"
 
 #: ../src/server/Rss.vala:29 ../src/server/Rss.vala:54
 msgid "No title"
@@ -277,7 +297,7 @@ msgstr "_Compartir"
 msgid "_Help"
 msgstr "Ay_uda"
 
-#: ../src/gui/Gui.vala:560 ../src/gui/Gui.vala:850
+#: ../src/gui/Gui.vala:560 ../src/gui/Gui.vala:852
 msgid "Meiga"
 msgstr "Meiga"
 
@@ -313,68 +333,72 @@ msgstr "UPnP"
 msgid "SSH"
 msgstr "SSH"
 
-#: ../src/gui/Gui.vala:662
+#: ../src/gui/Gui.vala:654
+msgid "FON"
+msgstr "FON"
+
+#: ../src/gui/Gui.vala:664
 msgid "<b>SSH options</b>"
 msgstr "<b>Opciones SSH</b>"
 
-#: ../src/gui/Gui.vala:669
+#: ../src/gui/Gui.vala:671
 msgid "Host"
 msgstr "Servidor"
 
-#: ../src/gui/Gui.vala:684
+#: ../src/gui/Gui.vala:686
 msgid "Port"
 msgstr "Puerto"
 
-#: ../src/gui/Gui.vala:699
+#: ../src/gui/Gui.vala:701
 msgid "User"
 msgstr "Usuario"
 
-#: ../src/gui/Gui.vala:714
+#: ../src/gui/Gui.vala:716
 msgid "Password"
 msgstr "Contraseña"
 
-#: ../src/gui/Gui.vala:755
+#: ../src/gui/Gui.vala:757
 msgid "Options"
 msgstr "Opciones"
 
-#: ../src/gui/Gui.vala:781
+#: ../src/gui/Gui.vala:783
 msgid "Add path"
 msgstr "Añadir ruta"
 
-#: ../src/gui/Gui.vala:792
+#: ../src/gui/Gui.vala:794
 msgid "Local directory"
 msgstr "Directorio local"
 
-#: ../src/gui/Gui.vala:800
+#: ../src/gui/Gui.vala:802
 msgid "Select a folder to share"
 msgstr "Selecciona una carpeta para compartir"
 
-#: ../src/gui/Gui.vala:808
+#: ../src/gui/Gui.vala:810
 msgid "Share as"
 msgstr "Compartir como"
 
-#: ../src/gui/Gui.vala:853
+#: ../src/gui/Gui.vala:855
 msgid "This program comes with ABSOLUTELY NO WARRANTY.\n"
 msgstr "Este programa se suministra SIN NINGUNA GARANTÍA.\n"
 
-#: ../src/gui/Gui.vala:854
+#: ../src/gui/Gui.vala:856
 msgid ""
 "Licensed under GNU GPL 2.0. This is free software, and you are welcome to "
 msgstr ""
 "Licenciado bajo GNU GPL 2.0. Esto es software libre y estás invitado a "
 
-#: ../src/gui/Gui.vala:855
+#: ../src/gui/Gui.vala:857
 msgid "redistribute it under certain conditions.\n"
 msgstr "redistribuirlo bajo ciertas condiciones.\n"
 
-#: ../src/gui/Gui.vala:857
+#: ../src/gui/Gui.vala:859
 msgid "For more information, see:\n"
 msgstr "Para más información, consulta:\n"
 
-#: ../src/gui/Gui.vala:861
+#: ../src/gui/Gui.vala:863
 msgid "Xunta de Galicia partially funded this project using "
 msgstr "La Xunta de Galicia ha financiado este proyecto parcialmente usando "
 
-#: ../src/gui/Gui.vala:862
+#: ../src/gui/Gui.vala:864
 msgid "the European Regional Development Fund (ERDF)\n"
 msgstr "el Fondo Europeo de Desarrollo Regional (FEDER)\n"
