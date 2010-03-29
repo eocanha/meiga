@@ -1,7 +1,8 @@
-meiga (0.3.2) - Sun, 07 Feb 2010 19:10:04 +0100      
+meiga (0.3.3) - Sat, 10 Apr 2010 01:16:07 +0200
 
-  * Improved package build
-  * Support for Fedora
-  * Removed GtkBuilder support for compatibility with more distributions
-  * Memory and stability improvements
-
+  * Redirection support for FON routers
+  * Modernized autotools configuration
+  * Startup notification
+  * Memory optimization for large files
+  * File size indication
+  * Fixed bug: IP and URL are not updated on redirection
