@@ -292,10 +292,10 @@ public class Net : GLib.Object {
 
 	url="http://%s:%d".printf(external_ip, port);
 
-	internal_ip = internal_ip;
-	external_ip = external_ip;
-	url = url;
-	redirection_status = status;
+	this.internal_ip = internal_ip;
+	this.external_ip = external_ip;
+	this.url = url;
+	this.redirection_status = status;
 
 	return null;
   }
@@ -322,7 +322,7 @@ public class Net : GLib.Object {
 	  }
 	}
 
-	Idle.add( () => { redirection_status = REDIRECTION_STATUS_NONE; return false; });
+	Idle.add( () => { this.redirection_status = REDIRECTION_STATUS_NONE; return false; });
   }
 
   private void *forward_ssh_start() {
@@ -399,10 +399,10 @@ public class Net : GLib.Object {
 
 	tmp_url="http://%s:%d".printf(tmp_external_ip, port);
 
-	internal_ip = tmp_internal_ip;
-	external_ip = tmp_external_ip;
-	url = tmp_url;
-	redirection_status = status;
+	this.internal_ip = tmp_internal_ip;
+	this.external_ip = tmp_external_ip;
+	this.url = tmp_url;
+	this.redirection_status = status;
 	return null;
   }
 
@@ -428,7 +428,7 @@ public class Net : GLib.Object {
 	  }
 	}
 
-	Idle.add( () => { redirection_status = REDIRECTION_STATUS_NONE; return false; });
+	Idle.add( () => { this.redirection_status = REDIRECTION_STATUS_NONE; return false; });
   }
 
   private void *forward_fon_start() {
@@ -501,10 +501,10 @@ public class Net : GLib.Object {
 
 	tmp_url="http://%s:%d".printf(tmp_external_ip, port);
 
-	internal_ip = tmp_internal_ip;
-	external_ip = tmp_external_ip;
-	url = tmp_url;
-	redirection_status = status;
+	this.internal_ip = tmp_internal_ip;
+	this.external_ip = tmp_external_ip;
+	this.url = tmp_url;
+	this.redirection_status = status;
 
 	return null;
   }
@@ -531,7 +531,7 @@ public class Net : GLib.Object {
 	  }
 	}
 
-	Idle.add( () => { redirection_status = REDIRECTION_STATUS_NONE; return false; });
+	Idle.add( () => { this.redirection_status = REDIRECTION_STATUS_NONE; return false; });
   }
 
 }
