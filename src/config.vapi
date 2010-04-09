@@ -51,4 +51,12 @@ namespace Posix {
   public ssize_t read (int fd, void* buf, size_t count);
   [CCode (cheader_filename = "unistd.h")]
   public int close (int fd);
+
+  [CCode (cheader_filename = "sys/stat.h", cname = "struct stat")]
+  public struct Stat {
+    public size_t st_size;
+  }
+
+  [CCode (cheader_filename = "sys/stat.h")]
+  int fstat( int fd, out Stat buf);
 }

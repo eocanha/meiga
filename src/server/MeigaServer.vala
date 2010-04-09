@@ -280,12 +280,18 @@ public class MeigaServer : GLib.Object {
 
 	  string extension=extension_from_path(real_path).down();
 	  string mime=null;
+	  Posix.Stat stbuf;
+	  int64 length=0;
 
 	  if (extension!=null) mime=mimetypes.lookup(extension);
 	  if (mime==null) mime="application/x-octet-stream";
 
+	  Posix.fstat(f, out stbuf);
+	  length = (int64)stbuf.st_size;
+
 	  msg.response_headers.set_encoding(Soup.Encoding.EOF);
 	  msg.response_headers.append("content-type", mime);
+	  msg.response_headers.set_content_length(length);
 	  msg.response_body.set_accumulate(false); // Save memory
 
 	  ServerContext *context = new ServerContext(server, msg, f, 1024*1024);
