@@ -58,11 +58,11 @@ public class ServerContext : GLib.Object {
     if (fd<=0) return false;
 
 	buffer = (void *)new char[bufsize];
-	n=Posix.read(fd, buffer, bufsize);
+	n=Posix.read(fd, (void *)buffer, bufsize);
 
 	if (n>0) {
 	  msg.response_body.append(Soup.MemoryUse.TAKE,
-							   buffer, (size_t)n);
+	  						   buffer, (size_t)n);
 	  server.unpause_message(msg);
 	} else {
 	  msg.response_body.complete();

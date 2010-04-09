@@ -284,13 +284,11 @@ public class MeigaServer : GLib.Object {
 	  if (extension!=null) mime=mimetypes.lookup(extension);
 	  if (mime==null) mime="application/x-octet-stream";
 
-	  // A chunked encoding should be used to save memory when
-	  // sending huge files
-	  msg.response_headers.set_encoding(Soup.Encoding.CHUNKED);
+	  msg.response_headers.set_encoding(Soup.Encoding.EOF);
 	  msg.response_headers.append("content-type", mime);
 	  msg.response_body.set_accumulate(false); // Save memory
 
-	  ServerContext *context = new ServerContext(server, msg, f, 512*1024);
+	  ServerContext *context = new ServerContext(server, msg, f, 1024*1024);
 	  context->run();
 	} else if (FileUtils.test(real_path,FileTest.IS_DIR)) {
 	  List<string> files=new List<string>();
