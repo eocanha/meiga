@@ -47,6 +47,10 @@ public class ServerContext : GLib.Object {
 
   public void cleanup() {
 	msg.set_data("meiga-server-context", null);
+	if (buffer!=null) {
+	  delete buffer;
+	  buffer = null;
+	}
 	if (fd>0) {
 	  Posix.close(fd);
 	  fd=-1;
@@ -67,6 +71,7 @@ public class ServerContext : GLib.Object {
 	} else {
 	  msg.response_body.complete();
 	  server.unpause_message(msg);
+	  buffer = null;
 	  cleanup();
 	}
 	return false;
