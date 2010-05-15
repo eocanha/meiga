@@ -52,7 +52,7 @@ public class Net : GLib.Object {
 
   private int _port;
   public int port {
-	owned get { int r; lock (worker) { r = _port; } return r; }
+	get { int r; lock (worker) { r = _port; } return r; }
 	set { lock (worker) { _port = value; } }
   }
 
@@ -65,7 +65,7 @@ public class Net : GLib.Object {
   private int _previous_redirection_type;
   private int _redirection_type;
   public int redirection_type {
-	owned get { int r; lock (worker) { r = _redirection_type; } return r; }
+	get { int r; lock (worker) { r = _redirection_type; } return r; }
 	set {
 	  lock (worker) {
 		// Don't allow type changing in the middle of a change process
@@ -79,7 +79,7 @@ public class Net : GLib.Object {
 
   private int _redirection_status;
   public int redirection_status {
-	owned get { int r; lock (worker) { r = _redirection_status; } return r; }
+	get { int r; lock (worker) { r = _redirection_status; } return r; }
 	set { lock (worker) { _redirection_status = value; } }
   }
 
@@ -154,8 +154,6 @@ public class Net : GLib.Object {
 	case REDIRECTION_TYPE_UPNP:
 	  try {
 		worker = Thread.create(forward_upnp_start, true);
-	  } catch (SpawnError e) {
-		log(_("Error spawning UPNP redirector process"));
 	  } catch (ThreadError e) {
 		log(_("Error creating thread for UPNP redirector process"));
 	  }
@@ -163,8 +161,6 @@ public class Net : GLib.Object {
 	case REDIRECTION_TYPE_SSH:
 	  try {
 		worker = Thread.create(forward_ssh_start, true);
-	  } catch (SpawnError e) {
-		log(_("Error spawning SSH redirector process"));
 	  } catch (ThreadError e) {
 		log(_("Error creating thread for SSH redirector process"));
 	  }
@@ -172,8 +168,6 @@ public class Net : GLib.Object {
 	case REDIRECTION_TYPE_FON:
 	  try {
 		worker = Thread.create(forward_fon_start, true);
-	  } catch (SpawnError e) {
-		log(_("Error spawning FON redirector process"));
 	  } catch (ThreadError e) {
 		log(_("Error creating thread for FON redirector process"));
 	  }
@@ -202,26 +196,29 @@ public class Net : GLib.Object {
 	string txterr;
 	int result;
 
-	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
-										 out txtout,
-										 out txterr,
-										 out result);
+	try {
+	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
+										   out txtout,
+										   out txterr,
+										   out result);
 
-	if (result == 0) {
-	  internal_ip = txtout.chomp();
-	  log(_("Found internal IP: %s").printf(internal_ip));
-	} else {
-	  log(_("Local IP not found"));
-	  internal_ip = "127.0.0.1";
+	  if (result == 0) {
+		internal_ip = txtout.chomp();
+		log(_("Found internal IP: %s").printf(internal_ip));
+	  } else {
+		log(_("Local IP not found"));
+		internal_ip = "127.0.0.1";
+	  }
+
+	  url="http://%s:%d".printf(internal_ip, port);
+
+	  this.internal_ip = internal_ip;
+	  this.external_ip = internal_ip;
+	  this.url = url;
+	  this.redirection_status = REDIRECTION_STATUS_NONE;
+	} catch (GLib.SpawnError e) {
+	  log(_("Error spawning IP detection process"));
 	}
-
-	url="http://%s:%d".printf(internal_ip, port);
-
-	this.internal_ip = internal_ip;
-	this.external_ip = internal_ip;
-	this.url = url;
-	this.redirection_status = REDIRECTION_STATUS_NONE;
-
 	return null;
   }
 
@@ -237,10 +234,16 @@ public class Net : GLib.Object {
 	status = REDIRECTION_STATUS_PENDING;
 	Idle.add( () => { redirection_status = REDIRECTION_STATUS_PENDING; return false; });
 
-	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
-										 out txtout,
-										 out txterr,
-										 out result);
+	try {
+	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
+										   out txtout,
+										   out txterr,
+										   out result);
+
+	} catch (GLib.SpawnError e) {
+	  log(_("Error spawning IP detection process"));
+	  result = -1;
+	}
 
 	if (result == 0) {
 	  internal_ip = txtout.chomp();
@@ -256,36 +259,41 @@ public class Net : GLib.Object {
 
 	// Don't redirect if there's no valid internal IP
 	if (strcmp(internal_ip,"127.0.0.1")!=0) {
-	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -i",
-										   out txtout,
-										   out txterr,
-										   out result);
-	  txtout = txtout.chomp();
-
-	  if (result == 0 && strcmp(txtout,"")!=0
-		  && strcmp(txtout,"(null)")!=0) {
-		external_ip = txtout;
-		log(_("Found external IP: %s").printf(external_ip));
-		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -q %d".printf(port),
+	  try {
+		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -i",
 											 out txtout,
 											 out txterr,
 											 out result);
-		if (result != 0) {
-		  log(_("Creating redirection"));
-		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -r %d %d %s %s %d".printf(port,port,internal_ip,"Meiga",0),
+		txtout = txtout.chomp();
+
+		if (result == 0 && strcmp(txtout,"")!=0
+			&& strcmp(txtout,"(null)")!=0) {
+		  external_ip = txtout;
+		  log(_("Found external IP: %s").printf(external_ip));
+		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -q %d".printf(port),
 											   out txtout,
 											   out txterr,
 											   out result);
-		  if (result == 0) {
-			log(_("Redirection performed"));
+		  if (result != 0) {
+			log(_("Creating redirection"));
+			GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -r %d %d %s %s %d".printf(port,port,internal_ip,"Meiga",0),
+												 out txtout,
+												 out txterr,
+												 out result);
+			if (result == 0) {
+			  log(_("Redirection performed"));
+			  status = REDIRECTION_STATUS_DONE;
+			}
+		  } else {
+			log(_("Redirection already present"));
 			status = REDIRECTION_STATUS_DONE;
 		  }
 		} else {
-		  log(_("Redirection already present"));
-		  status = REDIRECTION_STATUS_DONE;
+		  log(_("External IP not found. Check that your router has UPnP enabled and working"));
+		  status = REDIRECTION_STATUS_ERROR;
 		}
-	  } else {
-		log(_("External IP not found. Check that your router has UPnP enabled and working"));
+	  } catch (GLib.SpawnError e) {
+		log(_("Error spawning UPNP redirector process"));
 		status = REDIRECTION_STATUS_ERROR;
 	  }
 	}
@@ -296,7 +304,6 @@ public class Net : GLib.Object {
 	this.external_ip = external_ip;
 	this.url = url;
 	this.redirection_status = status;
-
 	return null;
   }
 
@@ -310,10 +317,16 @@ public class Net : GLib.Object {
 
 	if (status == REDIRECTION_STATUS_DONE || status == REDIRECTION_STATUS_PENDING) {
 	  if (internal_ip != external_ip) {
-		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -d %d".printf(port),
-											 out txtout,
-											 out txterr,
-											 out result);
+		try {
+		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -d %d".printf(port),
+											   out txtout,
+											   out txterr,
+											   out result);
+		} catch (GLib.SpawnError e) {
+		  result = -1;
+		  log(_("Error spawning UPNP redirector process"));
+		}
+
 		if (result == 0) {
 		  log(_("Redirection removed"));
 		} else {
@@ -338,10 +351,15 @@ public class Net : GLib.Object {
 	status = REDIRECTION_STATUS_PENDING;
 	Idle.add( () => { redirection_status = REDIRECTION_STATUS_PENDING; return false; });
 
-	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
-										 out txtout,
-										 out txterr,
-										 out result);
+	try {
+	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
+										   out txtout,
+										   out txterr,
+										   out result);
+	} catch (GLib.SpawnError e) {
+	  log(_("Error spawning IP detection process"));
+	  result = -1;
+	}
 
 	if (result == 0) {
 	  tmp_internal_ip = txtout.chomp();
@@ -417,10 +435,16 @@ public class Net : GLib.Object {
 	if (status == REDIRECTION_STATUS_DONE ||
 		status == REDIRECTION_STATUS_PENDING ||
 		status == REDIRECTION_STATUS_ERROR) {
-	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwssh -d %d".printf(port),
-										   out txtout,
-										   out txterr,
-										   out result);
+	  try {
+		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwssh -d %d".printf(port),
+											 out txtout,
+											 out txterr,
+											 out result);
+	  } catch (GLib.SpawnError e) {
+		result = -1;
+		log(_("Error spawning SSH redirector process"));
+	  }
+
 	  if (result == 0) {
 		log(_("Redirection removed"));
 	  } else {
@@ -443,10 +467,15 @@ public class Net : GLib.Object {
 	status = REDIRECTION_STATUS_PENDING;
 	Idle.add( () => { redirection_status = REDIRECTION_STATUS_PENDING; return false; });
 
-	GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
-										 out txtout,
-										 out txterr,
-										 out result);
+	try {
+	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwlocalip",
+										   out txtout,
+										   out txterr,
+										   out result);
+	} catch (GLib.SpawnError e) {
+	  log(_("Error spawning IP detection process"));
+	  result = -1;
+	}
 
 	if (result == 0) {
 	  tmp_internal_ip = txtout.chomp();
@@ -465,36 +494,42 @@ public class Net : GLib.Object {
 	  Environment.set_variable("FON_PASSWORD", ssh_password, true);
 	  Environment.set_variable("DISPLAY", display, true);
 
-	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -i",
-										   out txtout,
-										   out txterr,
-										   out result);
-	  txtout = txtout.chomp();
-
-	  if (result == 0 && strcmp(txtout,"")!=0
-		  && strcmp(txtout,"(null)")!=0) {
-		tmp_external_ip = txtout;
-		log(_("Found external IP: %s").printf(tmp_external_ip));
-		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -q %d".printf(port),
+	  try {
+		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -i",
 											 out txtout,
 											 out txterr,
 											 out result);
-		if (result != 0) {
-		  log(_("Creating redirection"));
-		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -r %d %s %d".printf(port,tmp_internal_ip,port),
+
+		txtout = txtout.chomp();
+
+		if (result == 0 && strcmp(txtout,"")!=0
+			&& strcmp(txtout,"(null)")!=0) {
+		  tmp_external_ip = txtout;
+		  log(_("Found external IP: %s").printf(tmp_external_ip));
+		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -q %d".printf(port),
 											   out txtout,
 											   out txterr,
 											   out result);
-		  if (result == 0) {
-			log(_("Redirection performed"));
+		  if (result != 0) {
+			log(_("Creating redirection"));
+			GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -r %d %s %d".printf(port,tmp_internal_ip,port),
+												 out txtout,
+												 out txterr,
+												 out result);
+			if (result == 0) {
+			  log(_("Redirection performed"));
+			  status = REDIRECTION_STATUS_DONE;
+			}
+		  } else {
+			log(_("Redirection already present"));
 			status = REDIRECTION_STATUS_DONE;
 		  }
 		} else {
-		  log(_("Redirection already present"));
-		  status = REDIRECTION_STATUS_DONE;
+		  log(_("External IP not found. Check that you really have a Fonera version 1 router"));
+		  status = REDIRECTION_STATUS_ERROR;
 		}
-	  } else {
-		log(_("External IP not found. Check that you really have a Fonera version 1 router"));
+	  } catch (GLib.SpawnError e) {
+		log(_("Error spawning FON redirector process"));
 		status = REDIRECTION_STATUS_ERROR;
 	  }
 	}
@@ -505,7 +540,6 @@ public class Net : GLib.Object {
 	this.external_ip = tmp_external_ip;
 	this.url = tmp_url;
 	this.redirection_status = status;
-
 	return null;
   }
 
@@ -520,10 +554,16 @@ public class Net : GLib.Object {
 	if (status == REDIRECTION_STATUS_DONE ||
 		status == REDIRECTION_STATUS_PENDING ||
 		status == REDIRECTION_STATUS_ERROR) {
-	  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -d %d".printf(port),
-										   out txtout,
-										   out txterr,
-										   out result);
+	  try {
+		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -d %d".printf(port),
+											 out txtout,
+											 out txterr,
+											 out result);
+	  } catch (GLib.SpawnError e) {
+		result = -1;
+		log(_("Error spawning FON redirector process"));
+	  }
+
 	  if (result == 0) {
 		log(_("Redirection removed"));
 	  } else {

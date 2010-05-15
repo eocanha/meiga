@@ -12,21 +12,19 @@ libdbus-1-dev      (>= 0.74)
 libdbus-glib-1-dev (>= 0.74)
 libgupnp-1.0-dev   (>= 0.6)
 
-In addition, the Vala 0.7.2 compiler is needed (0.5.2 is also reported 
-to work). If you have Ubuntu Jaunty or Debian Sid, you can install the
-package. If you're using an older distribution, you must install it
-by hand.
+In addition, the Vala 0.8.1 compiler is needed (older versions
+are not tested, but they might work).
 
 You can download and compile it yourself from here:
 
-http://download.gnome.org/sources/vala/0.7/vala-0.7.2.tar.bz2
+http://download.gnome.org/sources/vala/0.8/vala-0.8.1.tar.bz2
 
 For additional instructions about the Vala compiler, have a look
 to the Vala website:
 
 http://live.gnome.org/Vala
 
-Compilation is reported to work on Ubuntu Hardy.
+Compilation is reported to work on Ubuntu Jaunty.
 
 Debian/Ubuntu package construction
 **********************************

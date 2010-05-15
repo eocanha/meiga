@@ -2,7 +2,7 @@ Source: meiga
 Section: gnome
 Priority: optional
 Maintainer: Enrique Ocaña González <eocanha@igalia.com>
-Build-Depends: debhelper (>= 4), gnome-common, pkg-config, libgtk2.0-dev, libsoup2.4-dev, libdbus-glib-1-dev, libgupnp-1.0-dev, valac (>= 0.5.7)
+Build-Depends: debhelper (>= 4), gnome-common, pkg-config, libgtk2.0-dev, libsoup2.4-dev, libdbus-glib-1-dev, libgupnp-1.0-dev, valac (>= 0.8.0)
 Standards-Version: 3.7.2
 Homepage: http://meiga.igalia.com/
 

@@ -5,7 +5,7 @@
 
 # -------------------------------------------------
 
-VALA_URL='http://download.gnome.org/sources/vala/0.7/vala-0.7.2.tar.bz2'
+VALA_URL='http://download.gnome.org/sources/vala/0.8/vala-0.8.1.tar.bz2'
 
 # -------------------------------------------------
 

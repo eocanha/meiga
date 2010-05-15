@@ -79,7 +79,7 @@ public class ServerContext : GLib.Object {
 
   public static void on_wrote_chunk (Soup.Message msg) {
 	ServerContext *sc;
-	sc = (ServerContext*)msg.get_data("meiga-server-context");
+	sc = (ServerContext*)msg.get_data<ServerContext*>("meiga-server-context");
 	if (sc!=null) sc->serve_chunk();
   }
 
@@ -87,7 +87,7 @@ public class ServerContext : GLib.Object {
 										 Soup.Message msg,
 										 Soup.ClientContext client) {
 	ServerContext *sc;
-	sc = (ServerContext*)msg.get_data("meiga-server-context");
+	sc = (ServerContext*)msg.get_data<ServerContext*>("meiga-server-context");
 	if (sc!=null) {
 	  sc->cleanup();
 	}
