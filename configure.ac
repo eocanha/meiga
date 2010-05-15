@@ -42,7 +42,7 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 
-VALA_REQUIRED=0.5.2
+VALA_REQUIRED=0.8.0
 GTHREAD_REQUIRED=2.16.3
 GLIB_REQUIRED=2.12.0
 GTK_REQUIRED=2.10.0
@@ -51,7 +51,9 @@ DBUSGLIB_REQUIRED=0.74
 GMODULE_REQUIRED=0.22
 GUPNP_REQUIRED=0.6
 
-if test "`$VALAC --version`" \< "Vala $VALA_REQUIRED"
+# No need to ask for the Vala compiler if the sources are
+# already compiled to C
+if test ! -f src/server/MeigaServer.c -a "`$VALAC --version`" \< "Vala $VALA_REQUIRED"
 then
     AC_MSG_ERROR([Vala >= $VALA_REQUIRED is required.])
 fi

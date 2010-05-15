@@ -1,7 +1,11 @@
 #!/bin/sh
 
 # Parameters:
-# -d	Installs all the needed compilation dependencies
+# -d	      Installs all the needed compilation dependencies
+# -r distro   Prepares a release for a given distro (jaunty, karmic, lucid...) in /tmp
+#             After that, ***cd /tmp*** and upload with: dput -f meiga meiga*.changes
+# -rn distro  The same than -r, but precompiling C sources to avoid dependancy on
+#             Vala package in the target distro
 
 # -------------------------------------------------
 
@@ -15,8 +19,10 @@ case $LSB_VENDOR in
     VALA_INSTALLED=0
     WKDIR=`pwd`
     if [ "$#" -ge 1 ]
-    then if [ "$1" = "-d" ]
+    then
+      if [ "$1" = "-d" ]
       then
+	shift
         if [ -f /usr/bin/lsb_release ]
         then
           UBUNTU_RELEASE=`lsb_release -r | { read _ X; echo $X; }`
@@ -44,6 +50,37 @@ case $LSB_VENDOR in
           echo "Your distribution is not supported for dependency autoinstall"
         fi
       fi
+
+      if [ "$1" = "-r" -o "$1" = "-rn" ]
+      then
+        RELEASETYPE="$1"
+	DISTRO="$2"
+	BUILDPATH="/tmp/meiga"
+	shift
+	shift
+	rm -rf "$BUILDPATH" "$BUILDPATH"_*
+	mkdir "$BUILDPATH" \
+        && cp -a .git "$BUILDPATH" \
+        && cd "$BUILDPATH" \
+        && git reset --hard HEAD \
+        && rm -rf .git \
+        && sed -e "s/) unstable/$DISTRO) $DISTRO/" < "$WKDIR/debian/changelog" > "$BUILDPATH/debian/changelog"
+
+	BINARYONLY="-S"
+        SIGNCHANGES=""
+
+        if [ "$RELEASETYPE" = "-rn" ]
+        then
+          # Remove valac dependency from debian/control in /tmp/meiga
+          sed -e 's/, valac (.*)//' < "$WKDIR/debian/control" > "$BUILDPATH/debian/control" \
+          && ./autogen.sh \
+          && cd "$BUILDPATH/src/gui" && make meiga.vala.stamp && cd "$BUILDPATH" \
+          && cd "$BUILDPATH/src/server" && make meiga.vala.stamp && cd "$BUILDPATH"
+        fi
+      else
+        BINARYONLY="-b"
+        SIGNCHANGES="-uc"
+      fi
     fi
 
     CHECKDEPS=`dpkg-checkbuilddeps 2>&1`
@@ -65,7 +102,7 @@ case $LSB_VENDOR in
     # If you're using a distribution for which an updated Vala package 
     # exists and you want to check the dependency, remove the "-d" option
 
-    dpkg-buildpackage -d -rfakeroot -b -uc
+    dpkg-buildpackage -d -rfakeroot $BINARYONLY $SIGNCHANGES
 
     if [ "$VALA_INSTALLED" = "1" ]
     then
@@ -74,6 +111,16 @@ case $LSB_VENDOR in
       make uninstall
       cd "$WKDIR"
       ldconfig
+    fi
+
+    if [ -n "$DISTRO" ]
+    then
+      echo "---------------------------------------------------------------"
+      echo "Source release prepared."
+      echo "Run the following commands to upload the release to Ubuntu PPA:"
+      echo "  cd /tmp"
+      echo "  dput -f meiga meiga*.changes"
+      echo "---------------------------------------------------------------"
     fi
 
     ;;
