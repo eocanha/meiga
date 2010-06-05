@@ -820,6 +820,7 @@ public class Gui : GLib.Object {
 				   Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
 				   Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
 				   3, 3);
+		  shareas.activate += on_adddialogok;
 		  shareas.show();
 		}
 		t.set_col_spacings(5);
