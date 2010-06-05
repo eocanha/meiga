@@ -1,6 +1,6 @@
-qName:		meiga
-Version:	0.3.1
-Release:	2%{?dist}
+Name:		meiga
+Version:	0.3.3
+Release:	1%{?dist}
 Summary:	Easy to use tool to share selected local directories via web
 
 Group:		Applications/Internet
@@ -9,6 +9,7 @@ URL:		http://meiga.igalia.com/
 Source0:	http://meiga.igalia.com/packages/src/%{name}-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
+BuildRequires:	gnome-common
 BuildRequires:	intltool
 BuildRequires:	libtool
 BuildRequires:	vala
@@ -43,8 +44,7 @@ Enables the Meiga KDE integration
 %setup -q
 
 %build
-intltoolize --force
-autoreconf -f -i
+./autogen.sh
 %configure
 make %{?_smp_mflags}
 
@@ -80,10 +80,10 @@ fi
 %files -f %{name}.lang
 %defattr(-,root,root,-)
 %{_bindir}/fwlocalip
+%{_bindir}/fwfon
 %{_bindir}/fwupnp
 %{_bindir}/fwssh
 %{_bindir}/fwssh-task
-%{_bindir}/fwfon
 %{_bindir}/meiga
 %{_bindir}/meigaserver
 %{_bindir}/meiga-askpass
@@ -103,7 +103,16 @@ fi
 
 
 %changelog
-* Sun Nov 15 2009 Rajeesh K Nambiar <rajeeshknambiar@gmail.com> -0.3.1-2
+* Sat Jun 05 2010 Rajeesh K Nambiar <rajeeshknambiar@gmail.com> - 0.3.3-1
+- Fix for FTBFS RHBZ #599951 : Vala compiler segfault
+- Added gnome-common as BR
+
+* Mon Feb 08 2010 Rajeesh K Nambiar <rajeeshknambiar@gmail.com> - 0.3.2-1
+- Doesn't use GtkBuilder anymore
+- Files are now iterated instead of mmapped
+- Fix for RHBZ #559390
+
+* Sun Nov 15 2009 Rajeesh K Nambiar <rajeeshknambiar@gmail.com> - 0.3.1-2
 - Split the KDE specific files into meiga-kde package
 - Added --force to intltoolize in %build
 
