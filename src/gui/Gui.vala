@@ -501,7 +501,7 @@ public class Gui : GLib.Object {
 		  sharemenumenu.add(remove);
 		  remove.activate += on_remove;
 
-		  Gtk.ImageMenuItem copy_invitation = new Gtk.ImageMenuItem.with_mnemonic("_Copy invitation");
+		  Gtk.ImageMenuItem copy_invitation = new Gtk.ImageMenuItem.with_mnemonic(_("_Copy invitation"));
 		  copy_invitation.image = new Gtk.Image.from_stock("gtk-copy", Gtk.IconSize.MENU);
 		  copy_invitation.show();
 		  sharemenumenu.add(copy_invitation);
@@ -542,7 +542,7 @@ public class Gui : GLib.Object {
 	  sep.show();
 	  systraymenu.add(sep);
 
-	  Gtk.ImageMenuItem copy_invitation = new Gtk.ImageMenuItem.with_mnemonic("_Copy invitation");
+	  Gtk.ImageMenuItem copy_invitation = new Gtk.ImageMenuItem.with_mnemonic(_("_Copy invitation"));
 	  copy_invitation.image = new Gtk.Image.from_stock("gtk-copy", Gtk.IconSize.MENU);
 	  copy_invitation.show();
 	  systraymenu.add(copy_invitation);
