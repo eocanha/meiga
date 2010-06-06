@@ -197,7 +197,7 @@ public class Gui : GLib.Object {
   // Private methods
   private Gtk.MenuBar menushell_to_menubar(MenuShell menu) {
     Gtk.MenuBar menubar=new Gtk.MenuBar();
-    weak List<Gtk.MenuItem> children=(List<Gtk.MenuItem>)menu.children;
+    List<Gtk.MenuItem> children = (List<Gtk.MenuItem>) ((Gtk.Container)menu).get_children();
     List<Gtk.MenuItem> childrencopy=new List<Gtk.MenuItem>();
     foreach (Gtk.MenuItem menuitem in children) {
       childrencopy.append(menuitem);
@@ -783,7 +783,7 @@ public class Gui : GLib.Object {
 	adddialog.title = _("Add path");
 	adddialog.modal = true;
 	adddialog.type_hint = Gdk.WindowTypeHint.DIALOG;
-	adddialog.position = Gtk.WindowPosition.CENTER;
+	adddialog.set_position (Gtk.WindowPosition.CENTER);
 	{
 	  Gtk.Container content_area = (Gtk.Container)((Gtk.Dialog)adddialog).get_content_area();
 
@@ -866,7 +866,7 @@ public class Gui : GLib.Object {
 	a.website = "http://meiga.igalia.com";
 	a.modal = true;
 	a.type_hint = Gdk.WindowTypeHint.DIALOG;
-	a.position = Gtk.WindowPosition.CENTER;
+	a.set_position (Gtk.WindowPosition.CENTER);
 	a.default_height = 300;
 	a.default_width = 300;
 	List blist = ((Gtk.Container)a.get_action_area()).get_children();
