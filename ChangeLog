@@ -1,3 +1,11 @@
+meiga (0.3.4) - Sun, 06 Jun 2010 03:26:42 +0300
+
+  * Fixed bug: memory leak when a download is aborted
+  * Meiga ported to Vala 0.8.1
+  * Trigger default action on Enter press in Add dialog
+  * Update RPM spec
+  * Improved release process
+
 meiga (0.3.3) - Sat, 10 Apr 2010 01:16:07 +0200
 
   * Redirection support for FON routers
