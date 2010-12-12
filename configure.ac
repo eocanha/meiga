@@ -53,9 +53,48 @@ GUPNP_REQUIRED=0.6
 
 # No need to ask for the Vala compiler if the sources are
 # already compiled to C
-if test ! -f src/server/MeigaServer.c -a "`$VALAC --version`" \< "Vala $VALA_REQUIRED"
+if test ! -f src/server/MeigaServer.c
 then
-    AC_MSG_ERROR([Vala >= $VALA_REQUIRED is required.])
+
+    # Compare major, minor and revision version values one by one
+    # because lexicographic order isn't enough
+
+    VALA_REQUIRED="0.11.2"
+    VALAC_VERSION="Vala 0.11.3"
+    IFS_BAK="$IFS"
+    IFS=". "
+    VALAC_MAJ=`echo "$VALAC_VERSION" | { read _ A _ _; echo $A; }`
+    VALAC_MIN=`echo "$VALAC_VERSION" | { read _ _ A _; echo $A; }`
+    VALAC_REV=`echo "$VALAC_VERSION" | { read _ _ _ A; echo $A; }`
+    VALAC_REQ_MAJ=`echo "$VALA_REQUIRED" | { read A _ _; echo $A; }`
+    VALAC_REQ_MIN=`echo "$VALA_REQUIRED" | { read _ A _; echo $A; }`
+    VALAC_REQ_REV=`echo "$VALA_REQUIRED" | { read _ _ A; echo $A; }`
+    IFS="$IFS_BAK"
+
+    VALAC_REQ_FAIL=0
+    if test "$VALAC_MAJ" \< "$VALAC_REQ_MAJ"
+    then
+     VALAC_REQ_FAIL=1
+    elif test "$VALAC_MAJ" = "$VALAC_REQ_MAJ"
+    then
+      echo "Equal majors"
+      if test "$VALAC_MIN" \< "$VALAC_REQ_MIN"
+      then
+       VALAC_REQ_FAIL=1
+      elif test "$VALAC_MIN" = "$VALAC_REQ_MIN"
+      then
+      echo "Equal minors"
+       if test "$VALAC_REV" \< "$VALAC_REQ_REV"
+       then
+         VALAC_REQ_FAIL=1
+       fi
+      fi
+    fi
+     
+    if test "$VALAC_REQ_FAIL" = "1"
+    then
+      AC_MSG_ERROR([Vala >= $VALA_REQUIRED is required.])
+    fi  
 fi
 
 PKG_CHECK_MODULES(gthread, gthread-2.0 >= $GTHREAD_REQUIRED)
