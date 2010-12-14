@@ -1,7 +1,3 @@
-meiga (0.3.4) - Sun, 06 Jun 2010 03:26:42 +0300
+meiga (0.3.5) - Tue, 14 Dec 2010 10:49:11 +0100
 
-  * Fixed bug: memory leak when a download is aborted
-  * Meiga ported to Vala 0.8.1
-  * Trigger default action on Enter press in Add dialog
-  * Update RPM spec
-  * Improved release process
+  * Improvements in building process

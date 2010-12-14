@@ -1,5 +1,5 @@
 AC_PREREQ(2.62)
-AC_INIT([meiga],[0.3.4],[info@igalia.com],[meiga])
+AC_INIT([meiga],[0.3.5],[info@igalia.com],[meiga])
 
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS([config.h])
