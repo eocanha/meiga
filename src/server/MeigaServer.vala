@@ -31,7 +31,6 @@ using Posix;
 public class MeigaServer : GLib.Object {
   const string MIME_TYPES_FILE="/etc/mime.types";
 
-  private int port;
   private Soup.Server server;
   private GLib.HashTable<string,string> path_mapping;
   private GLib.HashTable<string,string> mimetypes;
@@ -43,6 +42,12 @@ public class MeigaServer : GLib.Object {
   public Log logger { public get; private set; default=null; }
   public uint gui_pid { public get; private set; default=0; }
   public string display { public get; private set; default=null; }
+  public uint _port = 8001;
+  public uint port {
+	public get { return _port; }
+	public set { _port = value; }
+  }
+  public bool ssl { public get; public set; default=false; }
 
   public signal void model_changed();
 
@@ -56,24 +61,91 @@ public class MeigaServer : GLib.Object {
   public void initialize() {
 	logger = new Log();
 
-	port=8001;
 	pending_requests=0;
 	total_requests=0;
 
 	initialize_mimetypes();
 	path_mapping=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);
+	reinitialize();
+	initialize_dbus();
 
-	server=new Server(Soup.SERVER_PORT,port);
+	notify["port"] += (s, p) => {
+	  reinitialize();
+	  model_changed();
+	};
+
+	notify["ssl"] += (s, p) => {
+	  reinitialize();
+	  model_changed();
+	};
+  }
+
+  private void enforce_meiga_ssl_cert() {
+	string txtout;
+	string txterr;
+	int result;
+
+	if (!(FileUtils.test(Environment.get_home_dir()+"/.meiga/ssl/meiga.pem", FileTest.EXISTS)
+		  && FileUtils.test(Environment.get_home_dir()+"/.meiga/ssl/meiga.key",	FileTest.EXISTS))) {
+	  try {
+		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/make-meiga-ssl-cert",
+											 out txtout,
+											 out txterr,
+											 out result);
+		if (result != 0) {
+		  log(_("Error creating SSL certificate"));
+		}
+	  } catch (GLib.SpawnError e) {
+		log(_("Error spawning SSL certificate creation process"));
+	  }
+	}
+  }
+
+
+  private void reinitialize() {
+	if (server!=null) {
+	  foreach (string logical_path in path_mapping.get_keys()) {
+		server.remove_handler(logical_path);
+	  }
+	  server.remove_handler("/rss");
+	  server.remove_handler("/");
+	  server.quit();
+	  server = null;
+	}
+
+	int tries = 100;
+	while (server==null && tries>0) {
+	  if (tries==1) _port = Soup.ADDRESS_ANY_PORT;
+	  if (ssl) {
+		enforce_meiga_ssl_cert();
+		server=new Server(Soup.SERVER_PORT, port,
+						  Soup.SERVER_SSL_CERT_FILE, Environment.get_home_dir()+"/.meiga/ssl/meiga.pem",
+						  Soup.SERVER_SSL_KEY_FILE, Environment.get_home_dir()+"/.meiga/ssl/meiga.key");
+	  } else {
+		server=new Server(Soup.SERVER_PORT, port);
+	  }
+	  tries--;
+	}
+	_port = server.get_port();
+
 	server.add_handler("/",serve_file_callback_default);
 	server.add_handler("/rss",serve_rss_callback);
-	server.run_async();
 
-	initialize_dbus();
+	foreach (string logical_path in path_mapping.get_keys()) {
+	  server.add_handler(logical_path,serve_file_callback);
+	}
+
+	server.run_async();
+	if (net!=null) {
+	  net.protocol = (ssl?"https":"http");
+	  net.port = port;
+	}
   }
 
   public void initialize_net() {
 	net = new Net();
 	net.logger = logger;
+	net.protocol = (ssl?"https":"http");
 	net.port = port;
 	net.display = display;
 	net.redirection_type = Net.REDIRECTION_TYPE_NONE;
@@ -140,13 +212,16 @@ public class MeigaServer : GLib.Object {
   }
 
   public void shutdown() {
-	server.quit();
+	if (server!=null) {
+	  foreach (string logical_path in path_mapping.get_keys()) {
+		server.remove_handler(logical_path);
+	  }
+	  server.remove_handler("/rss");
+	  server.remove_handler("/");
+	  server.quit();
+	}
 	net.redirection_type = Net.REDIRECTION_TYPE_NONE;
 	Idle.add_full(Priority.LOW, () => { Gtk.main_quit(); return false; });
-  }
-
-  public void set_port(int port) {
-	this.port=port;
   }
 
   public void register_gui(uint gui_pid, string display) {

@@ -1,0 +1,38 @@
+#!/bin/sh
+if [ -z "$HOME" ]
+then
+ echo "\$HOME must be defined"
+ exit 1
+fi
+
+SSLDIR="$HOME/.meiga/ssl"
+
+if [ ! -d "$SSLDIR" ]
+then
+ mkdir -m 700 -p "$SSLDIR"
+fi
+
+cat > "$SSLDIR/meiga_cert_request.req" << EOF
+RANDFILE = /dev/urandom
+
+[ req ]
+default_bits = 1024
+default_keyfile = privkey.pem
+distinguished_name = req_distinguished_name
+prompt = no
+policy = policy_anything
+
+[ req_distinguished_name ]
+commonName = meiga
+EOF
+
+openssl req \
+ -config "$SSLDIR/meiga_cert_request.req" \
+ -new -x509 \
+ -days 999999 \
+ -nodes \
+ -out "$SSLDIR/meiga.pem" \
+ -keyout "$SSLDIR/meiga.key" > /dev/null 2>&1
+
+chmod 600 "$SSLDIR/meiga.pem" "$SSLDIR/meiga.key"
+

@@ -50,10 +50,28 @@ public class Net : GLib.Object {
 	private set { lock (worker) { _internal_ip = value; } }
   }
 
-  private int _port;
-  public int port {
-	get { int r; lock (worker) { r = _port; } return r; }
-	set { lock (worker) { _port = value; } }
+  private uint _port;
+  public uint port {
+	get { uint r; lock (worker) { r = _port; } return r; }
+	set {
+	  bool reload = false;
+	  lock (worker) { reload = (_port!=value); }
+	  if (reload) forward_stop();
+	  lock (worker) { _port = value; }
+	  if (reload) forward_start();
+	}
+  }
+
+  private string _protocol;
+  public string protocol {
+	owned get { string r; lock (worker) { r = _protocol; } return r; }
+	set {
+	  lock (worker) {
+		if (_url!=null) _url=_url.splice(0,_protocol.len(),value);
+		_protocol=value;
+	  }
+	  url = _url; // Force a notify
+	}
   }
 
   private string _url = null;
@@ -120,7 +138,8 @@ public class Net : GLib.Object {
   }
 
   public Net() {
-	port = 8001;
+	_port = 8001;
+	_protocol = "http";
 	url = null;
 	logger = null;
 	_previous_redirection_type = REDIRECTION_TYPE_NONE;
@@ -210,7 +229,7 @@ public class Net : GLib.Object {
 		internal_ip = "127.0.0.1";
 	  }
 
-	  url="http://%s:%d".printf(internal_ip, port);
+	  url="%s://%s:%u".printf(protocol,internal_ip, port);
 
 	  this.internal_ip = internal_ip;
 	  this.external_ip = internal_ip;
@@ -270,13 +289,13 @@ public class Net : GLib.Object {
 			&& strcmp(txtout,"(null)")!=0) {
 		  external_ip = txtout;
 		  log(_("Found external IP: %s").printf(external_ip));
-		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -q %d".printf(port),
+		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -q %u".printf(port),
 											   out txtout,
 											   out txterr,
 											   out result);
 		  if (result != 0) {
 			log(_("Creating redirection"));
-			GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -r %d %d %s %s %d".printf(port,port,internal_ip,"Meiga",0),
+			GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -r %u %u %s %s %d".printf(port,port,internal_ip,"Meiga",0),
 												 out txtout,
 												 out txterr,
 												 out result);
@@ -298,7 +317,7 @@ public class Net : GLib.Object {
 	  }
 	}
 
-	url="http://%s:%d".printf(external_ip, port);
+	url="%s://%s:%u".printf(protocol, external_ip, port);
 
 	this.internal_ip = internal_ip;
 	this.external_ip = external_ip;
@@ -318,7 +337,7 @@ public class Net : GLib.Object {
 	if (status == REDIRECTION_STATUS_DONE || status == REDIRECTION_STATUS_PENDING) {
 	  if (internal_ip != external_ip) {
 		try {
-		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -d %d".printf(port),
+		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwupnp -d %u".printf(port),
 											   out txtout,
 											   out txterr,
 											   out result);
@@ -379,7 +398,7 @@ public class Net : GLib.Object {
 	  string[] sshcmd_argv;
 
 	  tmp_external_ip = ssh_host;
-	  sshcmd += "%s %d %s %d".printf(ssh_host, port, tmp_internal_ip, port);
+	  sshcmd += "%s %u %s %u".printf(ssh_host, port, tmp_internal_ip, port);
 
 	  log(_("Using external IP: %s").printf(tmp_external_ip));
 	  log(_("Creating SSH tunnel"));
@@ -415,7 +434,7 @@ public class Net : GLib.Object {
 	  }
 	}
 
-	tmp_url="http://%s:%d".printf(tmp_external_ip, port);
+	tmp_url="%s://%s:%u".printf(protocol, tmp_external_ip, port);
 
 	this.internal_ip = tmp_internal_ip;
 	this.external_ip = tmp_external_ip;
@@ -436,7 +455,7 @@ public class Net : GLib.Object {
 		status == REDIRECTION_STATUS_PENDING ||
 		status == REDIRECTION_STATUS_ERROR) {
 	  try {
-		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwssh -d %d".printf(port),
+		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwssh -d %u".printf(port),
 											 out txtout,
 											 out txterr,
 											 out result);
@@ -506,13 +525,13 @@ public class Net : GLib.Object {
 			&& strcmp(txtout,"(null)")!=0) {
 		  tmp_external_ip = txtout;
 		  log(_("Found external IP: %s").printf(tmp_external_ip));
-		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -q %d".printf(port),
+		  GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -q %u".printf(port),
 											   out txtout,
 											   out txterr,
 											   out result);
 		  if (result != 0) {
 			log(_("Creating redirection"));
-			GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -r %d %s %d".printf(port,tmp_internal_ip,port),
+			GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -r %u %s %u".printf(port,tmp_internal_ip,port),
 												 out txtout,
 												 out txterr,
 												 out result);
@@ -534,7 +553,7 @@ public class Net : GLib.Object {
 	  }
 	}
 
-	tmp_url="http://%s:%d".printf(tmp_external_ip, port);
+	tmp_url="%s://%s:%u".printf(protocol, tmp_external_ip, port);
 
 	this.internal_ip = tmp_internal_ip;
 	this.external_ip = tmp_external_ip;
@@ -555,7 +574,7 @@ public class Net : GLib.Object {
 		status == REDIRECTION_STATUS_PENDING ||
 		status == REDIRECTION_STATUS_ERROR) {
 	  try {
-		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -d %d".printf(port),
+		GLib.Process.spawn_command_line_sync(Config.BINDIR+"/fwfon -d %u".printf(port),
 											 out txtout,
 											 out txterr,
 											 out result);

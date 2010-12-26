@@ -9,7 +9,7 @@ AM_CPPFLAGS = \
 	$(NULL)
 
 bin_PROGRAMS = fwupnp
-bin_SCRIPTS = fwlocalip fwssh fwssh-task meiga-askpass fwfon
+bin_SCRIPTS = fwlocalip fwssh fwssh-task meiga-askpass fwfon make-meiga-ssl-cert
 
 fwupnp_SOURCES = \
 	upnp.c \
