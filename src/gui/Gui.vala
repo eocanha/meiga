@@ -262,6 +262,8 @@ public class Gui : GLib.Object {
 	  _remote.ModelChanged += this.on_remote_model_changed;
 	  _remote.LogChanged += this.on_remote_log_changed;
 	}
+
+	on_remote_model_changed();
   }
 
   public void on_remote_model_changed() {

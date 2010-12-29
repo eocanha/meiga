@@ -38,6 +38,7 @@ public class MeigaServer : GLib.Object {
   private Net net;
   private uint pending_requests;
   private uint total_requests;
+  private GLib.KeyFile settings;
 
   public Log logger { public get; private set; default=null; }
   public uint gui_pid { public get; private set; default=0; }
@@ -66,16 +67,17 @@ public class MeigaServer : GLib.Object {
 
 	initialize_mimetypes();
 	path_mapping=new GLib.HashTable<string,string>(GLib.str_hash,GLib.str_equal);
-	reinitialize();
 	initialize_dbus();
 
 	notify["port"] += (s, p) => {
 	  reinitialize();
+	  save_settings();
 	  model_changed();
 	};
 
 	notify["ssl"] += (s, p) => {
 	  reinitialize();
+	  save_settings();
 	  model_changed();
 	};
   }
@@ -207,6 +209,56 @@ public class MeigaServer : GLib.Object {
 	}
   }
 
+  private void initialize_settings() {
+	string filename = Environment.get_home_dir()+"/.meiga/meiga.ini";
+	settings = new KeyFile();
+	try {
+	  if (!FileUtils.test(filename, FileTest.EXISTS)) throw new Error(Quark.from_string(""),1,"");
+	  settings.load_from_file(filename, KeyFileFlags.KEEP_COMMENTS & KeyFileFlags.KEEP_TRANSLATIONS);
+	} catch (Error e) {	}
+
+	try {
+	  string[] stpaths = settings.get_string_list("meiga", "paths");
+	  for (int i=1; i<stpaths.length; i+=2) {
+		string logical_path = stpaths[i-1];
+		string real_path = stpaths[i];
+		path_mapping.insert(logical_path,real_path);
+	  }
+	} catch (KeyFileError e) { }
+
+	try {
+	  uint stport = (uint)settings.get_string("meiga", "port").to_long();
+	  _port = stport;
+	} catch (KeyFileError e) { }
+
+	try {
+	  bool stssl = settings.get_boolean("meiga", "ssl");
+	  ssl = stssl;
+	} catch (KeyFileError e) { }
+
+	save_settings();
+  }
+
+  private void save_settings() {
+	string filename = Environment.get_home_dir()+"/.meiga/meiga.ini";
+
+	string[] stpaths = {};
+	List<weak string> keys=path_mapping.get_keys().copy();
+	keys.sort(GLib.strcmp);
+	foreach (weak string k in keys) {
+	  string v=path_mapping.lookup(k);
+	  stpaths += k;
+	  stpaths += v;
+	}
+	settings.set_string_list("meiga", "paths", stpaths);
+    settings.set_string("meiga", "port", "%u".printf(_port));
+	settings.set_boolean("meiga", "ssl", ssl);
+
+	try {
+	  FileUtils.set_contents(filename, settings.to_data());
+	} catch (FileError e) { }
+  }
+
   public string get_public_url() {
 	return net.url;
   }
@@ -227,7 +279,12 @@ public class MeigaServer : GLib.Object {
   public void register_gui(uint gui_pid, string display) {
 	this.gui_pid = gui_pid;
 	this.display = display;
-	if (this.net == null) initialize_net();
+	if (this.net == null) {
+	  initialize_settings();
+	  reinitialize();
+	  initialize_net();
+	}
+	model_changed();
   }
 
   public void register_path(string real_path, string logical_path) {
@@ -242,6 +299,7 @@ public class MeigaServer : GLib.Object {
 	path_mapping.insert(logical_path,real_path);
 	log(_("Registered logical path '%s' to real path '%s'").printf(logical_path,real_path));
 	server.add_handler(logical_path,serve_file_callback);
+	save_settings();
   }
 
   public void unregister_path(string logical_path) {
@@ -254,6 +312,7 @@ public class MeigaServer : GLib.Object {
 
 	log(_("Unregistered logical path '%s'").printf(logical_path));
 	path_mapping.remove(logical_path);
+	save_settings();
   }
 
   public int get_redirection_type() {
