@@ -12,7 +12,8 @@ BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildRequires:	gnome-common
 BuildRequires:	intltool
 BuildRequires:	libtool
-BuildRequires:	vala
+# Not needed because source releases are now precompiled
+# BuildRequires:	vala
 BuildRequires:	libsoup-devel
 BuildRequires:	gupnp-devel
 BuildRequires:	dbus-glib-devel
@@ -21,6 +22,7 @@ Requires:	dbus
 Requires:	gtk2
 Requires:	gupnp
 Requires:	hicolor-icon-theme
+Requires:	openssl
 
 %description
 Meiga is a lightweight, easy to use, network friendly and also

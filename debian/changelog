@@ -1,3 +1,9 @@
+meiga (0.4.0-3) unstable; urgency=low
+
+  * Added openssl dependency
+
+ -- Enrique Ocaña González <eocanha@igalia.com>  Fri, 31 Dec 2010 11:41:00 +0100
+
 meiga (0.4.0-2) unstable; urgency=low
 
   * Source without Vala dependency
