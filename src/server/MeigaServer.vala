@@ -49,6 +49,8 @@ public class MeigaServer : GLib.Object {
 	public set { _port = value; }
   }
   public bool ssl { public get; public set; default=false; }
+  public string auth_user { public get; public set; default=""; }
+  public string auth_md5passwd { public get; public set; default=""; }
 
   public signal void model_changed();
 
@@ -80,6 +82,18 @@ public class MeigaServer : GLib.Object {
 	  save_settings();
 	  model_changed();
 	};
+
+	notify["auth_user"] += (s, p) => {
+	  reinitialize();
+	  save_settings();
+	  model_changed();
+	};
+
+	notify["auth_md5passwd"] += (s, p) => {
+	  reinitialize();
+	  save_settings();
+	  model_changed();
+	};
   }
 
   private void enforce_meiga_ssl_cert() {
@@ -102,7 +116,6 @@ public class MeigaServer : GLib.Object {
 	  }
 	}
   }
-
 
   private void reinitialize() {
 	if (server!=null) {
@@ -129,6 +142,15 @@ public class MeigaServer : GLib.Object {
 	  tries--;
 	}
 	_port = server.get_port();
+
+	if (auth_user!="" && auth_md5passwd!="") {
+	  Soup.AuthDomainBasic auth = new Soup.AuthDomainBasic(
+		Soup.AUTH_DOMAIN_REALM, "Meiga",
+		Soup.AUTH_DOMAIN_BASIC_AUTH_CALLBACK, on_auth_callback,
+		Soup.AUTH_DOMAIN_BASIC_AUTH_DATA, this,
+		Soup.AUTH_DOMAIN_ADD_PATH, "/");
+	  server.add_auth_domain(auth);
+	}
 
 	server.add_handler("/",serve_file_callback_default);
 	server.add_handler("/rss",serve_rss_callback);
@@ -236,6 +258,16 @@ public class MeigaServer : GLib.Object {
 	  ssl = stssl;
 	} catch (KeyFileError e) { }
 
+	try {
+	  string stauth_user = settings.get_string("meiga", "auth_user");
+	  auth_user = stauth_user;
+	} catch (KeyFileError e) { }
+
+	try {
+	  string stauth_md5passwd = settings.get_string("meiga", "auth_md5passwd");
+	  auth_md5passwd = stauth_md5passwd;
+	} catch (KeyFileError e) { }
+
 	save_settings();
   }
 
@@ -253,6 +285,8 @@ public class MeigaServer : GLib.Object {
 	settings.set_string_list("meiga", "paths", stpaths);
     settings.set_string("meiga", "port", "%u".printf(_port));
 	settings.set_boolean("meiga", "ssl", ssl);
+    settings.set_string("meiga", "auth_user", auth_user);
+    settings.set_string("meiga", "auth_md5passwd", auth_md5passwd);
 
 	try {
 	  FileUtils.set_contents(filename, settings.to_data());
@@ -363,6 +397,17 @@ public class MeigaServer : GLib.Object {
 
   public string get_requests_stats() {
 	return "%u/%u".printf(pending_requests, total_requests);
+  }
+
+  [CCode (instance_pos = -1)]
+  private bool on_auth_callback (Soup.AuthDomain domain, Soup.Message msg,
+								 string username, string password) {
+	bool result = (username==auth_user &&
+				   Checksum.compute_for_string(ChecksumType.MD5, password)==auth_md5passwd);
+	if (!result) {
+	  log(_("Invalid authentication asking for path %s").printf(msg.uri.path));
+	}
+	return result;
   }
 
   public void serve_file_callback (Soup.Server server, Soup.Message? msg, string path,

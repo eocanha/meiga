@@ -110,6 +110,22 @@ public class Meiga : GLib.Object {
 	server.ssl=ssl;
   }
 
+  public string get_auth_user() {
+	return server.auth_user;
+  }
+
+  public void set_auth_user(string auth_user) {
+	server.auth_user = auth_user;
+  }
+
+  public string get_auth_md5passwd() {
+	return server.auth_md5passwd;
+  }
+
+  public void set_auth_md5passwd(string auth_md5passwd) {
+	server.auth_md5passwd = auth_md5passwd;
+  }
+
   public void set_ssh_host(string ssh_host) {
 	server.set_ssh_host(ssh_host);
   }

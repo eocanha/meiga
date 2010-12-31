@@ -42,6 +42,8 @@ public class Gui : GLib.Object {
   private Gtk.MenuItem systraymenu_restore;
   private Gtk.VBox topvbox;
   private Gtk.TreeView files;
+  private Gtk.Entry auth_user;
+  private Gtk.Entry auth_password;
   private Gtk.Entry port;
   private Gtk.CheckButton ssl;
   private Gtk.ComboBox redirection_type;
@@ -132,6 +134,18 @@ public class Gui : GLib.Object {
   public void on_redirection_apply(Gtk.Widget widget) {
 	if (remote == null) return;
 	try {
+	  remote.set_auth_user(auth_user.get_text());
+	  string md5passwd;
+	  if (auth_password.get_text()=="") {
+		md5passwd="";
+	  } else {
+		md5passwd=Checksum.compute_for_string(ChecksumType.MD5, auth_password.get_text());
+	  }
+	  string remote_md5passwd = remote.get_auth_md5passwd();
+	  if (md5passwd!=remote_md5passwd) {
+		remote.set_auth_md5passwd(md5passwd);
+		auth_password.set_text(md5passwd);
+	  }
 	  remote.set_port((uint)port.get_text().to_ulong());
 	  remote.set_ssl(ssl.get_active());
 	  remote.set_ssh_host(ssh_host.get_text());
@@ -379,6 +393,8 @@ public class Gui : GLib.Object {
     if (string_model == null) string_model = "";
     update_model_from_string(model, string_model);
 
+	auth_user.set_text(remote.get_auth_user());
+	auth_password.set_text(remote.get_auth_md5passwd());
 	port.set_text("%u".printf(int_port));
 	ssl.set_active(bool_ssl);
 	redirection_type.set_active(int_redirection_type);
@@ -646,38 +662,65 @@ public class Gui : GLib.Object {
 			{
 			  Gtk.HBox hb2 = new Gtk.HBox(false, 0);
 			  {
-				Gtk.Label l = new Gtk.Label(_("Port"));
+				Gtk.Label l = new Gtk.Label(_("User"));
 				hb2.pack_start(l, false, false, 5);
 				l.show();
 
-				port = new Gtk.Entry();
-				hb2.pack_start(port, true, true, 5);
-				port.show();
+				auth_user = new Gtk.Entry();
+				hb2.pack_start(auth_user, true, true, 5);
+				auth_user.show();
 			  }
 			  vb.pack_start(hb2, false, false, 5);
 			  hb2.show();
 
 			  Gtk.HBox hb3 = new Gtk.HBox(false, 0);
 			  {
-				Gtk.Label l = new Gtk.Label(_("Encrypt transmission"));
+				Gtk.Label l = new Gtk.Label(_("Password"));
 				hb3.pack_start(l, false, false, 5);
 				l.show();
 
-				ssl = new Gtk.CheckButton();
-				hb3.pack_start(ssl, false, false, 5);
-				ssl.show();
+				auth_password = new Gtk.Entry();
+				auth_password.visibility = false;
+				hb3.pack_start(auth_password, true, true, 5);
+				auth_password.show();
 			  }
 			  vb.pack_start(hb3, false, false, 5);
 			  hb3.show();
 
 			  Gtk.HBox hb4 = new Gtk.HBox(false, 0);
 			  {
-				Gtk.Label l = new Gtk.Label(_("Port redirection scheme"));
+				Gtk.Label l = new Gtk.Label(_("Port"));
 				hb4.pack_start(l, false, false, 5);
 				l.show();
 
+				port = new Gtk.Entry();
+				hb4.pack_start(port, true, true, 5);
+				port.show();
+			  }
+			  vb.pack_start(hb4, false, false, 5);
+			  hb4.show();
+
+			  Gtk.HBox hb5 = new Gtk.HBox(false, 0);
+			  {
+				Gtk.Label l = new Gtk.Label(_("Encrypt transmission"));
+				hb5.pack_start(l, false, false, 5);
+				l.show();
+
+				ssl = new Gtk.CheckButton();
+				hb5.pack_start(ssl, false, false, 5);
+				ssl.show();
+			  }
+			  vb.pack_start(hb5, false, false, 5);
+			  hb5.show();
+
+			  Gtk.HBox hb6 = new Gtk.HBox(false, 0);
+			  {
+				Gtk.Label l = new Gtk.Label(_("Port redirection scheme"));
+				hb6.pack_start(l, false, false, 5);
+				l.show();
+
 				redirection_type = new Gtk.ComboBox();
-				hb4.pack_start(redirection_type, true, true, 5);
+				hb6.pack_start(redirection_type, true, true, 5);
 				redirection_type.show();
 
 				Gtk.ListStore redirection_type_model = new Gtk.ListStore(1, typeof(string));
@@ -698,8 +741,8 @@ public class Gui : GLib.Object {
 												"text",
 												0);
 			  }
-			  vb.pack_start(hb4, false, false, 5);
-			  hb4.show();
+			  vb.pack_start(hb6, false, false, 5);
+			  hb6.show();
 
 			  Gtk.Frame f = new Gtk.Frame(_("<b>SSH options</b>"));
 			  ((Gtk.Label)(f.label_widget)).use_markup = true;

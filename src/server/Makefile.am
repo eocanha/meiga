@@ -35,7 +35,7 @@ meigaserver_SOURCES = \
 meiga.vala.stamp: $(meigaserver_VALASOURCES)
 	$(VALAC) -C \
 	--thread --pkg=libsoup-2.4 --pkg=gtk+-2.0 --pkg=dbus-glib-1 \
-	--vapidir=.. --pkg=config --basedir $(top_srcdir)/src/server $^
+	--vapidir=. --vapidir=.. --pkg=config --basedir $(top_srcdir)/src/server $^
 	touch $@
 
 meigaserver_LDADD = \
