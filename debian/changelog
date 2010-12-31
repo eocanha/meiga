@@ -1,3 +1,9 @@
+meiga (0.4.0-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Enrique Ocaña González <eocanha@igalia.com>  Fri, 31 Dec 2010 03:26:28 +0100
+
 meiga (0.3.5-1) unstable; urgency=low
 
   * New upstream release

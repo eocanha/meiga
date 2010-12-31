@@ -1,3 +1,10 @@
+meiga (0.4.0) - Fri, 31 Dec 2010 03:26:28 +0100
+
+  * Dynamic port change
+  * SSL support
+  * Persistent settings storage
+  * Password protection
+
 meiga (0.3.5) - Tue, 14 Dec 2010 10:49:11 +0100
 
   * Improvements in building process

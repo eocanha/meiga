@@ -1,5 +1,5 @@
 Name:		meiga
-Version:	0.3.5
+Version:	0.4.0
 Release:	1%{?dist}
 Summary:	Easy to use tool to share selected local directories via web
 
@@ -87,6 +87,7 @@ fi
 %{_bindir}/meiga
 %{_bindir}/meigaserver
 %{_bindir}/meiga-askpass
+%{_bindir}/make-meiga-ssl-cert
 %{_datadir}/nautilus-scripts/share-on-meiga
 %{_datadir}/dbus-1/services/com.igalia.Meiga.service
 %{_datadir}/applications/%{name}.desktop
