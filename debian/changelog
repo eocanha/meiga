@@ -1,3 +1,9 @@
+meiga (0.4.0-2) unstable; urgency=low
+
+  * Source without Vala dependency
+
+ -- Enrique Ocaña González <eocanha@igalia.com>  Fri, 31 Dec 2010 04:30:00 +0100
+
 meiga (0.4.0-1) unstable; urgency=low
 
   * New upstream release
