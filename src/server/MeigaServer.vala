@@ -40,6 +40,7 @@ public class MeigaServer : GLib.Object {
   private uint total_requests;
   private GLib.KeyFile settings;
 
+  public MainLoop mainloop;
   public Log logger { public get; private set; default=null; }
   public uint gui_pid { public get; private set; default=0; }
   public string display { public get; private set; default=null; }
@@ -54,7 +55,8 @@ public class MeigaServer : GLib.Object {
 
   public signal void model_changed();
 
-  public MeigaServer() {
+  public MeigaServer(MainLoop mainloop) {
+	this.mainloop = mainloop;
   }
 
   private void log(string msg) {
@@ -307,7 +309,14 @@ public class MeigaServer : GLib.Object {
 	  server.quit();
 	}
 	net.redirection_type = Net.REDIRECTION_TYPE_NONE;
-	Idle.add_full(Priority.LOW, () => { Gtk.main_quit(); return false; });
+
+    this.exposed = null;
+
+	Idle.add_full(Priority.LOW, () => {
+		mainloop.quit();
+		stderr.printf("Server stopped\n");
+		return false;
+	  });
   }
 
   public void register_gui(uint gui_pid, string display) {
@@ -613,10 +622,11 @@ public class MeigaServer : GLib.Object {
 	Intl.bind_textdomain_codeset(Config.GETTEXT_PACKAGE, "UTF-8");
 	Intl.textdomain(Config.GETTEXT_PACKAGE);
 
-	MeigaServer s=new MeigaServer();
+	var mainloop = new MainLoop();
+
+	MeigaServer s=new MeigaServer(mainloop);
 	s.initialize();
-	Gtk.init(ref args);
-	Gtk.main();
+	mainloop.run();
 	return;
   }
 
