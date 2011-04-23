@@ -1,5 +1,5 @@
 Name:		meiga
-Version:	0.4.0
+Version:	0.4.1
 Release:	1%{?dist}
 Summary:	Easy to use tool to share selected local directories via web
 

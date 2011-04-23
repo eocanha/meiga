@@ -1,3 +1,9 @@
+meiga (0.4.1-1) unstable; urgency=low
+
+  * Fixed Fedora bug 679258: server segfault on shutdown
+
+ -- Enrique Ocaña González <eocanha@igalia.com>  Sat, 23 Apr 2011 18:38:29 +0200
+
 meiga (0.4.0-3) unstable; urgency=low
 
   * Added openssl dependency

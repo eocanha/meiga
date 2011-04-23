@@ -1,6 +1,3 @@
-meiga (0.4.0) - Fri, 31 Dec 2010 03:26:28 +0100
+meiga (0.4.1) - Sat, 23 Apr 2011 18:38:29 +0200
 
-  * Dynamic port change
-  * SSL support
-  * Persistent settings storage
-  * Password protection
+  * Fixed Fedora bug 679258: server segfault on shutdown
