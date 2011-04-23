@@ -1,0 +1,427 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: meiga\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-12-31 03:38+0100\n"
+"PO-Revision-Date: 2009-06-14 21:12+0200\n"
+"Last-Translator: kentxchang <kentxchang@gmail.com>\n"
+"Language-Team: Taiwaneese <zh_TW@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/server/Meiga.vala:123
+msgid "--- No log available ---"
+msgstr "---沒有可用的日誌檔---" 
+
+#: ../src/server/MeigaServer.vala:81
+#, c-format                         
+msgid "External URL: %s"            
+msgstr "外部網址: %s"               
+
+#: ../src/server/MeigaServer.vala:113
+#, c-format                          
+msgid "Error opening file %s"        
+msgstr "開啟檔案錯誤 %s"             
+
+#: ../src/server/MeigaServer.vala:128
+msgid "Registering DBUS service"     
+msgstr "註冊 DBUS 服務"              
+
+#: ../src/server/MeigaServer.vala:131
+msgid "Not registering DBUS service: not primary owner"
+msgstr "沒有登記的 DBUS 服務：不是主要的所有者"        
+
+#: ../src/server/MeigaServer.vala:134
+#, c-format                          
+msgid "Error registering DBUS server: %s"
+msgstr "錯誤註冊的 DBUS 服務: %s"        
+
+#: ../src/server/MeigaServer.vala:162
+msgid "Attempted to register path without GUI started. Ignoring."
+msgstr "試圖註冊的路徑沒有已啟動的GUI。忽略。"                   
+
+#: ../src/server/MeigaServer.vala:168
+#, c-format                          
+msgid "Registered logical path '%s' to real path '%s'"
+msgstr ""                                             
+
+#: ../src/server/MeigaServer.vala:176
+msgid "Attempted to unregister path without GUI started. Ignoring."
+msgstr ""                                                          
+
+#: ../src/server/MeigaServer.vala:180
+#, c-format                          
+msgid "Unregistered logical path '%s'"
+msgstr ""                             
+
+#: ../src/server/MeigaServer.vala:263
+#, c-format                          
+msgid "Request: %s --> Serving: %s"  
+msgstr ""                            
+
+#: ../src/server/MeigaServer.vala:319
+#: ../src/server/MeigaServer.vala:324
+#, c-format                          
+msgid "Index of %s\n"                
+msgstr ""                            
+
+#: ../src/server/MeigaServer.vala:333
+#, c-format                          
+msgid "Served by <a href=\"http://meiga.igalia.com\">Meiga %s</a>"
+msgstr ""                                                         
+
+#: ../src/server/MeigaServer.vala:367
+#, c-format                          
+msgid "Request: %s --> Serving (RSS mode): %s"
+msgstr ""                                     
+
+#: ../src/server/MeigaServer.vala:403
+#, c-format                          
+msgid "Documents under %s"           
+msgstr ""                            
+
+#
+#: ../src/server/MeigaServer.vala:414
+msgid "File not found"               
+msgstr "找不到檔案"                  
+
+#: ../src/server/Net.vala:158
+msgid "Error creating thread for UPNP redirector process"
+msgstr ""                                                
+
+#: ../src/server/Net.vala:165
+msgid "Error creating thread for SSH redirector process"
+msgstr ""                                               
+
+#: ../src/server/Net.vala:172
+msgid "Error creating thread for FON redirector process"
+msgstr ""                                               
+
+#: ../src/server/Net.vala:207
+#: ../src/server/Net.vala:250
+#: ../src/server/Net.vala:366
+#: ../src/server/Net.vala:482
+#, c-format                  
+msgid "Found internal IP: %s"
+msgstr ""                    
+
+#
+#: ../src/server/Net.vala:209
+#: ../src/server/Net.vala:252
+#: ../src/server/Net.vala:368
+#: ../src/server/Net.vala:484
+msgid "Local IP not found"   
+msgstr "找不到本地端IP"      
+
+#: ../src/server/Net.vala:220
+#: ../src/server/Net.vala:244
+#: ../src/server/Net.vala:360
+#: ../src/server/Net.vala:476
+msgid "Error spawning IP detection process"
+msgstr ""                                  
+
+#: ../src/server/Net.vala:272
+#: ../src/server/Net.vala:508
+#, c-format                  
+msgid "Found external IP: %s"
+msgstr ""                    
+
+#: ../src/server/Net.vala:278
+#: ../src/server/Net.vala:514
+msgid "Creating redirection" 
+msgstr ""                    
+
+#: ../src/server/Net.vala:284
+#: ../src/server/Net.vala:404
+#: ../src/server/Net.vala:520
+#: ../src/gui/Gui.vala:429   
+msgid "Redirection performed"
+msgstr ""                    
+
+#: ../src/server/Net.vala:288
+#: ../src/server/Net.vala:524
+msgid "Redirection already present"
+msgstr ""                          
+
+#: ../src/server/Net.vala:292
+msgid "External IP not found. Check that your router has UPnP enabled and working"
+msgstr ""                                                                         
+
+#: ../src/server/Net.vala:296
+#: ../src/server/Net.vala:327
+msgid "Error spawning UPNP redirector process"
+msgstr ""                                     
+
+#: ../src/server/Net.vala:331
+#: ../src/server/Net.vala:449
+#: ../src/server/Net.vala:568
+msgid "Redirection removed"  
+msgstr ""                    
+
+#: ../src/server/Net.vala:333
+#: ../src/server/Net.vala:451
+#: ../src/server/Net.vala:570
+msgid "Unable to remove redirection"
+msgstr ""                           
+
+#: ../src/server/Net.vala:384
+#, c-format                  
+msgid "Using external IP: %s"
+msgstr ""                    
+
+#: ../src/server/Net.vala:385
+msgid "Creating SSH tunnel"  
+msgstr ""                    
+
+#: ../src/server/Net.vala:407
+msgid "Error creating SSH tunnel. Check config parameters and password."
+msgstr ""                                                               
+
+#: ../src/server/Net.vala:412
+#: ../src/server/Net.vala:445
+msgid "Error spawning SSH redirector process"
+msgstr ""                                    
+
+#: ../src/server/Net.vala:528
+msgid "External IP not found. Check that you really have a Fonera version 1 router"
+msgstr ""                                                                          
+
+#: ../src/server/Net.vala:532
+#: ../src/server/Net.vala:564
+msgid "Error spawning FON redirector process"
+msgstr ""                                    
+
+#: ../src/server/Rss.vala:29
+#: ../src/server/Rss.vala:54
+msgid "No title"            
+msgstr "沒有標題"           
+
+#: ../src/server/Rss.vala:32
+#: ../src/server/Rss.vala:56
+msgid "No description"      
+msgstr "沒有描述"           
+
+#: ../src/server/Rss.vala:33
+msgid "No content"          
+msgstr "沒有內容"           
+
+# This is a locale code!
+#: ../src/server/Rss.vala:59
+msgid "en"                  
+msgstr "zh_TW"              
+
+#: ../src/server/Rss.vala:150
+#, c-format                  
+msgid "<a href=\"%s\">Download %s</a>\n"
+msgstr ""                               
+
+#: ../src/server/Rss.vala:159
+#, c-format                  
+msgid "RssFeed.new_from_directory(): Error\n"
+msgstr ""                                    
+
+#: ../src/gui/Gui.vala:113
+#, c-format               
+msgid "Remote error deleting share '%s'\n"
+msgstr ""                                 
+
+#: ../src/gui/Gui.vala:139
+msgid "Remote error applying redirection options\n"
+msgstr ""                                          
+
+#: ../src/gui/Gui.vala:159
+msgid "Empty share name not allowed"
+msgstr ""                           
+
+#: ../src/gui/Gui.vala:163
+msgid "Share name not allowed"
+msgstr ""                     
+
+#: ../src/gui/Gui.vala:172
+#, c-format               
+msgid "Remote error sharing '%s' as '%s'\n"
+msgstr ""                                  
+
+#: ../src/gui/Gui.vala:243
+#, c-format               
+msgid "Error looking for DBUS server: %s\n"
+msgstr ""                                  
+
+#: ../src/gui/Gui.vala:252
+msgid "Error looking for DBUS server: remote object not found\n"
+msgstr ""                                                       
+
+#: ../src/gui/Gui.vala:272
+msgid "Share on Meiga..." 
+msgstr ""                 
+
+#: ../src/gui/Gui.vala:276
+#, c-format               
+msgid "Creating Nautilus context menu for Meiga %s --> %s\n"
+msgstr ""                                                   
+
+#: ../src/gui/Gui.vala:303
+msgid "Icon file not found\n"
+msgstr ""                    
+
+#: ../src/gui/Gui.vala:360
+msgid "Remote error getting paths\n"
+msgstr ""                           
+
+#: ../src/gui/Gui.vala:366
+msgid "Remote error getting redirection options\n"
+msgstr ""                                         
+
+#: ../src/gui/Gui.vala:390
+msgid "Remote error getting log lines\n"
+msgstr ""                               
+
+#: ../src/gui/Gui.vala:427
+msgid "Direct connection" 
+msgstr "直接連接"         
+
+#: ../src/gui/Gui.vala:428
+msgid "Performing redirection"
+msgstr ""                     
+
+#: ../src/gui/Gui.vala:430
+msgid "Redirection error" 
+msgstr "重定向錯誤"       
+
+#: ../src/gui/Gui.vala:435
+msgid "Remote error getting public url\n"
+msgstr ""                                
+
+#: ../src/gui/Gui.vala:467
+msgid "Remote error shutting down server\n"
+msgstr ""                                  
+
+#: ../src/gui/Gui.vala:475
+msgid "_File"             
+msgstr "檔案(_F)"         
+
+#: ../src/gui/Gui.vala:490
+msgid "_Share"            
+msgstr "分享(_S)"         
+
+#: ../src/gui/Gui.vala:504
+#: ../src/gui/Gui.vala:545
+msgid "_Copy invitation"  
+msgstr "複製分享路徑(_C)" 
+
+#: ../src/gui/Gui.vala:516
+msgid "_Help"             
+msgstr "幫助(_H)"         
+
+#: ../src/gui/Gui.vala:560
+#: ../src/gui/Gui.vala:853
+msgid "Meiga"             
+msgstr "Meiga"            
+
+#: ../src/gui/Gui.vala:600
+msgid "Local file"        
+msgstr "本地端檔案"       
+
+#: ../src/gui/Gui.vala:603
+msgid "Shared as"         
+msgstr "分享為"           
+
+#: ../src/gui/Gui.vala:610
+msgid "Shares"            
+msgstr "分享"             
+
+#: ../src/gui/Gui.vala:626
+msgid "Log"               
+msgstr "日誌檔"           
+
+#: ../src/gui/Gui.vala:635
+msgid "Port redirection scheme"
+msgstr "連接埠(Port)重定向方案"
+
+#: ../src/gui/Gui.vala:648
+msgid "None"              
+msgstr "沒有"             
+
+#: ../src/gui/Gui.vala:650
+msgid "UPnP"              
+msgstr "UPnP"             
+
+#: ../src/gui/Gui.vala:652
+msgid "SSH"               
+msgstr "SSH"              
+
+#: ../src/gui/Gui.vala:654
+msgid "FON"               
+msgstr "FON"              
+
+#: ../src/gui/Gui.vala:664
+msgid "<b>SSH options</b>"
+msgstr "<b>SSH 選項</b>"  
+
+#: ../src/gui/Gui.vala:671
+msgid "Host"              
+msgstr ""                 
+
+#: ../src/gui/Gui.vala:686
+msgid "Port"              
+msgstr ""                 
+
+#: ../src/gui/Gui.vala:701
+msgid "User"              
+msgstr "使用者"           
+
+#: ../src/gui/Gui.vala:716
+msgid "Password"          
+msgstr "密碼"             
+
+#: ../src/gui/Gui.vala:757
+msgid "Options"           
+msgstr "選項"             
+
+#: ../src/gui/Gui.vala:783
+msgid "Add path"          
+msgstr "新增路徑"         
+
+#: ../src/gui/Gui.vala:794
+msgid "Local directory"   
+msgstr "本地端目錄"       
+
+#: ../src/gui/Gui.vala:802
+msgid "Select a folder to share"
+msgstr "選擇一資料夾來分享"
+
+#: ../src/gui/Gui.vala:810
+msgid "Share as"
+msgstr "分享為"
+
+#: ../src/gui/Gui.vala:856
+msgid "This program comes with ABSOLUTELY NO WARRANTY.\n"
+msgstr ""
+
+#: ../src/gui/Gui.vala:857
+msgid "Licensed under GNU GPL 2.0. This is free software, and you are welcome to "
+msgstr ""
+
+#: ../src/gui/Gui.vala:858
+msgid "redistribute it under certain conditions.\n"
+msgstr ""
+
+#: ../src/gui/Gui.vala:860
+msgid "For more information, see:\n"
+msgstr ""
+
+#: ../src/gui/Gui.vala:864
+msgid "Xunta de Galicia partially funded this project using "
+msgstr ""
+
+#: ../src/gui/Gui.vala:865
+msgid "the European Regional Development Fund (ERDF)\n"
+msgstr ""
+
