@@ -60,6 +60,7 @@ struct _UPNPStateContext {
   gchar *internal_ip;
   gchar *description;
   gulong sec_lease_duration;
+  gchar *iface;
 
   /* Result management */
   UpnpActionCompletedCallback on_complete;
@@ -158,7 +159,7 @@ callback_timeout_action_connect (gpointer userdata);
 UPNPStateContext *
 upnpstatecontext_new ()
 {
-  UPNPStateContext *sc = g_slice_new(UPNPStateContext);
+  UPNPStateContext *sc = g_slice_new0(UPNPStateContext);
   return sc;
 }
 
@@ -204,7 +205,16 @@ upnpstatecontext_free (UPNPStateContext *sc)
   g_free(sc->result);
   g_free(sc->internal_ip);
   g_free(sc->description);
+  g_free(sc->iface);
   g_slice_free(UPNPStateContext, sc);
+}
+
+void
+upnpstatecontext_set_iface (UPNPStateContext *sc,
+                              gchar *iface)
+{
+  g_free(sc->iface);
+  sc->iface=g_strdup(iface);
 }
 
 static void
@@ -299,7 +309,7 @@ action_connect (UPNPStateContext *sc)
     /* Create a new GUPnP Context.  By here we are using the default GLib main
        context, and connecting to the current machine's default IP on an
        automatically generated port. */
-    sc->context = gupnp_context_new (NULL, NULL, 0, NULL);
+    sc->context = gupnp_context_new (NULL, sc->iface, 0, NULL);
 
     /* Create a Control Point targeting WAN IP Connection services */
     sc->cp = gupnp_control_point_new
@@ -331,7 +341,7 @@ action_connect2 (UPNPStateContext *sc)
     /* Create a new GUPnP Context.  By here we are using the default GLib main
        context, and connecting to the current machine's default IP on an
        automatically generated port. */
-    sc->context = gupnp_context_new (NULL, NULL, 0, NULL);
+    sc->context = gupnp_context_new (NULL, sc->iface, 0, NULL);
 
     /* Create a Control Point targeting WAN PPP Connection services */
     sc->cp = gupnp_control_point_new

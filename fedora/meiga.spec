@@ -82,6 +82,7 @@ fi
 %files -f %{name}.lang
 %defattr(-,root,root,-)
 %{_bindir}/fwlocalip
+%{_bindir}/fwlocaliface
 %{_bindir}/fwfon
 %{_bindir}/fwupnp
 %{_bindir}/fwssh

@@ -1,6 +1,7 @@
 NULL = 
 
 AM_CPPFLAGS = \
+        -DBINDIR=\""$(bindir)"\" \
 	$(gthread_CFLAGS) \
 	$(glib_CFLAGS) \
 	$(gobject_CFLAGS) \
@@ -9,7 +10,7 @@ AM_CPPFLAGS = \
 	$(NULL)
 
 bin_PROGRAMS = fwupnp
-bin_SCRIPTS = fwlocalip fwssh fwssh-task meiga-askpass fwfon make-meiga-ssl-cert
+bin_SCRIPTS = fwlocalip fwlocaliface fwssh fwssh-task meiga-askpass fwfon make-meiga-ssl-cert
 
 fwupnp_SOURCES = \
 	upnp.c \

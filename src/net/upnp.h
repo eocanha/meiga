@@ -41,6 +41,10 @@ upnpstatecontext_new ();
 void
 upnpstatecontext_free (UPNPStateContext *sc);
 
+void
+upnpstatecontext_set_iface (UPNPStateContext *sc,
+                              gchar *iface);
+
 gchar *
 upnp_get_public_ip (UPNPStateContext *sc,
                     UpnpActionCompletedCallback on_complete,
@@ -55,4 +59,17 @@ upnp_port_redirect (UPNPStateContext *sc,
                     gulong sec_lease_duration,
                     UpnpActionCompletedCallback on_complete,
                     gpointer user_data);
+
+gchar *
+upnp_check_map (UPNPStateContext *sc,
+                guint external_port,
+                UpnpActionCompletedCallback on_complete,
+                gpointer user_data);
+
+gchar *
+upnp_delete (UPNPStateContext *sc,
+             guint external_port,
+             UpnpActionCompletedCallback on_complete,
+             gpointer user_data);
+
 #endif

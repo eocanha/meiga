@@ -37,6 +37,27 @@ void on_complete (gboolean success,
   exit(success?0:1);
 }
 
+static gchar *fwlocaliface() {
+  gchar *out, *err, *result=NULL;
+  gint exit;
+  GError **error;
+
+  g_spawn_command_line_sync (BINDIR "/fwlocaliface",
+                             &out, &err, &exit, error);
+  if (error==NULL && out!=NULL) {
+    result = g_strdup(g_strchomp(out));
+    if (g_strcmp0(result, "")==0) {
+      g_free(result);
+      result = NULL;
+    }
+  }
+  g_free(out);
+  g_free(err);
+  g_clear_error(error);
+
+  return result;
+}
+
 static void print_usage(const gchar *progname) {
 }
 
@@ -45,13 +66,17 @@ main (int argc, char *argv[])
 {
   static GMainLoop *mainloop;
   UPNPStateContext *sc;
+  gchar *iface = NULL;
 
-  /* Required initialisation */
+  /* Required initialization */
   g_thread_init (NULL);
   g_type_init ();
   mainloop = g_main_loop_new (NULL, FALSE);
 
   sc = upnpstatecontext_new();
+  iface = fwlocaliface();
+
+  upnpstatecontext_set_iface(sc, iface);
 
   if (argc == 2 && g_strcmp0(argv[1],"-i") == 0) {
     upnp_get_public_ip(sc,
