@@ -1,5 +1,5 @@
 Name:		meiga
-Version:	0.4.1
+Version:	0.4.2
 Release:	1%{?dist}
 Summary:	Easy to use tool to share selected local directories via web
 
@@ -16,11 +16,13 @@ BuildRequires:	libtool
 # BuildRequires:	vala
 BuildRequires:	libsoup-devel
 BuildRequires:	gupnp-devel
+BuildRequires:	gssdp-devel
 BuildRequires:	dbus-glib-devel
 BuildRequires:	desktop-file-utils
 Requires:	dbus
 Requires:	gtk2
 Requires:	gupnp
+Requires:	gssdp
 Requires:	hicolor-icon-theme
 Requires:	openssl
 

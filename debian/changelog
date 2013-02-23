@@ -1,3 +1,13 @@
+meiga (0.4.2-1) unstable; urgency=low
+
+  * Added libgssdp dependency
+  * Libsoup-2.2 is no longer required for modern distros
+  * Fixed bug: UPnP negotiation fails when there are several network interfaces and automatic selection doesn't work
+  * Added French translation (first version)
+  * Added Taiwaneese (zh_TW) locale
+
+ -- Enrique Ocaña González <eocanha@igalia.com>  Sat, 23 Feb 2013 23:04:16 +0100
+
 meiga (0.4.1-1) unstable; urgency=low
 
   * Fixed Fedora bug 679258: server segfault on shutdown

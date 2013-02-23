@@ -1,3 +1,7 @@
-meiga (0.4.1) - Sat, 23 Apr 2011 18:38:29 +0200
+meiga (0.4.2) - Sat, 23 Feb 2013 22:40:16 +0100
 
-  * Fixed Fedora bug 679258: server segfault on shutdown
+  * Added libgssdp dependency
+  * Libsoup-2.2 is no longer required for modern distros
+  * Fixed bug: UPnP negotiation fails when there are several network interfaces and automatic selection doesn't work
+  * Added French translation (first version)
+  * Added Taiwaneese (zh_TW) locale
