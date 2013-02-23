@@ -50,6 +50,7 @@ SOUP24_REQUIRED=2.4.0
 DBUSGLIB_REQUIRED=0.74
 GMODULE_REQUIRED=0.22
 GUPNP_REQUIRED=0.6
+GSSDP_REQUIRED=0.8
 
 # No need to ask for the Vala compiler if the sources are
 # already compiled to C
@@ -105,6 +106,7 @@ PKG_CHECK_MODULES(libsoup24, libsoup-2.4 >= $SOUP24_REQUIRED)
 PKG_CHECK_MODULES(dbusglib, dbus-glib-1 >= $DBUSGLIB_REQUIRED)
 PKG_CHECK_MODULES(gmodule, gmodule-2.0 >= $GMODULE_REQUIRED)
 PKG_CHECK_MODULES(gupnp, gupnp-1.0 >= $GUPNP_REQUIRED)
+PKG_CHECK_MODULES(gssdp, gssdp-1.0 >= $GSSDP_REQUIRED)
 
 # Syntax changes in gupnp 0.12 and above
 echo -n "checking for gupnp >= 0.12... "
@@ -135,6 +137,8 @@ AC_SUBST(gmodule_CFLAGS)
 AC_SUBST(gmodule_LIBS)
 AC_SUBST(gupnp_CFLAGS)
 AC_SUBST(gupnp_LIBS)
+AC_SUBST(gssdp_CFLAGS)
+AC_SUBST(gssdp_LIBS)
 
 AC_SUBST(serviceentrydir)
 

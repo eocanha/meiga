@@ -6,6 +6,7 @@ AM_CPPFLAGS = \
 	$(glib_CFLAGS) \
 	$(gobject_CFLAGS) \
 	$(gupnp_CFLAGS) \
+	$(gssdp_CFLAGS) \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
 
@@ -22,6 +23,7 @@ fwupnp_LDADD = \
 	$(glib_LIBS) \
 	$(gobject_LIBS) \
 	$(gupnp_LIBS) \
+	$(gssdp_LIBS) \
 	$(NULL)
 
 DISTCLEANFILES = \
