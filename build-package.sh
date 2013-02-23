@@ -35,7 +35,7 @@ case $LSB_VENDOR in
           apt-get -y --force-yes \
             install wget flex bison debhelper fakeroot \
             gnome-common pkg-config \
-            libgtk2.0-dev libglade2-dev libsoup2.2-dev libsoup2.4-dev \
+            libgtk2.0-dev libglade2-dev libsoup2.4-dev \
             libdbus-1-dev libdbus-glib-1-dev libgupnp-1.0-dev
           ldconfig
           VALAC_PATH=`which valac`
