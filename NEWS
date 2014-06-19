@@ -1,7 +1,3 @@
-meiga (0.4.2) - Sat, 23 Feb 2013 22:40:16 +0100
+meiga (0.4.3) - Thu, 19 Jun 2014 21:26:00 +0200
 
-  * Added libgssdp dependency
-  * Libsoup-2.2 is no longer required for modern distros
-  * Fixed bug: UPnP negotiation fails when there are several network interfaces and automatic selection doesn't work
-  * Added French translation (first version)
-  * Added Taiwaneese (zh_TW) locale
+  * Fixed build problem in Fedora 21 related to intltoolize and gettext

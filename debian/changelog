@@ -1,3 +1,9 @@
+meiga (0.4.3-1) unstable; urgency=low
+
+  * Fixed build problem in Fedora 21 related to intltoolize and gettext
+
+ -- Enrique Ocaña González <eocanha@igalia.com>  Thu, 19 Jun 2014 21:26:00 +0200
+
 meiga (0.4.2-1) unstable; urgency=low
 
   * Added libgssdp dependency
