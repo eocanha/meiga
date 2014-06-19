@@ -34,8 +34,6 @@ fi
 # Gettext
 IT_PROG_INTLTOOL([0.40.0])
 AC_SUBST([GETTEXT_PACKAGE], [meiga])
-AM_GNU_GETTEXT_VERSION([0.17])
-AM_GLIB_GNU_GETTEXT
 AC_DEFINE([GETTEXT_PACKAGE], [PACKAGE_TARNAME], [The prefix for our gettext translation domains.])
 
 AC_SUBST(CFLAGS)
